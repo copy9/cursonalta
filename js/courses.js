@@ -6,9 +6,9 @@
 window.COURSES = [
   {
     id: "policia-civil-pi-agente",
-    title: "Polícia Civil do Piauí: Agente (TESTE)",
+    title: "Polícia Civil do Piauí: Agente",
     shortDescription: "Preparação para o concurso de Agente da Polícia Civil do Piauí, com aulas em vídeo e material de estudo.",
-    description: "Curso preparatório para o cargo de Agente da Polícia Civil do Piauí. Conteúdo organizado por disciplina do edital, com aulas em vídeo e material de apoio. Este registro é um teste da vitrine e do fluxo de assinatura.",
+    description: "Curso preparatório para o cargo de Agente da Polícia Civil do Piauí. Conteúdo organizado por disciplina do edital, com aulas em vídeo e material de apoio.",
     category: "Concursos",
     level: "Todos os níveis",
     instructor: { name: "Equipe Cursonalta", role: "Conteúdo de concursos", initials: "CN" },
