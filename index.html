@@ -8,10 +8,10 @@
   <link rel="icon" href="assets/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body class="netflix">
 
 <header class="site-header">
   <nav class="container nav">
@@ -28,69 +28,29 @@
     <div class="nav-actions">
       <a href="entrar.html" class="btn btn-ghost btn-sm">Entrar</a>
       <a href="cadastro.html" class="btn btn-primary btn-sm">Criar conta</a>
-      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu"></button>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">☰</button>
     </div>
   </nav>
 </header>
 
 <main>
-  <!-- HERO -->
-  <section class="hero">
-    <div class="container hero-grid">
-      <div>
-        <span class="eyebrow"> Novos cursos toda semana</span>
-        <h1>Aprenda do jeito certo e <em>decole</em> na sua carreira</h1>
-        <p class="lead">Acesse cursos completos em vídeo sobre marketing, produtividade, design, idiomas, finanças e tecnologia. Você paga uma mensalidade e estuda no seu ritmo.</p>
-        <div class="hero-cta">
-          <a href="cursos.html" class="btn btn-primary">Explorar cursos</a>
-          <a href="#como-funciona" class="btn btn-light">Como funciona</a>
-        </div>
-        <div class="hero-stats">
-          <div><strong>+12 mil</strong><span>alunos ativos</span></div>
-          <div><strong>6</strong><span>áreas de estudo</span></div>
-          <div><strong>100%</strong><span>online e no seu ritmo</span></div>
-        </div>
-      </div>
-      <div class="hero-visual">
-        <div class="hero-badge b1"><i></i><span>4,9 de avaliação média</span></div>
-        <img class="mascot" src="assets/logo.png" alt="Astronauta formado no foguete da Cursonalta">
-        <div class="hero-badge b2"><i></i><span>Acesso imediato após a assinatura</span></div>
+  <!-- BANNER EM DESTAQUE (preenchido por JavaScript) -->
+  <section class="banner" id="banner">
+    <div class="banner-bg" id="banner-bg"></div>
+    <div class="container banner-content">
+      <span class="eyebrow">Em destaque</span>
+      <h1 id="banner-title">Aprenda do jeito certo</h1>
+      <p class="banner-meta" id="banner-meta"></p>
+      <p class="banner-desc" id="banner-desc"></p>
+      <div class="hero-cta">
+        <a href="#" class="btn btn-primary" id="banner-cta">Ver curso</a>
+        <a href="cursos.html" class="btn btn-light">Todos os cursos</a>
       </div>
     </div>
   </section>
 
-  <!-- CATEGORIAS -->
-  <section>
-    <div class="container">
-      <div class="section-head">
-        <span class="kicker">Explore por área</span>
-        <h2>Encontre o curso certo para o seu objetivo</h2>
-        <p>Escolha uma categoria e comece a estudar hoje mesmo.</p>
-      </div>
-      <div class="categories">
-        <a href="cursos.html?cat=Marketing" class="cat-card"><div class="cat-icon"></div><strong>Marketing</strong><small>Atraia e converta clientes</small></a>
-        <a href="cursos.html?cat=Produtividade" class="cat-card"><div class="cat-icon"></div><strong>Produtividade</strong><small>Ganhe tempo no trabalho</small></a>
-        <a href="cursos.html?cat=Design" class="cat-card"><div class="cat-icon"></div><strong>Design</strong><small>Crie com estilo e IA</small></a>
-        <a href="cursos.html?cat=Idiomas" class="cat-card"><div class="cat-icon"></div><strong>Idiomas</strong><small>Fale com confiança</small></a>
-        <a href="cursos.html?cat=Finanças" class="cat-card"><div class="cat-icon"></div><strong>Finanças</strong><small>Organize e invista</small></a>
-        <a href="cursos.html?cat=Tecnologia" class="cat-card"><div class="cat-icon"></div><strong>Tecnologia</strong><small>Programe seus projetos</small></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- CURSOS EM DESTAQUE -->
-  <section style="padding-top:0">
-    <div class="container">
-      <div class="section-row">
-        <div>
-          <span class="kicker" style="color:var(--orange);font-weight:700;text-transform:uppercase;letter-spacing:.12em;font-size:.8rem">Em destaque</span>
-          <h2>Cursos mais procurados</h2>
-        </div>
-        <a href="cursos.html">Ver todos os cursos →</a>
-      </div>
-      <div class="grid" id="featured-grid"></div>
-    </div>
-  </section>
+  <!-- FILEIRAS DE CURSOS (preenchidas por JavaScript) -->
+  <section class="rows" id="rows"></section>
 
   <!-- COMO FUNCIONA -->
   <section class="benefits" id="como-funciona">
@@ -118,17 +78,17 @@
       </div>
       <div class="quotes">
         <div class="quote">
-          <div class="stars"></div>
+          <div class="stars">★★★★★</div>
           <p>"Em duas semanas já estava usando as técnicas no trabalho. Conteúdo direto e sem enrolação."</p>
           <div class="who"><div class="avatar">AM</div><div><strong>Ana Martins</strong><small>Analista de marketing</small></div></div>
         </div>
         <div class="quote">
-          <div class="stars"></div>
+          <div class="stars">★★★★★</div>
           <p>"Eu tinha medo de planilhas. Hoje faço relatórios em metade do tempo. Vale cada centavo."</p>
           <div class="who"><div class="avatar">BS</div><div><strong>Bruno Souza</strong><small>Assistente administrativo</small></div></div>
         </div>
         <div class="quote">
-          <div class="stars"></div>
+          <div class="stars">★★★★★</div>
           <p>"A mensalidade cabe no orçamento e o suporte entre os alunos é muito bom. Recomendo demais."</p>
           <div class="who"><div class="avatar">CF</div><div><strong>Carla Fernandes</strong><small>Designer freelancer</small></div></div>
         </div>
@@ -142,10 +102,10 @@
       <div class="cta-band">
         <div>
           <h2>Pronto para começar a sua jornada?</h2>
-          <p>Crie sua conta grátis e explore a plataforma. Assine quando quiser.</p>
+          <p>Crie sua conta e explore a plataforma. Assine quando quiser.</p>
         </div>
         <div style="display:flex;gap:12px;flex-wrap:wrap">
-          <a href="cadastro.html" class="btn btn-primary">Criar conta grátis</a>
+          <a href="cadastro.html" class="btn btn-primary">Criar conta</a>
           <a href="cursos.html" class="btn btn-light">Ver cursos</a>
         </div>
       </div>
@@ -173,7 +133,7 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <a href="index.html" class="brand"><img src="assets/logo.png" alt="" style="background:#fff;border-radius:12px;padding:4px"><span>Curso<b>nalta</b></span></a>
+        <a href="index.html" class="brand"><img src="assets/logo.png" alt=""><span>Curso<b>nalta</b></span></a>
         <p style="margin-top:14px;max-width:320px">Cursos online em vídeo para você aprender, praticar e crescer no seu ritmo.</p>
       </div>
       <div>
@@ -199,9 +159,49 @@
 <script src="js/courses.js"></script>
 <script src="js/main.js"></script>
 <script>
-  // Destaques: primeiros três cursos
-  document.getElementById("featured-grid").innerHTML =
-    window.COURSES.slice(0, 3).map(courseCardHTML).join("");
+  (function () {
+    var courses = window.COURSES;
+
+    // Banner: o primeiro curso com capa vira o destaque
+    var featured = courses.find(function (c) { return c.cover; }) || courses[0];
+    var bg = document.getElementById("banner-bg");
+    if (featured.cover) {
+      bg.style.backgroundImage = "url('" + featured.cover + "')";
+    } else {
+      bg.style.background = featured.gradient;
+    }
+    document.getElementById("banner-title").textContent = featured.title;
+    document.getElementById("banner-meta").textContent =
+      featured.category + " · " + featured.level + " · " + featured.duration;
+    document.getElementById("banner-desc").textContent = featured.shortDescription;
+    document.getElementById("banner-cta").href = "curso.html?id=" + featured.id;
+
+    // Fileiras: uma por categoria, mais uma com todos os cursos
+    function poster(c) {
+      var img = c.cover
+        ? '<img src="' + c.cover + '" alt="" loading="lazy">'
+        : '<div class="poster-fallback" style="background:' + c.gradient + '"><span>' + c.title + '</span></div>';
+      return '<a class="poster" href="curso.html?id=' + c.id + '">' +
+               '<div class="poster-img">' + img + '</div>' +
+               '<div class="poster-info"><strong>' + c.title + '</strong>' +
+               '<small>' + c.category + ' · ' + formatBRL(c.price) + '/mês</small></div>' +
+             '</a>';
+    }
+    function row(title, list) {
+      return '<div class="row">' +
+               '<h2 class="row-title">' + title + '</h2>' +
+               '<div class="row-track">' + list.map(poster).join("") + '</div>' +
+             '</div>';
+    }
+
+    var html = row("Todos os cursos", courses);
+    var cats = [];
+    courses.forEach(function (c) { if (cats.indexOf(c.category) === -1) cats.push(c.category); });
+    cats.forEach(function (cat) {
+      html += row(cat, courses.filter(function (c) { return c.category === cat; }));
+    });
+    document.getElementById("rows").innerHTML = html;
+  })();
 </script>
 </body>
 </html>
