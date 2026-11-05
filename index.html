@@ -37,6 +37,7 @@
   <!-- BANNER EM DESTAQUE (preenchido por JavaScript) -->
   <section class="banner" id="banner">
     <div class="banner-bg" id="banner-bg"></div>
+    <img class="banner-poster" id="banner-poster" alt="">
     <div class="container banner-content">
       <span class="eyebrow">Em destaque</span>
       <h1 id="banner-title">Aprenda do jeito certo</h1>
@@ -164,11 +165,12 @@
 
     // Banner: o primeiro curso com capa vira o destaque
     var featured = courses.find(function (c) { return c.cover; }) || courses[0];
-    var bg = document.getElementById("banner-bg");
+    document.getElementById("banner-bg").style.background = featured.gradient;
+    var poster = document.getElementById("banner-poster");
     if (featured.cover) {
-      bg.style.backgroundImage = "url('" + featured.cover + "')";
+      poster.src = featured.cover;
     } else {
-      bg.style.background = featured.gradient;
+      poster.style.display = "none";
     }
     document.getElementById("banner-title").textContent = featured.title;
     document.getElementById("banner-meta").textContent =

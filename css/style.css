@@ -500,3 +500,18 @@ section { padding: 96px 0; position: relative; }
   .banner-bg { opacity: .35; background-position: center top; }
   .banner-content { padding-top: 40px; }
 }
+
+/* Banner: fundo de cor + capa como cartão à direita (sem texto por cima de texto) */
+.banner-bg { background-image: none !important; }
+.banner-bg::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(700px 420px at 75% 50%, rgba(34,211,238,.18), transparent 70%);
+}
+.banner-poster {
+  position: absolute; z-index: 2; right: 6%; top: 50%; transform: translateY(-50%);
+  width: min(460px, 34vw); aspect-ratio: 16 / 10; object-fit: cover; border-radius: 18px;
+  border: 1px solid var(--border-strong); box-shadow: 0 40px 80px -20px rgba(0,0,0,.8), 0 0 80px -10px rgba(139,92,246,.45);
+}
+@media (max-width: 960px) {
+  .banner-poster { display: none; }
+}
