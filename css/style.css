@@ -425,3 +425,9 @@ section { padding: 96px 0; position: relative; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Ícones sem emoji: ponto luminoso no lugar */
+.cat-icon::before, .step .ico::before {
+  content: ""; width: 12px; height: 12px; border-radius: 4px; background: var(--grad);
+  box-shadow: 0 0 18px rgba(139, 92, 246, .7);
+}

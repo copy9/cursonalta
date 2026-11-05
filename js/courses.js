@@ -15,7 +15,6 @@ window.COURSES = [
     price: 49.9,
     duration: "581h 4min",
     lessons: 0,
-    emoji: "🚓",
     cover: "assets/covers/policia-civil-pi-agente.png",
     gradient: "linear-gradient(135deg, #0b1b4d, #1e3a8a)",
     learn: [
@@ -38,7 +37,6 @@ window.COURSES = [
     price: 49.9,
     duration: "12h 30min",
     lessons: 36,
-    emoji: "📈",
     gradient: "linear-gradient(135deg, #f97316, #fbbf24)",
     learn: [
       "Montar um funil de vendas do início ao fim",
@@ -67,7 +65,6 @@ window.COURSES = [
     price: 39.9,
     duration: "8h 15min",
     lessons: 28,
-    emoji: "📊",
     gradient: "linear-gradient(135deg, #1e3a8a, #2748b8)",
     learn: [
       "Usar fórmulas e funções de busca com segurança",
@@ -95,7 +92,6 @@ window.COURSES = [
     price: 59.9,
     duration: "10h 00min",
     lessons: 30,
-    emoji: "🎨",
     gradient: "linear-gradient(135deg, #7c3aed, #ec4899)",
     learn: [
       "Escrever prompts que geram imagens úteis",
@@ -123,7 +119,6 @@ window.COURSES = [
     price: 69.9,
     duration: "15h 45min",
     lessons: 42,
-    emoji: "🗣️",
     gradient: "linear-gradient(135deg, #059669, #34d399)",
     learn: [
       "Conduzir reuniões e apresentações em inglês",
@@ -151,7 +146,6 @@ window.COURSES = [
     price: 44.9,
     duration: "6h 40min",
     lessons: 22,
-    emoji: "💰",
     gradient: "linear-gradient(135deg, #0ea5e9, #1e3a8a)",
     learn: [
       "Montar um orçamento mensal realista",
@@ -179,7 +173,6 @@ window.COURSES = [
     price: 79.9,
     duration: "20h 10min",
     lessons: 54,
-    emoji: "💻",
     gradient: "linear-gradient(135deg, #0b1b4d, #475569)",
     learn: [
       "Estruturar páginas com HTML semântico",
@@ -198,14 +191,6 @@ window.COURSES = [
   }
 ];
 
-window.CATEGORY_ICONS = {
-  "Marketing": "📈",
-  "Produtividade": "📊",
-  "Design": "🎨",
-  "Idiomas": "🗣️",
-  "Finanças": "💰",
-  "Tecnologia": "💻"
-};
 
 window.formatBRL = function (value) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -218,7 +203,6 @@ window.courseCardHTML = function (c) {
         ${c.cover ? `<img src="${c.cover}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">` : ""}
         <span class="tag">${c.category}</span>
         <span class="level">${c.level}</span>
-        <span class="emoji">${c.emoji}</span>
       </a>
       <div class="course-body">
         <h3><a href="curso.html?id=${c.id}">${c.title}</a></h3>
