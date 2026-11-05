@@ -16,6 +16,7 @@ window.COURSES = [
     duration: "581h 4min",
     lessons: 0,
     emoji: "🚓",
+    cover: "assets/covers/policia-civil-pi-agente.png",
     gradient: "linear-gradient(135deg, #0b1b4d, #1e3a8a)",
     learn: [
       "Conhecer o conteúdo cobrado no edital",
@@ -214,6 +215,7 @@ window.courseCardHTML = function (c) {
   return `
     <article class="course-card">
       <a href="curso.html?id=${c.id}" class="thumb" style="background:${c.gradient}" aria-label="Ver curso ${c.title}">
+        ${c.cover ? `<img src="${c.cover}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover">` : ""}
         <span class="tag">${c.category}</span>
         <span class="level">${c.level}</span>
         <span class="emoji">${c.emoji}</span>
