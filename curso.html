@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Curso | Cursonalta</title>
+  <meta name="description" content="Conheça o conteúdo, o professor e os módulos deste curso.">
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="container nav">
+    <a href="index.html" class="brand" aria-label="Cursonalta início">
+      <img src="assets/logo.png" alt="Logo Cursonalta">
+      <span>Curso<b>nalta</b></span>
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="index.html">Início</a>
+      <a href="cursos.html" class="active">Cursos</a>
+      <a href="index.html#como-funciona">Como funciona</a>
+      <a href="index.html#perguntas">Dúvidas</a>
+    </div>
+    <div class="nav-actions">
+      <a href="entrar.html" class="btn btn-ghost btn-sm">Entrar</a>
+      <a href="cadastro.html" class="btn btn-primary btn-sm">Criar conta</a>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">☰</button>
+    </div>
+  </nav>
+</header>
+
+<main id="course-root">
+  <!-- Preenchido por JavaScript a partir de js/courses.js -->
+  <section class="course-hero">
+    <div class="container">
+      <p class="breadcrumb"><a href="index.html">Início</a> / <a href="cursos.html">Cursos</a></p>
+      <h1>Carregando curso...</h1>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <a href="index.html" class="brand"><img src="assets/logo.png" alt="" style="background:#fff;border-radius:12px;padding:4px"><span>Curso<b>nalta</b></span></a>
+        <p style="margin-top:14px;max-width:320px">Cursos online em vídeo para você aprender, praticar e crescer no seu ritmo.</p>
+      </div>
+      <div>
+        <h4>Plataforma</h4>
+        <ul><li><a href="cursos.html">Cursos</a></li><li><a href="index.html#como-funciona">Como funciona</a></li><li><a href="index.html#perguntas">Dúvidas</a></li></ul>
+      </div>
+      <div>
+        <h4>Conta</h4>
+        <ul><li><a href="entrar.html">Entrar</a></li><li><a href="cadastro.html">Criar conta</a></li></ul>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <ul><li><a href="#">Termos de uso</a></li><li><a href="#">Privacidade</a></li><li><a href="#">Contato</a></li></ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 Cursonalta. Todos os direitos reservados.</span>
+      <span>cursonalta.com</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/courses.js"></script>
+<script src="js/main.js"></script>
+<script>
+  (function () {
+    var id = new URLSearchParams(window.location.search).get("id");
+    var c = window.COURSES.find(function (x) { return x.id === id; }) || window.COURSES[0];
+    var root = document.getElementById("course-root");
+    document.title = c.title + " | Cursonalta";
+
+    var learn = c.learn.map(function (item) { return "<li>" + item + "</li>"; }).join("");
+    var modules = c.modules.map(function (m, i) {
+      return '<li><span style="color:var(--orange);margin-right:8px">' + String(i + 1).padStart(2, "0") + "</span>" +
+             m.title + "<span>" + m.lessons + " aulas · " + m.time + "</span></li>";
+    }).join("");
+
+    var related = window.COURSES.filter(function (x) { return x.id !== c.id; }).slice(0, 3)
+      .map(courseCardHTML).join("");
+
+    root.innerHTML =
+      '<section class="course-hero">' +
+        '<div class="container">' +
+          '<p class="breadcrumb"><a href="index.html">Início</a> / <a href="cursos.html">Cursos</a> / ' + c.category + "</p>" +
+          "<h1>" + c.title + "</h1>" +
+          '<p class="lead">' + c.shortDescription + "</p>" +
+          '<div class="pill-row">' +
+            '<span class="pill">' + c.emoji + " " + c.category + "</span>" +
+            '<span class="pill">Nível: ' + c.level + "</span>" +
+            '<span class="pill">' + c.lessons + " aulas</span>" +
+            '<span class="pill">' + c.duration + "</span>" +
+          "</div>" +
+        "</div>" +
+      "</section>" +
+
+      '<section style="padding-top:0">' +
+        '<div class="container detail-grid">' +
+          "<div>" +
+            '<div class="panel">' +
+              "<h2>Pré-visualização</h2>" +
+              '<div class="video-box" style="background:' + c.gradient + '">' +
+                '<button class="play" aria-label="Assistir prévia">▶</button>' +
+                "<small>Prévia · 3min</small>" +
+              "</div>" +
+            "</div>" +
+            '<div class="panel">' +
+              "<h2>Sobre o curso</h2>" +
+              "<p>" + c.description + "</p>" +
+            "</div>" +
+            '<div class="panel">' +
+              "<h2>O que você vai aprender</h2>" +
+              '<ul class="checklist">' + learn + "</ul>" +
+            "</div>" +
+            '<div class="panel">' +
+              "<h2>Conteúdo do curso</h2>" +
+              '<ul class="modules">' + modules + "</ul>" +
+            "</div>" +
+            '<div class="panel">' +
+              "<h2>Professor</h2>" +
+              '<div class="instructor">' +
+                '<div class="avatar">' + c.instructor.initials + "</div>" +
+                "<div><strong>" + c.instructor.name + "</strong><small>" + c.instructor.role + "</small></div>" +
+              "</div>" +
+            "</div>" +
+          "</div>" +
+
+          "<aside>" +
+            '<div class="panel buy-card">' +
+              '<p style="margin:0;color:var(--muted);font-weight:600">Assinatura mensal</p>' +
+              '<div class="price-big">' + formatBRL(c.price) + " <small>/mês</small></div>" +
+              "<ul>" +
+                "<li>Acesso a todas as " + c.lessons + " aulas</li>" +
+                "<li>Grupo exclusivo no Telegram</li>" +
+                "<li>Novas aulas incluídas</li>" +
+                "<li>Cancele a renovação quando quiser</li>" +
+              "</ul>" +
+              '<a href="cadastro.html?curso=' + c.id + '" class="btn btn-primary btn-block">Assinar este curso</a>' +
+              '<p class="guarantee">🔒 Pagamento seguro · Garantia de 7 dias</p>' +
+            "</div>" +
+          "</aside>" +
+        "</div>" +
+      "</section>" +
+
+      '<section style="padding-top:0">' +
+        '<div class="container">' +
+          '<div class="section-row"><h2>Outros cursos que você pode gostar</h2><a href="cursos.html">Ver todos →</a></div>' +
+          '<div class="grid">' + related + "</div>" +
+        "</div>" +
+      "</section>";
+  })();
+</script>
+</body>
+</html>

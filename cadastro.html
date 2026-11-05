@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Criar conta | Cursonalta</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="container nav">
+    <a href="index.html" class="brand" aria-label="Cursonalta início">
+      <img src="assets/logo.png" alt="Logo Cursonalta">
+      <span>Curso<b>nalta</b></span>
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="index.html">Início</a>
+      <a href="cursos.html">Cursos</a>
+      <a href="index.html#como-funciona">Como funciona</a>
+      <a href="index.html#perguntas">Dúvidas</a>
+    </div>
+    <div class="nav-actions">
+      <a href="entrar.html" class="btn btn-ghost btn-sm">Entrar</a>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">☰</button>
+    </div>
+  </nav>
+</header>
+
+<main class="auth-wrap">
+  <aside class="auth-side">
+    <img src="assets/logo.png" alt="">
+    <h2>Sua jornada começa aqui</h2>
+    <p>Crie sua conta em menos de um minuto, explore o catálogo e assine o curso que faz sentido para você.</p>
+  </aside>
+
+  <div class="auth-form-wrap">
+    <div class="auth-card">
+      <h1>Criar conta</h1>
+      <p>É rápido e gratuito.</p>
+
+      <form class="form" id="signup-form">
+        <div class="field">
+          <label for="name">Nome completo</label>
+          <input id="name" class="input" type="text" placeholder="Seu nome" required>
+        </div>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input id="email" class="input" type="email" placeholder="voce@email.com" required>
+        </div>
+        <div class="field">
+          <label for="password">Senha</label>
+          <input id="password" class="input" type="password" placeholder="Mínimo de 8 caracteres" minlength="8" required>
+        </div>
+        <label class="check"><input type="checkbox" required> Li e aceito os <a href="#" style="color:var(--blue);font-weight:600">termos de uso</a></label>
+        <button class="btn btn-primary btn-block" type="submit">Criar minha conta</button>
+      </form>
+
+      <p class="auth-foot">Já tem uma conta? <a href="entrar.html">Entrar</a></p>
+    </div>
+  </div>
+</main>
+
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Entrar | Cursonalta</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="container nav">
+    <a href="index.html" class="brand" aria-label="Cursonalta início">
+      <img src="assets/logo.png" alt="Logo Cursonalta">
+      <span>Curso<b>nalta</b></span>
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="index.html">Início</a>
+      <a href="cursos.html">Cursos</a>
+      <a href="index.html#como-funciona">Como funciona</a>
+      <a href="index.html#perguntas">Dúvidas</a>
+    </div>
+    <div class="nav-actions">
+      <a href="cadastro.html" class="btn btn-primary btn-sm">Criar conta</a>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">☰</button>
+    </div>
+  </nav>
+</header>
+
+<main class="auth-wrap">
+  <aside class="auth-side">
+    <img src="assets/logo.png" alt="">
+    <h2>Bem-vindo de volta!</h2>
+    <p>Continue de onde parou. Seus cursos assinados e seu progresso estão esperando por você.</p>
+  </aside>
+
+  <div class="auth-form-wrap">
+    <div class="auth-card">
+      <h1>Entrar na sua conta</h1>
+      <p>Use o e-mail que você cadastrou.</p>
+
+      <form class="form" id="login-form">
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input id="email" class="input" type="email" placeholder="voce@email.com" required>
+        </div>
+        <div class="field">
+          <label for="password">Senha</label>
+          <input id="password" class="input" type="password" placeholder="Sua senha" required>
+        </div>
+        <div class="row">
+          <label class="check"><input type="checkbox"> Manter conectado</label>
+          <a href="#">Esqueci minha senha</a>
+        </div>
+        <button class="btn btn-primary btn-block" type="submit">Entrar</button>
+      </form>
+
+      <div class="divider">ou</div>
+      <p class="auth-foot">Ainda não tem conta? <a href="cadastro.html">Criar conta grátis</a></p>
+    </div>
+  </div>
+</main>
+
+<script src="js/main.js"></script>
+</body>
+</html>
