@@ -198,7 +198,9 @@
     var cats = [];
     courses.forEach(function (c) { if (cats.indexOf(c.category) === -1) cats.push(c.category); });
     cats.forEach(function (cat) {
-      html += row(cat, courses.filter(function (c) { return c.category === cat; }));
+      var list = courses.filter(function (c) { return c.category === cat; });
+      // Só mostra a fileira da categoria quando ela tem cursos suficientes para encher a linha
+      if (list.length >= 3) html += row(cat, list);
     });
     document.getElementById("rows").innerHTML = html;
   })();
