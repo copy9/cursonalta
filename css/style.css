@@ -495,3 +495,8 @@ section { padding: 96px 0; position: relative; }
   .banner-content { padding: 0 0 90px; }
   .poster { width: 240px; }
 }
+
+@media (max-width: 760px) {
+  .banner-bg { opacity: .35; background-position: center top; }
+  .banner-content { padding-top: 40px; }
+}
