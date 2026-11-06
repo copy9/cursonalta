@@ -8,7 +8,7 @@
   <link rel="icon" href="assets/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -28,7 +28,7 @@
     <div class="nav-actions">
       <a href="entrar.html" class="btn btn-ghost btn-sm">Entrar</a>
       <a href="cadastro.html" class="btn btn-primary btn-sm">Criar conta</a>
-      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu"></button>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">☰</button>
     </div>
   </nav>
 </header>
@@ -36,14 +36,14 @@
 <main>
   <section class="page-hero">
     <div class="container">
-      <span class="eyebrow"> Catálogo</span>
-      <h1>Encontre o seu próximo curso</h1>
+      <span class="eyebrow">Catálogo</span>
+      <h1>Todos os cursos</h1>
       <p>Pesquise pelo nome, filtre por área e nível. Assine por mês e estude no seu ritmo.</p>
     </div>
   </section>
 
   <div class="container">
-    <div class="toolbar">
+    <div class="catalog-bar">
       <div class="field">
         <label for="search">Buscar</label>
         <input id="search" class="input" type="search" placeholder="Ex.: Excel, marketing, inglês..." autocomplete="off">
@@ -71,9 +71,16 @@
     <div class="chips" id="chips"></div>
     <p class="results-count" id="count"></p>
 
-    <div class="grid" id="grid"></div>
-    <div class="empty" id="empty">
-      <strong>Nenhum curso encontrado</strong>
+    <!-- Sem filtros: fileiras por categoria -->
+    <div id="rows-view"></div>
+
+    <!-- Com busca ou filtro: grade de resultados -->
+    <div class="catalog-results" id="grid-view" style="display:none">
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div class="empty" id="empty" style="display:none; padding:60px 20px; text-align:center; color:var(--muted)">
+      <strong style="display:block;color:#fff;font-size:1.2rem;margin-bottom:6px">Nenhum curso encontrado</strong>
       Tente outra palavra ou limpe os filtros.
     </div>
   </div>
@@ -83,7 +90,7 @@
   <div class="container">
     <div class="footer-grid">
       <div>
-        <a href="index.html" class="brand"><img src="assets/logo.png" alt="" style="background:#fff;border-radius:12px;padding:4px"><span>Curso<b>nalta</b></span></a>
+        <a href="index.html" class="brand"><img src="assets/logo.png" alt=""><span>Curso<b>nalta</b></span></a>
         <p style="margin-top:14px;max-width:320px">Cursos online em vídeo para você aprender, praticar e crescer no seu ritmo.</p>
       </div>
       <div>
@@ -110,6 +117,8 @@
 <script src="js/main.js"></script>
 <script>
   (function () {
+    var rowsView = document.getElementById("rows-view");
+    var gridView = document.getElementById("grid-view");
     var grid = document.getElementById("grid");
     var empty = document.getElementById("empty");
     var count = document.getElementById("count");
@@ -118,41 +127,66 @@
     var sort = document.getElementById("sort");
     var chipsEl = document.getElementById("chips");
 
-    var params = new URLSearchParams(window.location.search);
-    var activeCat = params.get("cat") || "Todos";
+    var activeCat = new URLSearchParams(window.location.search).get("cat") || "Todos";
+    var categories = ["Todos"];
+    window.COURSES.forEach(function (c) { if (categories.indexOf(c.category) === -1) categories.push(c.category); });
 
-    var categories = ["Todos"].concat(
-      Array.from(new Set(window.COURSES.map(function (c) { return c.category; })))
-    );
+    function poster(c) {
+      var img = c.cover
+        ? '<img src="' + c.cover + '" alt="" loading="lazy">'
+        : '<div class="poster-fallback" style="background:' + c.gradient + '"><span>' + c.title + "</span></div>";
+      return '<a class="poster" href="curso.html?id=' + c.id + '">' +
+               '<div class="poster-img">' + img + "</div>" +
+               '<div class="poster-info"><strong>' + c.title + "</strong><small>" + c.category + " · " + formatBRL(c.price) + "/mês</small></div>" +
+             "</a>";
+    }
 
     function renderChips() {
       chipsEl.innerHTML = categories.map(function (cat) {
-        var icon = "";
-        var cls = cat === activeCat ? "chip active" : "chip";
-        return '<button class="' + cls + '" data-cat="' + cat + '">' + icon + cat + "</button>";
+        return '<button class="chip' + (cat === activeCat ? " active" : "") + '" data-cat="' + cat + '">' + cat + "</button>";
       }).join("");
     }
 
-    function applyFilters() {
+    function filtered() {
       var term = search.value.trim().toLowerCase();
       var lvl = level.value;
       var list = window.COURSES.filter(function (c) {
         var matchCat = activeCat === "Todos" || c.category === activeCat;
         var matchLvl = !lvl || c.level === lvl;
-        var haystack = (c.title + " " + c.shortDescription + " " + c.category + " " + c.instructor.name).toLowerCase();
-        var matchTerm = !term || haystack.indexOf(term) !== -1;
-        return matchCat && matchLvl && matchTerm;
+        var hay = (c.title + " " + c.shortDescription + " " + c.category + " " + c.instructor.name).toLowerCase();
+        return matchCat && matchLvl && (!term || hay.indexOf(term) !== -1);
       });
-
       switch (sort.value) {
         case "menor-preco": list.sort(function (a, b) { return a.price - b.price; }); break;
         case "maior-preco": list.sort(function (a, b) { return b.price - a.price; }); break;
         case "titulo": list.sort(function (a, b) { return a.title.localeCompare(b.title, "pt-BR"); }); break;
       }
+      return { list: list, filtering: term !== "" || lvl !== "" || activeCat !== "Todos" };
+    }
 
-      grid.innerHTML = list.map(courseCardHTML).join("");
-      empty.style.display = list.length ? "none" : "block";
-      count.textContent = list.length + (list.length === 1 ? " curso encontrado" : " cursos encontrados");
+    function row(title, list) {
+      return '<div class="row"><h2 class="row-title">' + title + '</h2><div class="row-track">' +
+             list.map(poster).join("") + "</div></div>";
+    }
+
+    function render() {
+      var r = filtered();
+      count.textContent = r.list.length + (r.list.length === 1 ? " curso encontrado" : " cursos encontrados");
+      empty.style.display = r.list.length ? "none" : "block";
+
+      if (r.filtering) {
+        rowsView.style.display = "none";
+        gridView.style.display = r.list.length ? "block" : "none";
+        grid.innerHTML = r.list.map(poster).join("");
+      } else {
+        gridView.style.display = "none";
+        rowsView.style.display = "block";
+        var html = row("Todos os cursos", window.COURSES);
+        categories.slice(1).forEach(function (cat) {
+          html += row(cat, window.COURSES.filter(function (c) { return c.category === cat; }));
+        });
+        rowsView.innerHTML = html;
+      }
     }
 
     chipsEl.addEventListener("click", function (e) {
@@ -160,15 +194,14 @@
       if (!btn) return;
       activeCat = btn.dataset.cat;
       renderChips();
-      applyFilters();
+      render();
     });
-
-    search.addEventListener("input", applyFilters);
-    level.addEventListener("change", applyFilters);
-    sort.addEventListener("change", applyFilters);
+    search.addEventListener("input", render);
+    level.addEventListener("change", render);
+    sort.addEventListener("change", render);
 
     renderChips();
-    applyFilters();
+    render();
   })();
 </script>
 </body>

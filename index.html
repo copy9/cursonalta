@@ -37,16 +37,18 @@
   <!-- BANNER EM DESTAQUE (preenchido por JavaScript) -->
   <section class="banner" id="banner">
     <div class="banner-bg" id="banner-bg"></div>
-    <img class="banner-poster" id="banner-poster" alt="">
-    <div class="container banner-content">
-      <span class="eyebrow">Em destaque</span>
-      <h1 id="banner-title">Aprenda do jeito certo</h1>
-      <p class="banner-meta" id="banner-meta"></p>
-      <p class="banner-desc" id="banner-desc"></p>
-      <div class="hero-cta">
-        <a href="#" class="btn btn-primary" id="banner-cta">Ver curso</a>
-        <a href="cursos.html" class="btn btn-light">Todos os cursos</a>
+    <div class="container banner-inner">
+      <div class="banner-content">
+        <span class="eyebrow">Em destaque</span>
+        <h1 id="banner-title">Aprenda do jeito certo</h1>
+        <p class="banner-meta" id="banner-meta"></p>
+        <p class="banner-desc" id="banner-desc"></p>
+        <div class="hero-cta">
+          <a href="#" class="btn btn-primary" id="banner-cta">Ver curso</a>
+          <a href="cursos.html" class="btn btn-light">Todos os cursos</a>
+        </div>
       </div>
+      <img class="banner-poster" id="banner-poster" alt="">
     </div>
   </section>
 
@@ -166,11 +168,11 @@
     // Banner: o primeiro curso com capa vira o destaque
     var featured = courses.find(function (c) { return c.cover; }) || courses[0];
     document.getElementById("banner-bg").style.background = featured.gradient;
-    var poster = document.getElementById("banner-poster");
+    var bannerPoster = document.getElementById("banner-poster");
     if (featured.cover) {
-      poster.src = featured.cover;
+      bannerPoster.src = featured.cover;
     } else {
-      poster.style.display = "none";
+      bannerPoster.style.display = "none";
     }
     document.getElementById("banner-title").textContent = featured.title;
     document.getElementById("banner-meta").textContent =
@@ -202,7 +204,7 @@
     cats.forEach(function (cat) {
       var list = courses.filter(function (c) { return c.category === cat; });
       // Só mostra a fileira da categoria quando ela tem cursos suficientes para encher a linha
-      if (list.length >= 3) html += row(cat, list);
+      html += row(cat, list);
     });
     document.getElementById("rows").innerHTML = html;
   })();

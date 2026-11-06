@@ -8,7 +8,7 @@
   <link rel="icon" href="assets/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -28,26 +28,20 @@
     <div class="nav-actions">
       <a href="entrar.html" class="btn btn-ghost btn-sm">Entrar</a>
       <a href="cadastro.html" class="btn btn-primary btn-sm">Criar conta</a>
-      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu"></button>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">☰</button>
     </div>
   </nav>
 </header>
 
 <main id="course-root">
-  <!-- Preenchido por JavaScript a partir de js/courses.js -->
-  <section class="course-hero">
-    <div class="container">
-      <p class="breadcrumb"><a href="index.html">Início</a> / <a href="cursos.html">Cursos</a></p>
-      <h1>Carregando curso...</h1>
-    </div>
-  </section>
+  <section class="series-hero"><div class="container"><p class="breadcrumb">Carregando...</p></div></section>
 </main>
 
 <footer class="site-footer">
   <div class="container">
     <div class="footer-grid">
       <div>
-        <a href="index.html" class="brand"><img src="assets/logo.png" alt="" style="background:#fff;border-radius:12px;padding:4px"><span>Curso<b>nalta</b></span></a>
+        <a href="index.html" class="brand"><img src="assets/logo.png" alt=""><span>Curso<b>nalta</b></span></a>
         <p style="margin-top:14px;max-width:320px">Cursos online em vídeo para você aprender, praticar e crescer no seu ritmo.</p>
       </div>
       <div>
@@ -76,65 +70,62 @@
   (function () {
     var id = new URLSearchParams(window.location.search).get("id");
     var c = window.COURSES.find(function (x) { return x.id === id; }) || window.COURSES[0];
-    var root = document.getElementById("course-root");
     document.title = c.title + " | Cursonalta";
 
-    var learn = c.learn.map(function (item) { return "<li>" + item + "</li>"; }).join("");
-    var modules = c.modules.map(function (m, i) {
-      return '<li><span style="color:var(--orange);margin-right:8px">' + String(i + 1).padStart(2, "0") + "</span>" +
-             m.title + "<span>" + m.lessons + " aulas · " + m.time + "</span></li>";
+    var cover = c.cover
+      ? '<img class="series-cover" src="' + c.cover + '" alt="">'
+      : '<div class="series-cover-fallback" style="background:' + c.gradient + '">' + c.title + "</div>";
+
+    var episodes = c.modules.map(function (m, i) {
+      return '<li class="ep">' +
+               '<span class="ep-num">' + String(i + 1).padStart(2, "0") + "</span>" +
+               "<div><strong>" + m.title + "</strong><small>" + m.lessons + " aulas</small></div>" +
+               '<span class="ep-time">' + m.time + "</span>" +
+             "</li>";
     }).join("");
 
-    var related = window.COURSES.filter(function (x) { return x.id !== c.id; }).slice(0, 3)
-      .map(courseCardHTML).join("");
+    var learn = c.learn.map(function (item) { return "<li>" + item + "</li>"; }).join("");
 
-    root.innerHTML =
-      '<section class="course-hero">' +
-        '<div class="container">' +
-          '<p class="breadcrumb"><a href="index.html">Início</a> / <a href="cursos.html">Cursos</a> / ' + c.category + "</p>" +
-          "<h1>" + c.title + "</h1>" +
-          '<p class="lead">' + c.shortDescription + "</p>" +
-          '<div class="pill-row">' +
-            '<span class="pill">' + c.category + "</span>" +
-            '<span class="pill">Nível: ' + c.level + "</span>" +
-            '<span class="pill">' + c.lessons + " aulas</span>" +
-            '<span class="pill">' + c.duration + "</span>" +
+    var related = window.COURSES.filter(function (x) { return x.id !== c.id; });
+    var relatedRow = related.map(function (x) {
+      var img = x.cover
+        ? '<img src="' + x.cover + '" alt="" loading="lazy">'
+        : '<div class="poster-fallback" style="background:' + x.gradient + '"><span>' + x.title + "</span></div>";
+      return '<a class="poster" href="curso.html?id=' + x.id + '">' +
+               '<div class="poster-img">' + img + "</div>" +
+               '<div class="poster-info"><strong>' + x.title + "</strong><small>" + x.category + " · " + formatBRL(x.price) + "/mês</small></div>" +
+             "</a>";
+    }).join("");
+
+    document.getElementById("course-root").innerHTML =
+      '<section class="series-hero">' +
+        '<div class="container series-grid">' +
+          "<div>" +
+            '<p class="breadcrumb"><a href="index.html">Início</a> / <a href="cursos.html">Cursos</a> / ' + c.category + "</p>" +
+            '<h1 class="series-title">' + c.title + "</h1>" +
+            '<div class="series-meta"><span>' + c.category + "</span><span>" + c.level + "</span><span>" + c.lessons + " aulas</span><span>" + c.duration + "</span></div>" +
+            '<p class="series-desc">' + c.shortDescription + "</p>" +
+            '<div class="hero-cta">' +
+              '<a href="cadastro.html?curso=' + c.id + '" class="btn btn-primary">Assinar por ' + formatBRL(c.price) + "/mês</a>" +
+              '<a href="#episodios" class="btn btn-light">Ver módulos</a>' +
+            "</div>" +
           "</div>" +
+          cover +
         "</div>" +
       "</section>" +
 
       '<section style="padding-top:0">' +
-        '<div class="container detail-grid">' +
+        '<div class="container series-body" id="episodios">' +
           "<div>" +
-            '<div class="panel">' +
-              "<h2>Pré-visualização</h2>" +
-              '<div class="video-box" style="background:' + c.gradient + '">' +
-                '<button class="play" aria-label="Assistir prévia">▶</button>' +
-                "<small>Prévia · 3min</small>" +
-              "</div>" +
-            "</div>" +
-            '<div class="panel">' +
-              "<h2>Sobre o curso</h2>" +
-              "<p>" + c.description + "</p>" +
-            "</div>" +
-            '<div class="panel">' +
-              "<h2>O que você vai aprender</h2>" +
+            '<h2 class="season-title">Módulos do curso</h2>' +
+            '<ol class="episodes">' + episodes + "</ol>" +
+            '<div class="panel" style="margin-top:28px">' +
+              "<h2>Sobre o curso</h2><p>" + c.description + "</p>" +
+              "<h2 style=\"margin-top:24px\">O que você vai aprender</h2>" +
               '<ul class="checklist">' + learn + "</ul>" +
             "</div>" +
-            '<div class="panel">' +
-              "<h2>Conteúdo do curso</h2>" +
-              '<ul class="modules">' + modules + "</ul>" +
-            "</div>" +
-            '<div class="panel">' +
-              "<h2>Professor</h2>" +
-              '<div class="instructor">' +
-                '<div class="avatar">' + c.instructor.initials + "</div>" +
-                "<div><strong>" + c.instructor.name + "</strong><small>" + c.instructor.role + "</small></div>" +
-              "</div>" +
-            "</div>" +
           "</div>" +
-
-          "<aside>" +
+          '<aside class="series-side">' +
             '<div class="panel buy-card">' +
               '<p style="margin:0;color:var(--muted);font-weight:600">Assinatura mensal</p>' +
               '<div class="price-big">' + formatBRL(c.price) + " <small>/mês</small></div>" +
@@ -145,7 +136,12 @@
                 "<li>Cancele a renovação quando quiser</li>" +
               "</ul>" +
               '<a href="cadastro.html?curso=' + c.id + '" class="btn btn-primary btn-block">Assinar este curso</a>' +
-              '<p class="guarantee"> Pagamento seguro · Garantia de 7 dias</p>' +
+              '<p class="guarantee">Pagamento seguro</p>' +
+            "</div>" +
+            '<div class="panel" style="margin-top:20px">' +
+              '<p style="margin:0;color:var(--muted);font-size:.8rem;font-family:var(--mono)">PROFESSOR</p>' +
+              '<div class="instructor" style="margin-top:10px"><div class="avatar">' + c.instructor.initials + "</div>" +
+              "<div><strong>" + c.instructor.name + "</strong><small>" + c.instructor.role + "</small></div></div>" +
             "</div>" +
           "</aside>" +
         "</div>" +
@@ -153,9 +149,9 @@
 
       '<section style="padding-top:0">' +
         '<div class="container">' +
-          '<div class="section-row"><h2>Outros cursos que você pode gostar</h2><a href="cursos.html">Ver todos →</a></div>' +
-          '<div class="grid">' + related + "</div>" +
+          '<div class="section-row"><h2>Mais cursos</h2><a href="cursos.html">Ver todos →</a></div>' +
         "</div>" +
+        '<div class="row"><div class="row-track">' + relatedRow + "</div></div>" +
       "</section>";
   })();
 </script>
