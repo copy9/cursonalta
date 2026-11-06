@@ -80,7 +80,7 @@ if ($action === 'register') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 190) out(422, ['ok' => false, 'error' => 'Informe um e-mail válido.']);
     if (strlen($password) < 8 || strlen($password) > 200) out(422, ['ok' => false, 'error' => 'A senha precisa ter no mínimo 8 caracteres.']);
 
-    $user = ['name' => $name, 'email' => $email, 'course' => null];
+    $user = ['name' => $name, 'email' => $email, 'course' => null, 'plan' => 'curso'];
     $exists = with_users($dataDir, $dataFile, function (&$users) use ($email, $name, $password, &$user) {
         if (isset($users[$email])) return true;
         $users[$email] = [
@@ -113,7 +113,12 @@ if ($action === 'login') {
     $ok = password_verify($password, $hash);
     if (!$found || !$ok) out(401, ['ok' => false, 'error' => 'E-mail ou senha incorretos.']);
 
-    $user = ['name' => $found['name'], 'email' => $found['email'], 'course' => isset($found['course']) ? $found['course'] : null];
+    $user = [
+        'name'   => $found['name'],
+        'email'  => $found['email'],
+        'course' => isset($found['course']) ? $found['course'] : null,
+        'plan'   => isset($found['plan']) ? $found['plan'] : 'curso',
+    ];
     session_regenerate_id(true);
     $_SESSION['user'] = $user;
     out(200, ['ok' => true, 'user' => $user]);
@@ -130,6 +135,7 @@ if ($action === 'course') {
     if (!in_array($course, $valid, true)) out(422, ['ok' => false, 'error' => 'Curso inválido.']);
     // A escolha é única: trocar de curso acontece com a mudança de plano, não aqui.
     if (!empty($_SESSION['user']['course'])) out(409, ['ok' => false, 'error' => 'Seu curso já foi escolhido.']);
+    if (isset($_SESSION['user']['plan']) && $_SESSION['user']['plan'] === 'todos') out(409, ['ok' => false, 'error' => 'Seu plano já dá acesso a todos os cursos.']);
 
     $email = $_SESSION['user']['email'];
     with_users($dataDir, $dataFile, function (&$users) use ($email, $course) {

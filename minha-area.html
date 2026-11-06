@@ -125,7 +125,7 @@
         <p class="ma-sub">Aqui você acompanha seu plano, seus cursos e o seu progresso.</p>
       </div>
       <div class="ma-stats">
-        <div class="ma-stat"><strong>1</strong><span>curso no seu plano</span></div>
+        <div class="ma-stat"><strong id="stat-count">1</strong><span id="stat-label">curso no seu plano</span></div>
         <div class="ma-stat"><strong>0</strong><span>aulas concluídas</span></div>
         <div class="ma-stat"><strong>0%</strong><span>do progresso</span></div>
       </div>
@@ -142,14 +142,22 @@
         <p id="pick-msg" role="alert" style="color:#b91c1c;font-weight:600;margin:0 0 12px"></p>
         <div class="ma-grid" id="picker-grid"></div>
       </div>
+
+      <div id="all-slot" hidden>
+        <div class="ma-head">
+          <h2>Seus cursos</h2>
+          <a href="cursos.html">Ver catálogo</a>
+        </div>
+        <div class="ma-grid" id="all-grid"></div>
+      </div>
     </div>
 
     <aside class="ma-side">
       <div class="ma-card ma-plan">
         <span class="ma-tag">Seu plano</span>
-        <strong class="ma-plan-name">Um curso</strong>
-        <p>R$ 14,99 por mês, com renovação automática.</p>
-        <ul class="ma-checks">
+        <strong class="ma-plan-name" id="plan-name">Um curso</strong>
+        <p id="plan-desc">R$ 14,99 por mês, com renovação automática.</p>
+        <ul class="ma-checks" id="plan-checks">
           <li>Acesso a um curso à sua escolha</li>
           <li>Cancele a renovação quando quiser</li>
         </ul>

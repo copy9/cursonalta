@@ -84,9 +84,53 @@
         document.getElementById("area-email").textContent = r.user.email;
         document.getElementById("area-hello").textContent = "Olá, " + r.user.name.split(" ")[0];
         area.style.visibility = "visible";
-        renderCourse(r.user.course);
+        renderArea(r.user);
       })
       .catch(function () { window.location.replace("entrar.html"); });
+
+    // Ajusta a área ao plano: um curso (escolha única) ou todos os cursos
+    function renderArea(user) {
+      var planName = document.getElementById("plan-name");
+      var planDesc = document.getElementById("plan-desc");
+      var planChecks = document.getElementById("plan-checks");
+      var statN = document.getElementById("stat-count");
+      var statL = document.getElementById("stat-label");
+
+      if (user.plan === "todos") {
+        planName.textContent = "Todos os cursos";
+        planDesc.textContent = formatBRL(window.ALL_ACCESS_PRICE) + " por mês, com renovação automática.";
+        planChecks.innerHTML = "<li>Acesso a todos os cursos da plataforma</li><li>Cancele a renovação quando quiser</li>";
+        statN.textContent = String(window.COURSES.length);
+        statL.textContent = "cursos no seu plano";
+        document.getElementById("course-slot").hidden = true;
+        document.getElementById("picker-slot").hidden = true;
+        renderAll();
+        return;
+      }
+
+      planName.textContent = "Um curso";
+      planDesc.textContent = formatBRL(14.99) + " por mês, com renovação automática.";
+      planChecks.innerHTML = "<li>Acesso a um curso à sua escolha</li><li>Cancele a renovação quando quiser</li>";
+      statN.textContent = "1";
+      statL.textContent = "curso no seu plano";
+      document.getElementById("all-slot").hidden = true;
+      renderCourse(user.course);
+    }
+
+    // Plano de todos os cursos: catálogo completo, sem escolha
+    function renderAll() {
+      document.getElementById("all-slot").hidden = false;
+      document.getElementById("all-grid").innerHTML = window.COURSES.map(function (c) {
+        return '<a class="ma-course" href="curso.html?id=' + c.id + '">' +
+                 '<div class="ma-course-img">' + (c.cover ? '<img src="' + c.cover + '" alt="" loading="lazy">' : "") + "</div>" +
+                 '<div class="ma-course-body">' +
+                   '<span class="ma-course-cat">' + c.category + "</span>" +
+                   "<strong>" + c.title + "</strong>" +
+                   '<div class="ma-course-foot"><span>' + c.lessons + " aulas</span><b>Abrir curso</b></div>" +
+                 "</div>" +
+               "</a>";
+      }).join("");
+    }
 
     // Mostra o curso escolhido, ou a tela para escolher um (plano de um curso)
     function renderCourse(courseId) {
