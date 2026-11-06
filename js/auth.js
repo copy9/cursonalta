@@ -96,3 +96,27 @@
     }
   }
 })();
+
+// Cabeçalho: com sessão ativa, mostra "Minha área" e "Sair" no lugar de "Entrar" e "Criar conta"
+(function () {
+  var actions = document.querySelector(".nav-actions");
+  if (!actions) return;
+  var login = actions.querySelector('a[href="entrar.html"]');
+  var signup = actions.querySelector('a[href="cadastro.html"]');
+
+  fetch("api/auth.php?action=me", { credentials: "same-origin" })
+    .then(function (res) { return res.json(); })
+    .then(function (r) {
+      if (!r.ok || !login || !signup) return;
+      login.textContent = "Minha área";
+      login.setAttribute("href", "minha-area.html");
+      signup.textContent = "Sair";
+      signup.setAttribute("href", "#");
+      signup.addEventListener("click", function (e) {
+        e.preventDefault();
+        fetch("api/auth.php?action=logout", { credentials: "same-origin" })
+          .finally(function () { window.location.href = "index.html"; });
+      });
+    })
+    .catch(function () {});
+})();
