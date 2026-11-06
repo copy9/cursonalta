@@ -74,7 +74,23 @@ button, input, select, textarea { font: inherit; }
 .section-row a { color: var(--accent); font-weight: 600; }
 
 /* ---------- Banner (destaque) ---------- */
-.banner { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }
+.banner {
+  position: relative; overflow: hidden; border-bottom: 1px solid var(--line);
+  background:
+    radial-gradient(800px 420px at 88% 18%, rgba(47, 91, 255, .14), transparent 62%),
+    radial-gradient(600px 300px at 10% 100%, rgba(47, 91, 255, .07), transparent 60%),
+    var(--bg);
+}
+.stats { background: var(--surface); border-bottom: 1px solid var(--line); }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; padding: 34px 0; }
+.stats-grid strong { display: block; font-size: 1.7rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); }
+.stats-grid span { color: var(--muted); font-size: .9rem; }
+.steps { counter-reset: step; }
+.step { counter-increment: step; }
+.step .ico { width: auto; height: auto; background: none; color: var(--accent); font-family: var(--mono); font-weight: 600; font-size: .9rem; margin-bottom: 18px; }
+.step .ico::before { content: counter(step, decimal-leading-zero); background: none; width: auto; height: auto; border-radius: 0; }
+main > section:not(.banner):not(.stats):not(.rows) { padding-bottom: 96px; }
+@media (max-width: 760px) { .stats-grid { grid-template-columns: 1fr 1fr; gap: 20px; padding: 26px 0; } .stats-grid strong { font-size: 1.35rem; } }
 .banner-bg { position: absolute; inset: 0; background: var(--bg-2); }
 .banner-bg::after {
   content: ""; position: absolute; inset: 0;
