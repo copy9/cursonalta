@@ -501,3 +501,27 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .section-row h2 { font-size: 1.5rem; }
   .row { margin-bottom: 36px; }
 }
+
+/* Minha área (visão do aluno) */
+.area-grid { padding: 8px 0 90px; }
+.area-cols { display: grid; grid-template-columns: 1.6fr 1fr; gap: 36px; align-items: start; }
+.area-card { display: grid; grid-template-columns: 240px 1fr; gap: 22px; align-items: center; padding: 18px; }
+.area-thumb img { width: 100%; border-radius: 14px; aspect-ratio: 16 / 10; object-fit: cover; }
+.area-info { display: grid; gap: 8px; justify-items: start; }
+.area-info strong { font-size: 1.15rem; }
+.area-info small { color: var(--muted); font-family: var(--mono); font-size: .8rem; }
+.bar { width: 100%; height: 8px; background: var(--bg-2); border-radius: 999px; overflow: hidden; margin: 6px 0 2px; }
+.bar span { display: block; height: 100%; background: var(--accent); border-radius: 999px; }
+.area-list { padding: 8px; }
+.area-row { display: flex; gap: 16px; align-items: center; padding: 12px; border-radius: 12px; transition: background .2s; }
+.area-row:hover { background: var(--surface-2); }
+.area-row-img { width: 96px; flex: none; aspect-ratio: 16 / 10; border-radius: 10px; overflow: hidden; background: #e7e7ec; }
+.area-row-img img { width: 100%; height: 100%; object-fit: cover; }
+.area-row strong { display: block; font-size: .98rem; }
+.area-row small { color: var(--muted); font-family: var(--mono); font-size: .78rem; }
+.area-plan-name { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.02em; margin: 8px 0 4px; }
+.area-side .panel p { color: var(--muted); }
+.area-checks { list-style: none; display: grid; gap: 8px; margin: 16px 0 22px; font-size: .95rem; }
+.area-checks li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+@media (max-width: 900px) { .area-cols { grid-template-columns: 1fr; } }
+@media (max-width: 760px) { .area-card { grid-template-columns: 1fr; } .area-thumb { max-width: 100%; } }
