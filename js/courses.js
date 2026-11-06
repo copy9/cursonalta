@@ -37,6 +37,7 @@ window.COURSES = [
     price: 49.9,
     duration: "12h 30min",
     lessons: 36,
+    cover: "assets/covers/marketing-digital-do-zero.png",
     gradient: "linear-gradient(135deg, #f97316, #fbbf24)",
     learn: [
       "Montar um funil de vendas do início ao fim",
@@ -65,6 +66,7 @@ window.COURSES = [
     price: 39.9,
     duration: "8h 15min",
     lessons: 28,
+    cover: "assets/covers/excel-para-produtividade.png",
     gradient: "linear-gradient(135deg, #1e3a8a, #2748b8)",
     learn: [
       "Usar fórmulas e funções de busca com segurança",
@@ -92,6 +94,7 @@ window.COURSES = [
     price: 59.9,
     duration: "10h 00min",
     lessons: 30,
+    cover: "assets/covers/design-com-ia.png",
     gradient: "linear-gradient(135deg, #7c3aed, #ec4899)",
     learn: [
       "Escrever prompts que geram imagens úteis",
@@ -119,6 +122,7 @@ window.COURSES = [
     price: 69.9,
     duration: "15h 45min",
     lessons: 42,
+    cover: "assets/covers/ingles-para-negocios.png",
     gradient: "linear-gradient(135deg, #059669, #34d399)",
     learn: [
       "Conduzir reuniões e apresentações em inglês",
@@ -146,6 +150,7 @@ window.COURSES = [
     price: 44.9,
     duration: "6h 40min",
     lessons: 22,
+    cover: "assets/covers/financas-pessoais.png",
     gradient: "linear-gradient(135deg, #0ea5e9, #1e3a8a)",
     learn: [
       "Montar um orçamento mensal realista",
@@ -173,6 +178,7 @@ window.COURSES = [
     price: 79.9,
     duration: "20h 10min",
     lessons: 54,
+    cover: "assets/covers/programacao-web-iniciante.png",
     gradient: "linear-gradient(135deg, #0b1b4d, #475569)",
     learn: [
       "Estruturar páginas com HTML semântico",

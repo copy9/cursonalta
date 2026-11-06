@@ -183,7 +183,8 @@
         rowsView.style.display = "block";
         var html = row("Todos os cursos", window.COURSES);
         categories.slice(1).forEach(function (cat) {
-          html += row(cat, window.COURSES.filter(function (c) { return c.category === cat; }));
+          var catList = window.COURSES.filter(function (c) { return c.category === cat; });
+          if (catList.length >= 3) html += row(cat, catList);
         });
         rowsView.innerHTML = html;
       }
