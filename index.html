@@ -217,7 +217,7 @@
     function byCategory(list) {
       return courses.filter(function (c) { return list.indexOf(c.category) !== -1; });
     }
-    html += row("Para começar do zero", courses.filter(function (c) { return c.level === "Iniciante"; }));
+    html += row("Para começar do zero", courses.filter(function (c) { return c.level === "Iniciante" || c.level === "Todos os níveis"; }));
     html += row("Carreira e produtividade", byCategory(["Produtividade", "Idiomas", "Finanças", "Concursos"]));
     html += row("Criatividade e tecnologia", byCategory(["Design", "Tecnologia", "Marketing"]));
     var cats = [];
