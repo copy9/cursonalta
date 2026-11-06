@@ -58,5 +58,12 @@
     wrap.querySelector(".pop-close").focus();
   }
 
+  // Atalho fixo: continua disponível mesmo se o pop-up for fechado
+  var float = document.createElement("a");
+  float.className = "drt-float";
+  float.href = PAGE;
+  float.textContent = "Tirar minha DRT";
+  document.body.appendChild(float);
+
   setTimeout(open, 4000);
 })();

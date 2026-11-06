@@ -431,3 +431,16 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .pop h2 { font-size: 1.6rem; }
   .pop-actions .btn, .pop-actions .btn-ghost-dark { width: 100%; }
 }
+
+/* Atalho fixo para o serviço de DRT */
+.drt-float {
+  position: fixed; left: 16px; bottom: 16px; z-index: 50;
+  display: inline-flex; align-items: center; gap: 8px; padding: 12px 18px 12px 14px;
+  background: #141414; color: #fff; border-radius: 999px; font-weight: 600; font-size: .9rem;
+  border-left: 3px solid var(--accent); box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .45);
+  transition: transform .2s, background .2s;
+}
+.drt-float::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }
+.drt-float:hover { transform: translateY(-2px); background: #222; }
+.drt-float:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+@media (max-width: 520px) { .drt-float { font-size: .85rem; padding: 10px 14px 10px 12px; } }
