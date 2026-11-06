@@ -109,8 +109,8 @@
       }
 
       planName.textContent = "Um curso";
-      planDesc.textContent = formatBRL(14.99) + " por mês, com renovação automática.";
-      planChecks.innerHTML = "<li>Acesso a um curso à sua escolha</li><li>Cancele a renovação quando quiser</li>";
+      planDesc.textContent = formatBRL(14.99) + ", pagamento único. Acesso até você concluir o curso.";
+      planChecks.innerHTML = "<li>Acesso a um curso à sua escolha</li><li>Acesso até concluir o curso</li>";
       statN.textContent = "1";
       statL.textContent = "curso no seu plano";
       document.getElementById("all-slot").hidden = true;
@@ -178,7 +178,7 @@
                  '<div class="ma-course-body">' +
                    '<span class="ma-course-cat">' + c.category + "</span>" +
                    "<strong>" + c.title + "</strong>" +
-                   '<div class="ma-course-foot"><span>' + formatBRL(c.price) + "/mês no plano</span><b>Escolher</b></div>" +
+                   '<div class="ma-course-foot"><span>' + formatBRL(c.price) + " · acesso até concluir</span><b>Escolher</b></div>" +
                  "</div>" +
                "</button>";
       }).join("");

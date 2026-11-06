@@ -232,7 +232,7 @@ window.courseCardHTML = function (c) {
         <p>${c.shortDescription}</p>
         <div class="meta"><span>${c.lessons} aulas</span><span>${c.duration}</span></div>
         <div class="course-foot">
-          <div class="price">${formatBRL(c.price)} <small>/mês</small></div>
+          <div class="price">${formatBRL(c.price)}</div>
           <a class="btn btn-primary btn-sm" href="curso.html?id=${c.id}">Ver curso</a>
         </div>
       </div>
