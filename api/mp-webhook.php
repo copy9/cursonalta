@@ -7,10 +7,6 @@ require_once __DIR__ . '/lib.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') out(405, ['ok' => false]);
 
-$settings = settings_read();
-$secret = $settings['mp_webhook_secret'] ?? '';
-if ($secret === '') out(503, ['ok' => false, 'error' => 'Webhook ainda não configurado.']);
-
 $raw = file_get_contents('php://input');
 $body = json_decode($raw, true);
 if (!is_array($body)) $body = [];
@@ -20,19 +16,8 @@ $dataId = isset($_GET['data_id']) ? (string)$_GET['data_id']
     : (isset($body['data']['id']) ? (string)$body['data']['id'] : '');
 if ($dataId === '' && isset($_GET['data.id'])) $dataId = (string)$_GET['data.id'];
 
-// Assinatura: "ts=...,v1=..." com HMAC-SHA256 sobre o modelo de mensagem do Mercado Pago
-$sig = isset($_SERVER['HTTP_X_SIGNATURE']) ? $_SERVER['HTTP_X_SIGNATURE'] : '';
-$reqId = isset($_SERVER['HTTP_X_REQUEST_ID']) ? $_SERVER['HTTP_X_REQUEST_ID'] : '';
-$ts = ''; $v1 = '';
-foreach (explode(',', $sig) as $part) {
-    $kv = explode('=', trim($part), 2);
-    if (count($kv) === 2 && $kv[0] === 'ts') $ts = $kv[1];
-    if (count($kv) === 2 && $kv[0] === 'v1') $v1 = $kv[1];
-}
-$idPart = ctype_alnum($dataId) ? strtolower($dataId) : $dataId;
-$manifest = 'id:' . $idPart . ';request-id:' . $reqId . ';ts:' . $ts . ';';
-$expected = hash_hmac('sha256', $manifest, $secret);
-if ($v1 === '' || !hash_equals($expected, $v1)) out(401, ['ok' => false, 'error' => 'Assinatura inválida.']);
+// Não confiamos no conteúdo do aviso: o status e a referência do pagamento são
+// conferidos direto na API do Mercado Pago, com o token da conta.
 
 if ($dataId === '') out(200, ['ok' => true, 'ignored' => true]);
 
