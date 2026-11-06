@@ -33,7 +33,6 @@
           '<a class="btn btn-primary" href="' + WA + '" target="_blank" rel="noopener">Quero tirar minha DRT</a>' +
           '<a class="btn btn-ghost-dark" href="' + PAGE + '">Ver como funciona</a>' +
         '</div>' +
-        '<p class="pop-note">Serviço de organização e protocolo do requerimento. A emissão depende de análise do órgão competente, e não há garantia de aprovação ou de prazo.</p>' +
       '</div>';
     document.body.appendChild(wrap);
     return wrap;
