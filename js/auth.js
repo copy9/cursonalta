@@ -39,7 +39,7 @@
         email: document.getElementById("email").value,
         password: document.getElementById("password").value
       }).then(function (r) {
-        if (r.ok) { window.location.href = "minha-area.html"; return; }
+        if (r.ok) { window.location.href = r.user.role === "admin" ? "admin.html" : "minha-area.html"; return; }
         showMsg(msg, r.error || "Não foi possível criar sua conta.");
         setBusy(btn, false, label);
       }).catch(function () {
@@ -63,7 +63,7 @@
         email: document.getElementById("email").value,
         password: document.getElementById("password").value
       }).then(function (r) {
-        if (r.ok) { window.location.href = "minha-area.html"; return; }
+        if (r.ok) { window.location.href = r.user.role === "admin" ? "admin.html" : "minha-area.html"; return; }
         showMsg(lmsg, r.error || "Não foi possível entrar.");
         setBusy(btn, false, label);
       }).catch(function () {

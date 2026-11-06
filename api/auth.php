@@ -127,6 +127,7 @@ if ($action === 'login') {
     ];
     session_regenerate_id(true);
     $_SESSION['user'] = $user;
+    $user['role'] = is_admin($user) ? 'admin' : 'aluno';
     out(200, ['ok' => true, 'user' => $user]);
 }
 
