@@ -41,10 +41,17 @@ $course = isset($body['course']) ? (string)$body['course'] : '';
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) out(422, ['ok' => false, 'error' => 'Informe um e-mail válido.']);
 if ($plan !== 'curso' && $plan !== 'todos') out(422, ['ok' => false, 'error' => 'Escolha o plano.']);
 
-$validCourses = [
-    'policia-civil-pi-agente', 'marketing-digital-do-zero', 'excel-para-produtividade',
-    'design-com-ia', 'ingles-para-negocios', 'financas-pessoais', 'programacao-web-iniciante',
-];
+// Cursos válidos são os publicados em app-data/courses.json
+$validCourses = [];
+$cursosFile = dirname(__DIR__) . '/app-data/courses.json';
+if (file_exists($cursosFile)) {
+    $lista = json_decode(file_get_contents($cursosFile), true);
+    if (is_array($lista)) {
+        foreach ($lista as $c) {
+            if (isset($c['id'])) $validCourses[] = (string)$c['id'];
+        }
+    }
+}
 if ($plan === 'curso') {
     if (!in_array($course, $validCourses, true)) out(422, ['ok' => false, 'error' => 'Escolha o curso liberado.']);
 } else {
