@@ -31,7 +31,7 @@
 
   /* Header */
   header{position:sticky;top:0;z-index:20;background:rgba(10,10,11,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-  .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0;gap:16px}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;gap:16px}
   .brand{text-decoration:none;color:var(--text)}
   .brand b{display:block;font-family:Georgia,serif;font-size:17px;color:var(--gold2);letter-spacing:.5px}
   .brand small{font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
@@ -155,6 +155,17 @@
     .timeline{grid-template-columns:1fr}
     .pillars{grid-template-columns:1fr}
     .hero-actions .btn,.hero-actions .btn-ghost{width:100%;justify-content:center}
+  }
+
+  /* Ajustes de celular */
+  @media (max-width:520px){
+    .nav{padding:12px 18px;gap:12px}
+    .brand b{font-size:15px;line-height:1.25}
+    .brand small{font-size:9px;letter-spacing:1.5px}
+    .nav-cta{padding:9px 14px;font-size:13px;white-space:nowrap}
+    .strip-in{justify-content:center;gap:10px 18px;font-size:13px;padding:18px 0}
+    .float-wa{width:52px;height:52px;right:14px;bottom:14px}
+    .wrap{padding:0 20px}
   }
 </style>
 </head>
