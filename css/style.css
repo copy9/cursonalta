@@ -350,3 +350,28 @@ main > section:not(.banner):not(.stats):not(.rows):not(.page-hero):not(.series-h
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* Pop-up do serviço de DRT */
+.pop-overlay {
+  position: fixed; inset: 0; z-index: 100; background: rgba(20, 20, 20, .55);
+  display: flex; align-items: center; justify-content: center; padding: 20px;
+  opacity: 0; transition: opacity .25s;
+}
+.pop-overlay.open { opacity: 1; }
+.pop {
+  position: relative; background: #fff; color: var(--text); border-radius: 22px;
+  width: min(460px, 100%); padding: 36px 32px 28px; box-shadow: 0 40px 80px -30px rgba(0, 0, 0, .5);
+  transform: translateY(14px); transition: transform .25s;
+}
+.pop-overlay.open .pop { transform: none; }
+.pop .kicker { color: var(--accent); }
+.pop h2 { font-size: 1.85rem; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin: 10px 0 12px; }
+.pop p { color: var(--muted); font-size: .98rem; }
+.pop-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 22px 0 16px; }
+.pop-note { font-size: .78rem; color: #8a8a94; }
+.pop-close {
+  position: absolute; top: 12px; right: 14px; background: none; border: 0; font-size: 1.8rem;
+  line-height: 1; color: var(--muted); cursor: pointer; padding: 4px 8px;
+}
+.pop-close:hover { color: var(--text); }
+@media (max-width: 520px) { .pop { padding: 30px 22px 22px; } .pop h2 { font-size: 1.5rem; } .pop-actions .btn { width: 100%; } }
