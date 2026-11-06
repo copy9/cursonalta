@@ -36,9 +36,7 @@
 <main>
   <section class="page-hero">
     <div class="container">
-      <span class="eyebrow">Catálogo</span>
-      <h1>Todos os cursos</h1>
-      <p>Pesquise pelo nome, filtre por área e nível. Assine por mês e estude no seu ritmo.</p>
+      <h1>Cursos</h1>
     </div>
   </section>
 
@@ -165,7 +163,7 @@
     }
 
     function row(title, list) {
-      return '<div class="row"><h2 class="row-title">' + title + '</h2><div class="row-track">' +
+      return '<div class="row">' + (title ? '<h2 class="row-title">' + title + '</h2>' : '') + '<div class="row-track">' +
              list.map(poster).join("") + "</div></div>";
     }
 
@@ -181,7 +179,7 @@
       } else {
         gridView.style.display = "none";
         rowsView.style.display = "block";
-        var html = row("Todos os cursos", window.COURSES);
+        var html = row("", window.COURSES);
         categories.slice(1).forEach(function (cat) {
           var catList = window.COURSES.filter(function (c) { return c.category === cat; });
           if (catList.length >= 3) html += row(cat, catList);
