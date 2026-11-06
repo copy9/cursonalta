@@ -37,12 +37,12 @@
   <section class="page-hero">
     <div class="container">
       <span class="kicker">Minha área</span>
-      <h1>Olá, Aluno</h1>
+      <h1 id="area-hello">Olá</h1>
       <p>Acompanhe seus cursos, seu plano e continue de onde parou.</p>
     </div>
   </section>
 
-  <section class="area-grid">
+  <section class="area-grid" id="area-account" style="visibility:hidden">
     <div class="container area-cols">
       <div class="area-main">
         <div class="section-row"><h2>Continuar assistindo</h2></div>
@@ -74,8 +74,9 @@
         </div>
         <div class="panel" style="margin-top:18px">
           <span class="plan-tag">Dados da conta</span>
-          <p style="margin-top:10px">Nome: Aluno</p>
-          <p>E-mail: aluno@exemplo.com</p>
+          <p style="margin-top:10px">Nome: <span id="area-name"></span></p>
+          <p>E-mail: <span id="area-email"></span></p>
+          <button type="button" id="logout-btn" class="btn btn-ghost btn-sm" style="margin-top:12px">Sair</button>
         </div>
       </aside>
     </div>
@@ -111,6 +112,7 @@
 
 <script src="js/courses.js"></script>
 <script src="js/main.js"></script>
+<script src="js/auth.js"></script>
 <script src="js/rows.js"></script>
 <script src="js/drt-popup.js"></script>
 <script>

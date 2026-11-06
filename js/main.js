@@ -15,12 +15,3 @@
   if (el) el.textContent = new Date().getFullYear();
 })();
 
-// Formulários de login e cadastro ainda não estão conectados ao backend
-(function () {
-  document.querySelectorAll("form.form").forEach(function (form) {
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      alert("Login e cadastro serão conectados na próxima etapa.");
-    });
-  });
-})();
