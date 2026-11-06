@@ -108,14 +108,9 @@
             '<div class="ma-meta">0% concluído</div>' +
             '<div class="ma-actions">' +
               '<a class="btn btn-primary" href="curso.html?id=' + course.id + '">Começar o curso</a>' +
-              '<button type="button" class="btn btn-ghost" id="change-course">Trocar de curso</button>' +
             "</div>" +
           "</div>" +
         "</article>";
-      document.getElementById("change-course").addEventListener("click", function () {
-        slot.hidden = true;
-        showPicker();
-      });
     }
 
     function showPicker() {

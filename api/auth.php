@@ -128,6 +128,8 @@ if ($action === 'course') {
         'design-com-ia', 'ingles-para-negocios', 'financas-pessoais', 'programacao-web-iniciante',
     ];
     if (!in_array($course, $valid, true)) out(422, ['ok' => false, 'error' => 'Curso inválido.']);
+    // A escolha é única: trocar de curso acontece com a mudança de plano, não aqui.
+    if (!empty($_SESSION['user']['course'])) out(409, ['ok' => false, 'error' => 'Seu curso já foi escolhido.']);
 
     $email = $_SESSION['user']['email'];
     with_users($dataDir, $dataFile, function (&$users) use ($email, $course) {
