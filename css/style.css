@@ -86,6 +86,15 @@ button, input, select, textarea { font: inherit; }
   background: var(--accent); color: #fff; font-size: .85rem; font-weight: 500; padding: 9px 16px; text-align: center;
 }
 .topbar a { font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.banner::before {
+  content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(15, 15, 20, .055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 15, 20, .055) 1px, transparent 1px);
+  background-size: 56px 56px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 75% at 70% 45%, #000 25%, transparent 80%);
+          mask-image: radial-gradient(ellipse 70% 75% at 70% 45%, #000 25%, transparent 80%);
+}
 .stats { background: var(--surface); border-bottom: 1px solid var(--line); }
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; padding: 34px 0; }
 .stats-grid strong { display: block; font-size: 1.7rem; font-weight: 800; letter-spacing: -0.03em; color: var(--text); }
