@@ -462,3 +462,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .pop h2 { font-size: 2rem; }
   .pop-actions .btn, .pop-actions .btn-ghost-dark { width: 100%; }
 }
+
+/* Celular: fileiras viram grade de 2 colunas, sem cartões cortados */
+@media (max-width: 760px) {
+  .row-track {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px; overflow: visible;
+    padding: 4px 4% 8px; scroll-snap-type: none;
+  }
+  .row-track .poster { width: auto; }
+  .row-nav { display: none; }
+  .row-track .poster:hover { transform: none; }
+  .poster-info { padding: 10px 12px 12px; }
+  .poster-info strong { font-size: .86rem; }
+  .poster-info small { font-size: .72rem; }
+  .catalog-results .grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .section-row h2 { font-size: 1.5rem; }
+  .row { margin-bottom: 36px; }
+}
