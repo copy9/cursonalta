@@ -444,3 +444,21 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .drt-float:hover { transform: translateY(-2px); background: #222; }
 .drt-float:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
 @media (max-width: 520px) { .drt-float { font-size: .85rem; padding: 10px 14px 10px 12px; } }
+
+/* Pop-up do DRT: mais destaque no título e nos botões */
+.pop { width: min(540px, 100%); padding: 48px 44px 34px; }
+.pop::before { left: 44px; width: 72px; height: 4px; }
+.pop h2 { font-size: 2.4rem; margin: 14px 0 16px; }
+.pop-kicker { font-size: .78rem; }
+.pop-lead { font-size: 1.02rem; color: #d4d1ca; }
+.pop-steps span { width: 34px; height: 34px; font-size: .9rem; background: var(--accent); color: #fff; border-color: var(--accent); }
+.pop-actions { flex-direction: column; gap: 12px; }
+.pop-actions .btn { width: 100%; padding: 18px 28px; font-size: 1.05rem; box-shadow: 0 18px 40px -14px rgba(217, 72, 15, .7); }
+.btn-ghost-dark { width: 100%; padding: 16px 28px; font-size: 1rem; color: #fff; border: 2px solid #fff; background: transparent; }
+.btn-ghost-dark:hover { background: #fff; color: #141414; border-color: #fff; }
+.pop-contact { color: #c4c1b9; }
+@media (max-width: 520px) {
+  .pop { padding: 44px 26px 26px; }
+  .pop h2 { font-size: 2rem; }
+  .pop-actions .btn, .pop-actions .btn-ghost-dark { width: 100%; }
+}
