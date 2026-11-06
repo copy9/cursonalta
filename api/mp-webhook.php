@@ -70,16 +70,18 @@ if ($type === 'payment') {
 
     if ($status === 'approved') {
         grant($email, function (&$u) use ($curso) {
-            if (($u['plan'] ?? '') === 'todos') return;
-            $u['plan'] = 'curso';
-            if (empty($u['course'])) $u['course'] = $curso;
+            if (($u['plan'] ?? '') !== 'todos') $u['plan'] = 'curso';
+            $list = user_courses($u);
+            if (!in_array($curso, $list, true)) $list[] = $curso;
+            $u['courses'] = $list;
+            $u['course'] = $list[0];
         }, 'pay-' . $dataId);
     } elseif (in_array($status, ['refunded', 'charged_back', 'cancelled'], true)) {
         grant($email, function (&$u) use ($curso) {
-            if (($u['course'] ?? null) === $curso && ($u['plan'] ?? '') === 'curso') {
-                $u['plan'] = 'none';
-                $u['course'] = null;
-            }
+            $list = array_values(array_filter(user_courses($u), function ($c) use ($curso) { return $c !== $curso; }));
+            $u['courses'] = $list;
+            $u['course'] = $list[0] ?? null;
+            if (!$list && ($u['plan'] ?? '') === 'curso') $u['plan'] = 'none';
         }, 'pay-' . $dataId . '-' . $status);
     }
     out(200, ['ok' => true]);

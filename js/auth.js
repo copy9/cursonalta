@@ -120,13 +120,13 @@
         return;
       }
 
-      planName.textContent = "Um curso";
-      planDesc.textContent = formatBRL(14.99) + ", pagamento único. Acesso até você concluir o curso.";
-      planChecks.innerHTML = "<li>Acesso a um curso à sua escolha</li><li>Acesso até concluir o curso</li>";
-      statN.textContent = "1";
-      statL.textContent = "curso no seu plano";
+      planName.textContent = "Cursos avulsos";
+      planDesc.textContent = formatBRL(14.99) + " por curso, pagamento único. Cada curso fica seu até você concluir.";
+      planChecks.innerHTML = "<li>Compre quantos cursos quiser</li><li>Acesso até concluir cada curso</li>";
+      statN.textContent = String((user.courses || []).length);
+      statL.textContent = "cursos no seu plano";
       document.getElementById("all-slot").hidden = true;
-      renderCourse(user.course);
+      renderOwned(user.courses || []);
     }
 
     // Plano de todos os cursos: catálogo completo, sem escolha
@@ -180,6 +180,37 @@
         "</article>";
     }
 
+    // Lista todos os cursos avulsos que o aluno comprou
+    function renderOwned(ids) {
+      var slot = document.getElementById("course-slot");
+      var picker = document.getElementById("picker-slot");
+      picker.hidden = true;
+      slot.hidden = false;
+      var owned = window.COURSES.filter(function (c) { return ids.indexOf(c.id) !== -1; });
+      if (!owned.length) {
+        slot.innerHTML = '<div class="ma-card"><span class="ma-tag">Seus cursos</span>' +
+          '<strong style="display:block;font-size:1.1rem">Você ainda não comprou nenhum curso.</strong>' +
+          '<a href="cursos.html" style="color:var(--orange);font-weight:600;display:inline-block;margin-top:12px">Ver os cursos</a></div>';
+        return;
+      }
+      slot.innerHTML = owned.map(function (course) {
+        return '<article class="ma-continue">' +
+          '<img src="' + course.cover + '" alt="">' +
+          '<div class="ma-continue-info">' +
+            '<span class="ma-tag">Seu curso</span>' +
+            "<h2>" + course.title + "</h2>" +
+            "<p>" + course.shortDescription + "</p>" +
+            '<div class="ma-bar"><span style="width:0%"></span></div>' +
+            '<div class="ma-meta">0% concluído</div>' +
+            '<div class="ma-actions">' +
+              '<a class="btn btn-primary" href="curso.html?id=' + course.id + '">Começar o curso</a>' +
+              '<button type="button" class="btn btn-ghost tg-btn" data-course="' + course.id + '">Entrar no grupo do Telegram</button>' +
+            "</div>" +
+          "</div>" +
+        "</article>";
+      }).join("");
+    }
+
     function showPicker() {
       var picker = document.getElementById("picker-slot");
       var grid = document.getElementById("picker-grid");
@@ -219,7 +250,7 @@
 
     // Grupo do Telegram: o link é pedido só no clique, pelo aluno logado com acesso
     document.addEventListener("click", function (e) {
-      var b = e.target.closest ? e.target.closest("#tg-btn") : null;
+      var b = e.target.closest ? e.target.closest(".tg-btn") : null;
       if (!b) return;
       var msg = document.getElementById("pick-msg");
       var win = window.open("", "_blank");

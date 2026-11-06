@@ -29,8 +29,8 @@ $rec = $users[$email];
 // Não vende de novo para quem já tem o acesso ativo
 $now = time();
 $hasAll = ($rec['plan'] ?? '') === 'todos' && ($rec['plan_expires_at'] ?? 0) > $now;
-$hasOne = ($rec['plan'] ?? '') === 'curso' && !empty($rec['course']);
-if ($hasAll || ($plano === 'curso' && $hasOne)) {
+$hasOne = $plano === 'curso' && in_array($curso, user_courses($rec), true);
+if ($hasAll || $hasOne) {
     header('Location: /minha-area.html');
     exit;
 }

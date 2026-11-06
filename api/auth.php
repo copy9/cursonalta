@@ -38,6 +38,9 @@ if ($action === 'me') {
         with_users($dataDir, $dataFile, function ($users) use ($email, &$u) {
             if (isset($users[$email])) {
                 $u['course'] = isset($users[$email]['course']) ? $users[$email]['course'] : null;
+                $list = isset($users[$email]['courses']) && is_array($users[$email]['courses']) ? $users[$email]['courses'] : [];
+                if (!empty($u['course']) && !in_array($u['course'], $list, true)) $list[] = $u['course'];
+                $u['courses'] = array_values(array_unique(array_filter($list)));
                 $u['plan'] = isset($users[$email]['plan']) ? $users[$email]['plan'] : 'curso';
             }
             return null;

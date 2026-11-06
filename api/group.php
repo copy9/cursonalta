@@ -42,7 +42,7 @@ if (file_exists($dataFile)) {
 if (!$record) out(403, ['ok' => false, 'error' => 'Acesso não encontrado.']);
 
 $plan = isset($record['plan']) ? $record['plan'] : 'curso';
-$allowed = ($plan === 'todos') || (isset($record['course']) && $record['course'] === $courseId);
+$allowed = ($plan === 'todos') || in_array($courseId, user_courses($record), true);
 if (!$allowed) out(403, ['ok' => false, 'error' => 'Seu plano não inclui este curso.']);
 
 // Plano de todos os cursos: convite de uso único para o grupo geral, válido por 1 dia

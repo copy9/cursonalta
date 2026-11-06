@@ -161,7 +161,7 @@
       .then(function (res) { return res.json(); })
       .then(function (r) {
         if (!r.ok || !r.user) return;
-        var has = r.user.plan === "todos" || r.user.course === c.id;
+        var has = r.user.plan === "todos" || (r.user.courses || []).indexOf(c.id) !== -1;
         if (!has) return;
         var hero = document.getElementById("hero-buy");
         if (hero) { hero.href = "minha-area.html"; hero.textContent = "Você tem acesso · ir para minha área"; }

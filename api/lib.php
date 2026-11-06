@@ -76,6 +76,13 @@ function users_modify(callable $fn) {
     return $result;
 }
 
+// Cursos avulsos que o aluno tem (lista nova + campo antigo "course")
+function user_courses($rec) {
+    $list = (isset($rec['courses']) && is_array($rec['courses'])) ? $rec['courses'] : [];
+    if (!empty($rec['course']) && !in_array($rec['course'], $list, true)) $list[] = $rec['course'];
+    return array_values(array_unique(array_filter($list)));
+}
+
 // Nome curto e estável para o convite do Telegram (máximo 32 caracteres)
 function user_tag($email) {
     return 'u' . substr(sha1(strtolower(trim($email))), 0, 20);
