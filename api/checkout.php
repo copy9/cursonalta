@@ -54,8 +54,12 @@ if ($plano === 'todos') {
     $file = app_dir() . '/courses.json';
     if (file_exists($file)) $cursos = json_decode(file_get_contents($file), true) ?: [];
     $titulo = null;
+    $preco = PRICE_CURSO;
     foreach ($cursos as $c) {
-        if (isset($c['id']) && $c['id'] === $curso) $titulo = $c['title'] ?? $curso;
+        if (isset($c['id']) && $c['id'] === $curso) {
+            $titulo = $c['title'] ?? $curso;
+            if (isset($c['price']) && (float)$c['price'] > 0) $preco = round((float)$c['price'], 2);
+        }
     }
     if ($titulo === null) out(422, ['ok' => false, 'error' => 'Este curso não está disponível.']);
 
@@ -63,7 +67,7 @@ if ($plano === 'todos') {
         'items' => [[
             'title'      => 'Curso: ' . $titulo,
             'quantity'   => 1,
-            'unit_price' => PRICE_CURSO,
+            'unit_price' => $preco,
             'currency_id' => 'BRL',
         ]],
         'payer'              => ['email' => $email],
