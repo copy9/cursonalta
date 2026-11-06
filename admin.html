@@ -312,7 +312,9 @@
           render();
           msg("Salvo. O site já mostra as alterações (pode ser preciso recarregar a página).", "ok");
         } else {
-          msg((r.body && r.body.error) || "Não foi possível salvar.", "err");
+          msg(r.status === 403
+            ? "Sua sessão expirou. Recarregue a página e entre de novo para salvar."
+            : ((r.body && r.body.error) || "Não foi possível salvar."), "err");
         }
       }).catch(function () {
         save.disabled = false;

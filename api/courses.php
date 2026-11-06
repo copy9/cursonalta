@@ -26,8 +26,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') out(405, ['ok' => false, 'error' => 'Método não permitido.']);
 
+ini_set('session.gc_maxlifetime', '2592000');
 session_set_cookie_params([
-    'lifetime' => 0,
+    'lifetime' => 2592000,
     'path'     => '/',
     'secure'   => true,
     'httponly' => true,

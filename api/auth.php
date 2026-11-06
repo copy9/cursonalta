@@ -17,8 +17,10 @@ require_once __DIR__ . '/config.php';
 $dataDir  = dirname(__DIR__) . '/app-data';
 $dataFile = $dataDir . '/users.json';
 
+// Sessão dura 30 dias, para o admin não perder o acesso no meio do trabalho
+ini_set('session.gc_maxlifetime', '2592000');
 session_set_cookie_params([
-    'lifetime' => 0,
+    'lifetime' => 2592000,
     'path'     => '/',
     'secure'   => true,
     'httponly' => true,
