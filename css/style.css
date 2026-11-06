@@ -3,8 +3,8 @@
    Fundo quase preto, tipografia grande, uma cor de destaque
    ========================================================= */
 :root {
-  --bg: #ebeae4;
-  --bg-2: #dedcd5;
+  --bg: #f7f7f5;
+  --bg-2: #eeeeea;
   --surface: #ffffff;
   --surface-2: #f2f2ee;
   --line: rgba(15, 15, 20, 0.08);
@@ -108,7 +108,7 @@ main > section:not(.banner):not(.stats):not(.rows):not(.page-hero):not(.series-h
 .banner-bg { position: absolute; inset: 0; background: var(--bg-2); }
 .banner-bg::after {
   content: ""; position: absolute; inset: 0;
-  background: linear-gradient(90deg, rgba(235,234,228,.97) 0%, rgba(235,234,228,.78) 48%, rgba(235,234,228,.12) 100%);
+  background: linear-gradient(90deg, rgba(247,247,245,.97) 0%, rgba(247,247,245,.78) 48%, rgba(247,247,245,.12) 100%);
 }
 .banner-inner { position: relative; z-index: 2; display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: 56px; min-height: min(78vh, 660px); }
 .banner-content { padding: 96px 0 104px; }
@@ -300,15 +300,10 @@ main > section:not(.banner):not(.stats):not(.rows):not(.page-hero):not(.series-h
 .poster-fallback,
 .series-cover-fallback { background: #e7e7ec !important; color: var(--text) !important; }
 
-/* Faixa escura para a seção "Como funciona": quebra a rolagem e dá contraste */
-.benefits { background: #0f0f14; color: #fff; }
-.benefits .kicker { color: #8fa8ff; }
-.benefits .section-head h2 { color: #fff; }
-.benefits .section-head p { color: #a3a3b0; }
-.benefits .step { background: #17171f; border: 1px solid rgba(255, 255, 255, .06); }
-.benefits .step h3 { color: #fff; }
-.benefits .step p { color: #a3a3b0; }
-.benefits .step .ico { color: #8fa8ff; }
+/* "Como funciona" em azul-claro, com cartões brancos: mais cor sem escurecer */
+.benefits { background: #e6edff; }
+.benefits .step { background: #ffffff; box-shadow: 0 1px 2px rgba(20, 30, 80, .06), 0 14px 30px -18px rgba(47, 91, 255, .35); }
+.benefits .step .ico { color: var(--accent); }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
