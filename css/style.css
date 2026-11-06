@@ -284,8 +284,8 @@ main > section:not(.banner):not(.stats):not(.rows):not(.page-hero):not(.series-h
 
 /* ---------- Responsivo ---------- */
 @media (max-width: 960px) {
-  .banner-inner { grid-template-columns: 1fr; gap: 0; }
-  .banner-poster { display: none; }
+  .banner-inner { grid-template-columns: 1fr; gap: 0; min-height: auto; }
+  .banner .player { margin: 0 0 56px; }
   .series-grid { grid-template-columns: 1fr; gap: 28px; padding: 56px 0 60px; }
   .series-cover { display: none; }
   .series-body { grid-template-columns: 1fr; }
