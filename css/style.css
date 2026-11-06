@@ -98,8 +98,8 @@ button, input, select, textarea { font: inherit; }
 .player { position: relative; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
 .player .banner-poster { box-shadow: none; border-radius: 0; }
 .play {
-  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%);
-  width: 78px; height: 78px; border-radius: 50%; background: #fff;
+  position: absolute; right: 22px; bottom: 22px;
+  width: 60px; height: 60px; border-radius: 50%; background: #fff;
   display: grid; place-items: center; box-shadow: 0 12px 34px rgba(15, 15, 40, .25);
 }
 .play svg { width: 28px; height: 28px; fill: var(--accent); margin-left: 4px; }
