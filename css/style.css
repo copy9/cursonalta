@@ -323,7 +323,8 @@ main > section:not(.banner):not(.stats):not(.rows):not(.page-hero):not(.series-h
   .benefits { padding: 70px 0; }
   .cta-band { padding: 32px; border-radius: 22px; }
   .site-footer { padding: 40px 0 22px; margin-top: 24px; }
-  .footer-grid { grid-template-columns: 1fr 1fr; gap: 26px 16px; }
+  .footer-grid { grid-template-columns: repeat(3, 1fr); gap: 24px 12px; }
+  .site-footer h4 { font-size: .85rem; margin-bottom: 10px; }
   .footer-grid > div:first-child { grid-column: 1 / -1; }
   .site-footer ul { gap: 8px; font-size: .88rem; }
   .footer-bottom { margin-top: 30px; flex-direction: column; gap: 6px; text-align: center; }
