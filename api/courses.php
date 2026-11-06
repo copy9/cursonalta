@@ -21,6 +21,8 @@ $dataFile = $dataDir . '/courses.json';
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $list = file_exists($dataFile) ? json_decode(file_get_contents($dataFile), true) : null;
+    // O link do Telegram nunca vai na lista pública: ele sai só pela api/group.php, para aluno com acesso
+    if (is_array($list)) $list = array_map(function ($c) { unset($c['telegram']); return $c; }, $list);
     out(200, ['ok' => true, 'courses' => is_array($list) ? $list : null]);
 }
 

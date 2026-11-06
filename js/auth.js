@@ -162,7 +162,7 @@
             '<div class="ma-meta">0% concluído</div>' +
             '<div class="ma-actions">' +
               '<a class="btn btn-primary" href="curso.html?id=' + course.id + '">Começar o curso</a>' +
-              (course.telegram ? '<a class="btn btn-ghost" href="' + course.telegram + '" target="_blank" rel="noopener">Entrar no grupo do Telegram</a>' : "") +
+              '<button type="button" class="btn btn-ghost" id="tg-btn" data-course="' + course.id + '">Entrar no grupo do Telegram</button>' +
             "</div>" +
           "</div>" +
         "</article>";
@@ -204,6 +204,25 @@
         });
       });
     }
+
+    // Grupo do Telegram: o link é pedido só no clique, pelo aluno logado com acesso
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest("#tg-btn") : null;
+      if (!b) return;
+      var msg = document.getElementById("pick-msg");
+      var win = window.open("", "_blank");
+      fetch("api/group.php?course=" + encodeURIComponent(b.getAttribute("data-course")), { credentials: "same-origin" })
+        .then(function (res) { return res.json(); })
+        .then(function (r) {
+          if (r.ok && r.url) { if (win) win.location.href = r.url; return; }
+          if (win) win.close();
+          window.alert(r.error || "Não foi possível abrir o grupo.");
+        })
+        .catch(function () {
+          if (win) win.close();
+          window.alert("Sem conexão com o servidor. Tente de novo.");
+        });
+    });
 
     var out = document.getElementById("logout-btn");
     if (out) {
