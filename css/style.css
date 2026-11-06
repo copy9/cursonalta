@@ -45,7 +45,8 @@ button, input, select, textarea { font: inherit; }
 .nav-links a { transition: color .2s; }
 .nav-links a:hover, .nav-links a.active { color: var(--text); }
 .nav-actions { display: flex; align-items: center; gap: 10px; }
-.menu-toggle { display: none; background: none; border: 0; color: var(--text); font-size: 1.4rem; cursor: pointer; }
+.menu-toggle { display: none; background: none; border: 0; color: var(--text); font-size: 1.9rem; line-height: 1; cursor: pointer; min-width: 48px; min-height: 48px; border-radius: 10px; }
+.menu-toggle:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
 /* ---------- Botões ---------- */
 .btn {
@@ -314,7 +315,14 @@ main > section:not(.banner):not(.stats):not(.rows):not(.page-hero):not(.series-h
 @media (max-width: 760px) {
   .nav-links, .nav-actions .btn-ghost { display: none; }
   .menu-toggle { display: block; }
-  .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 68px; left: 0; right: 0; background: var(--bg); padding: 18px 6%; gap: 16px; border-bottom: 1px solid var(--line); }
+  .nav-links.open {
+    display: flex; flex-direction: column; align-items: stretch; gap: 0;
+    position: absolute; top: 68px; left: 0; right: 0; background: #ffffff; padding: 8px 6% 16px;
+    border-bottom: 1px solid var(--line-2); box-shadow: 0 24px 40px -24px rgba(0, 0, 0, .3); z-index: 60;
+  }
+  .nav-links.open a { color: var(--text); font-size: 1.1rem; font-weight: 600; padding: 16px 4px; border-bottom: 1px solid var(--line); opacity: 1; }
+  .nav-links.open a:last-child { border-bottom: 0; }
+  .nav-links.open a.active { color: var(--accent); }
   .banner-content { padding: 56px 0 72px; }
   .checklist { grid-template-columns: 1fr; }
   .poster { width: 240px; }
@@ -346,6 +354,11 @@ main > section:not(.banner):not(.stats):not(.rows):not(.page-hero):not(.series-h
 .benefits .step h3 { color: #fff; }
 .benefits .step p { color: #a6a6a6; }
 .benefits .step .ico { color: #ff7a3d; }
+
+/* Foco visível para navegação pelo teclado */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 3px solid var(--accent); outline-offset: 3px;
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
