@@ -251,7 +251,9 @@
       else { courses[selected] = c; }
       isNew = false;
       render();
-      msg("Alterações aplicadas. Clique em Salvar no site para publicar.", "ok");
+      // Publica na hora: o curso aparece no site assim que você aplica
+      var sv = document.getElementById("btn-save");
+      if (sv) sv.click();
     });
 
     var del = document.getElementById("btn-delete");
