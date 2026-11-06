@@ -9,9 +9,9 @@
   --surface-2: #f2f2ee;
   --line: rgba(15, 15, 20, 0.08);
   --line-2: rgba(15, 15, 20, 0.16);
-  --text: #0f0f14;
+  --text: #141414;
   --muted: #6a6a74;
-  --accent: #2f5bff;
+  --accent: #d9480f;
   --accent-ink: #ffffff;
   --radius: 20px;
   --radius-sm: 12px;
@@ -55,7 +55,7 @@ button, input, select, textarea { font: inherit; }
 }
 .btn:hover { transform: translateY(-1px); }
 .btn-primary { background: var(--accent); color: var(--accent-ink); }
-.btn-primary:hover { background: #1f45e6; }
+.btn-primary:hover { background: #b93b0b; }
 .btn-ghost { background: transparent; color: var(--text); border-color: var(--line-2); }
 .btn-ghost:hover { border-color: var(--text); }
 .btn-light { background: rgba(15,15,20,.05); color: var(--text); border-color: var(--line-2); }
@@ -77,8 +77,8 @@ button, input, select, textarea { font: inherit; }
 .banner {
   position: relative; overflow: hidden; border-bottom: 1px solid var(--line);
   background:
-    radial-gradient(800px 420px at 88% 18%, rgba(47, 91, 255, .14), transparent 62%),
-    radial-gradient(600px 300px at 10% 100%, rgba(47, 91, 255, .07), transparent 60%),
+    radial-gradient(800px 420px at 88% 18%, rgba(217, 72, 15, .12), transparent 62%),
+    radial-gradient(600px 300px at 10% 100%, rgba(217, 72, 15, .06), transparent 60%),
     var(--bg);
 }
 .topbar {
@@ -337,10 +337,15 @@ main > section:not(.banner):not(.stats):not(.rows):not(.page-hero):not(.series-h
 .poster-fallback,
 .series-cover-fallback { background: #e7e7ec !important; color: var(--text) !important; }
 
-/* "Como funciona" em azul-claro, com cartões brancos: mais cor sem escurecer */
-.benefits { background: #e6edff; }
-.benefits .step { background: #ffffff; box-shadow: 0 1px 2px rgba(20, 30, 80, .06), 0 14px 30px -18px rgba(47, 91, 255, .35); }
-.benefits .step .ico { color: var(--accent); }
+/* "Como funciona" em preto fosco, com laranja escuro nos detalhes */
+.benefits { background: #161616; color: #fff; }
+.benefits .kicker { color: #ff7a3d; }
+.benefits .section-head h2 { color: #fff; }
+.benefits .section-head p { color: #a6a6a6; }
+.benefits .step { background: #1f1f1f; border: 1px solid rgba(255, 255, 255, .06); box-shadow: none; }
+.benefits .step h3 { color: #fff; }
+.benefits .step p { color: #a6a6a6; }
+.benefits .step .ico { color: #ff7a3d; }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }

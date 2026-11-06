@@ -15,6 +15,8 @@
       '<button type="button" class="row-btn" data-dir="-1" aria-label="Ver cursos anteriores">&#8249;</button>' +
       '<button type="button" class="row-btn" data-dir="1" aria-label="Ver próximos cursos">&#8250;</button>';
     row.insertBefore(nav, track);
+    // Sem título, as setas sobem para não cobrir os cartões
+    if (!row.querySelector(".row-title")) nav.style.top = "-50px";
 
     var prev = nav.children[0];
     var next = nav.children[1];
