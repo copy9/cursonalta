@@ -24,7 +24,7 @@
         '<h2 id="pop-title">Precisa tirar sua DRT de jornalista?</h2>' +
         '<p class="pop-lead">Você já tem o trabalho e a formação. O que falta é o registro que comprova a sua profissão. Organizamos o requerimento inteiro, para você não perder tempo com a papelada.</p>' +
         '<ul class="pop-steps">' +
-          '<li><span>1</span>Você envia os documentos</li>' +
+          '<li><span>1</span>Você envia os documentos necessários</li>' +
           '<li><span>2</span>Organizamos o requerimento</li>' +
           '<li><span>3</span>Acompanhamos até a carteira</li>' +
         '</ul>' +
