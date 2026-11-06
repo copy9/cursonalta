@@ -122,3 +122,66 @@ function tg_request($method, array $body) {
         'Content-Type: application/json',
     ], $body);
 }
+
+// Compras avulsas em andamento: guarda a referência antes de ir ao Mercado Pago.
+// Assim a área do aluno confere o pagamento direto na API, sem depender do aviso (webhook).
+function remember_pending_purchase($email, $ref) {
+    users_modify(function (&$users) use ($email, $ref) {
+        if (!isset($users[$email])) return false;
+        $list = $users[$email]['pending'] ?? [];
+        $now = time();
+        // Descarta compras antigas (mais de 1 dia) para não consultar à toa
+        $list = array_values(array_filter($list, function ($p) use ($now) { return ($p['at'] ?? 0) > $now - 86400 && ($p['ref'] ?? '') !== ''; }));
+        $list[] = ['ref' => $ref, 'at' => $now];
+        $users[$email]['pending'] = array_slice($list, -10);
+        return true;
+    });
+}
+
+// Confere no Mercado Pago as compras avulsas pendentes do aluno e libera as aprovadas.
+function sync_pending_purchases($email) {
+    $users = users_read();
+    $list = $users[$email]['pending'] ?? [];
+    if (!$list) return;
+    $now = time();
+    $done = [];
+    foreach ($list as $p) {
+        $ref = (string)($p['ref'] ?? '');
+        if ($ref === '' || ($p['at'] ?? 0) <= $now - 86400) { $done[] = $ref; continue; }
+        $parts = explode('|', $ref, 3);
+        if (count($parts) !== 3 || $parts[0] !== 'C') { $done[] = $ref; continue; }
+        $curso = $parts[2];
+        [$code, $res] = mp_request('GET', '/v1/payments/search?sort=date_created&criteria=desc&limit=5&external_reference=' . rawurlencode($ref));
+        if ($code !== 200 || !is_array($res)) continue;
+        foreach (($res['results'] ?? []) as $pay) {
+            if (($pay['external_reference'] ?? '') !== $ref) continue;
+            $status = $pay['status'] ?? '';
+            if ($status === 'approved') {
+                $avisoId = 'pay-' . (string)($pay['id'] ?? '');
+                users_modify(function (&$users) use ($email, $curso, $avisoId) {
+                    if (!isset($users[$email])) return;
+                    $seen = $users[$email]['mp_seen'] ?? [];
+                    if (in_array($avisoId, $seen, true)) return;
+                    if (($users[$email]['plan'] ?? '') !== 'todos') $users[$email]['plan'] = 'curso';
+                    $list2 = user_courses($users[$email]);
+                    if (!in_array($curso, $list2, true)) $list2[] = $curso;
+                    $users[$email]['courses'] = $list2;
+                    $users[$email]['course'] = $list2[0];
+                    $seen[] = $avisoId;
+                    $users[$email]['mp_seen'] = array_slice($seen, -50);
+                });
+                $done[] = $ref;
+                break;
+            }
+            if (in_array($status, ['rejected', 'cancelled', 'refunded', 'charged_back'], true)) { $done[] = $ref; break; }
+        }
+    }
+    if ($done) {
+        users_modify(function (&$users) use ($email, $done) {
+            if (!isset($users[$email])) return;
+            $users[$email]['pending'] = array_values(array_filter($users[$email]['pending'] ?? [], function ($p) use ($done) {
+                return !in_array($p['ref'] ?? '', $done, true);
+            }));
+        });
+    }
+}

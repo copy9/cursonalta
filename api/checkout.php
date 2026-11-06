@@ -88,5 +88,7 @@ if ($code < 200 || $code >= 300 || !$url) {
     exit;
 }
 
+if ($plano === 'curso') remember_pending_purchase($email, 'C|' . $email . '|' . $curso);
+
 header('Location: ' . $url);
 exit;

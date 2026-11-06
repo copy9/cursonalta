@@ -32,6 +32,9 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 if ($action === 'me') {
     if (!empty($_SESSION['user'])) {
+        // Confere compras avulsas recentes direto no Mercado Pago (não depende do aviso)
+        require_once __DIR__ . '/lib.php';
+        try { sync_pending_purchases(strtolower($_SESSION['user']['email'])); } catch (Throwable $e) { error_log('sync: ' . $e->getMessage()); }
         $u = $_SESSION['user'];
         // Plano e curso vêm do cadastro, para que uma liberação feita pelo admin valha na hora
         $email = $u['email'];
