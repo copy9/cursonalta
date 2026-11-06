@@ -109,7 +109,7 @@
             '<div class="series-meta"><span>' + c.category + "</span><span>" + c.level + "</span><span>" + c.lessons + " aulas</span><span>" + c.duration + "</span></div>" +
             '<p class="series-desc">' + c.shortDescription + "</p>" +
             '<div class="hero-cta">' +
-              '<a href="cadastro.html?curso=' + c.id + '" class="btn btn-primary">Assinar por ' + formatBRL(c.price) + "/mês</a>" +
+              '<a id="hero-buy" href="cadastro.html?curso=' + c.id + '" class="btn btn-primary">Assinar por ' + formatBRL(c.price) + "/mês</a>" +
               '<a href="#episodios" class="btn btn-light">Ver módulos</a>' +
             "</div>" +
           "</div>" +
@@ -129,7 +129,7 @@
             "</div>" +
           "</div>" +
           '<aside class="series-side">' +
-            '<div class="panel buy-card">' +
+            '<div class="panel buy-card" id="buy-card">' +
               '<p class="plan-label">Este curso</p>' +
               '<div class="price-big">' + formatBRL(c.price) + ' <small>/mês</small></div>' +
               '<a href="cadastro.html?plano=curso&curso=' + c.id + '" class="btn btn-ghost btn-block">Assinar este curso</a>' +
@@ -155,6 +155,26 @@
         "</div>" +
         '<div class="row"><div class="row-track">' + relatedRow + "</div></div>" +
       "</section>";
+
+    // Aluno que já tem acesso a este curso não vê os botões de compra
+    fetch("api/auth.php?action=me", { credentials: "same-origin" })
+      .then(function (res) { return res.json(); })
+      .then(function (r) {
+        if (!r.ok || !r.user) return;
+        var has = r.user.plan === "todos" || r.user.course === c.id;
+        if (!has) return;
+        var hero = document.getElementById("hero-buy");
+        if (hero) { hero.href = "minha-area.html"; hero.textContent = "Você tem acesso · ir para minha área"; }
+        var card = document.getElementById("buy-card");
+        if (card) {
+          card.innerHTML =
+            '<p class="plan-label">Seu acesso</p>' +
+            '<div class="price-big">Liberado</div>' +
+            "<p>Este curso já faz parte do seu plano.</p>" +
+            '<a href="minha-area.html" class="btn btn-primary btn-block">Ir para minha área</a>';
+        }
+      })
+      .catch(function () {});
   })();
 </script>
 </body>
