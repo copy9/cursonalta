@@ -264,6 +264,11 @@ button, input, select, textarea { font: inherit; }
   .footer-grid { grid-template-columns: 1fr; }
   .brand span { font-size: 1rem; }
 }
+/* Visual neutro: sem gradientes coloridos nos fundos e capas sem imagem */
+.banner-bg { background: linear-gradient(180deg, #ffffff, #ececf0) !important; }
+.poster-fallback,
+.series-cover-fallback { background: #e7e7ec !important; color: var(--text) !important; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
