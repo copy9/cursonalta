@@ -3,7 +3,7 @@
   Para adicionar um curso, copie um bloco abaixo e troque os dados.
   Quando a plataforma estiver integrada ao WordPress, esta lista passa a vir do painel.
 */
-window.COURSES = [
+var STATIC_COURSES = [
   {
     id: "policia-civil-pi-agente",
     title: "Polícia Civil do Piauí: Agente",
@@ -197,6 +197,20 @@ window.COURSES = [
   }
 ];
 
+
+// Se o admin tiver salvo a lista pelo painel, ela substitui a lista padrão.
+window.COURSES = STATIC_COURSES;
+(function () {
+  try {
+    var x = new XMLHttpRequest();
+    x.open("GET", "api/courses.php", false);
+    x.send(null);
+    if (x.status === 200) {
+      var j = JSON.parse(x.responseText);
+      if (j && j.courses && j.courses.length) window.COURSES = j.courses;
+    }
+  } catch (e) { /* sem conexão: usa a lista padrão */ }
+})();
 
 window.ALL_ACCESS_PRICE = 24.99;
 

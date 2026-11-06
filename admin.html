@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel do admin | Cursonalta</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .adm { --ink:#141414; --orange:#d9480f; --bg:#f6f5f2; --line:#e7e4de; --muted:#5f5f5f; background:var(--bg); min-height:70vh; padding:32px 0 72px; color:var(--ink); }
+    .adm-top { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:14px; margin-bottom:22px; }
+    .adm h1 { margin:0; font-size:1.7rem; }
+    .adm-msg { min-height:1.2em; font-weight:600; margin:0 0 14px; }
+    .adm-msg.ok { color:#1f7a3a; }
+    .adm-msg.err { color:#b91c1c; }
+    .adm-cols { display:grid; grid-template-columns:320px minmax(0,1fr); gap:24px; align-items:start; }
+    .adm-card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:20px; min-width:0; }
+    .adm-list { display:grid; gap:8px; }
+    .adm-item { text-align:left; background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 14px; cursor:pointer; font:inherit; color:var(--ink); }
+    .adm-item.on { border-color:var(--orange); box-shadow:0 0 0 2px rgba(217,72,15,.15); }
+    .adm-item strong { display:block; font-size:.95rem; }
+    .adm-item small { color:var(--muted); }
+    .adm-grid2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+    .adm-field { display:grid; gap:6px; min-width:0; }
+    .adm-field.full { grid-column:1 / -1; }
+    .adm-field label { font-size:.85rem; font-weight:600; }
+    .adm-field input, .adm-field textarea, .adm-field select { font:inherit; padding:10px 12px; border:1px solid #cfcac2; border-radius:10px; background:#fff; color:var(--ink); width:100%; min-width:0; }
+    .adm-field textarea { min-height:90px; resize:vertical; }
+    .adm-field small { color:var(--muted); font-size:.78rem; }
+    .adm-h { font-size:1rem; margin:22px 0 10px; }
+    .adm-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; margin-top:22px; }
+    .adm-danger { color:#b91c1c; border-color:#e0b4b4; }
+    .adm-restricted { max-width:520px; margin:60px auto; text-align:center; }
+    @media (max-width: 860px) {
+      .adm-cols { grid-template-columns:1fr; }
+      .adm-grid2 { grid-template-columns:1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="site-header">
+  <nav class="container nav">
+    <a href="index.html" class="brand" aria-label="Cursonalta início">
+      <img src="assets/logo.png" alt="Logo Cursonalta">
+      <span>Curso<b>nalta</b></span>
+    </a>
+    <div class="nav-links" id="nav-links">
+      <a href="index.html">Início</a>
+      <a href="cursos.html">Cursos</a>
+    </div>
+    <div class="nav-actions">
+      <a href="minha-area.html" class="btn btn-ghost btn-sm">Minha área</a>
+      <button class="menu-toggle" id="menu-toggle" aria-label="Abrir menu">☰</button>
+    </div>
+  </nav>
+</header>
+
+<main class="adm">
+  <div class="container" id="adm-root">
+    <p>Carregando...</p>
+  </div>
+</main>
+
+<script src="js/courses.js"></script>
+<script src="js/main.js"></script>
+<script src="js/drt-popup.js"></script>
+<script>
+(function () {
+  var root = document.getElementById("adm-root");
+  var courses = [];
+  var selected = -1;   // índice do curso em edição; -1 = novo curso
+  var isNew = false;
+
+  function esc(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function slugify(s) {
+    return String(s).normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60);
+  }
+
+  function initialsOf(name) {
+    return String(name || "").trim().split(/\s+/).slice(0, 2)
+      .map(function (p) { return p.charAt(0).toUpperCase(); }).join("");
+  }
+
+  function blank() {
+    return {
+      id: "", title: "", shortDescription: "", description: "", category: "", level: "Todos os níveis",
+      instructor: { name: "", role: "", initials: "" }, price: 14.99, duration: "", lessons: 0,
+      cover: "", gradient: "linear-gradient(135deg, #141414, #2a2a2a)", learn: [], modules: []
+    };
+  }
+
+  function msg(text, kind) {
+    var el = document.getElementById("adm-msg");
+    if (!el) return;
+    el.textContent = text || "";
+    el.className = "adm-msg " + (kind || "");
+  }
+
+  function listHTML() {
+    return courses.map(function (c, i) {
+      return '<button type="button" class="adm-item' + (i === selected && !isNew ? " on" : "") + '" data-i="' + i + '">' +
+               "<strong>" + esc(c.title) + "</strong>" +
+               "<small>" + esc(c.category) + " · R$ " + Number(c.price).toFixed(2).replace(".", ",") + "</small>" +
+             "</button>";
+    }).join("");
+  }
+
+  function formHTML(c) {
+    var modules = (c.modules || []).map(function (m) { return m.title + " | " + m.lessons + " | " + m.time; }).join("\n");
+    var learn = (c.learn || []).join("\n");
+    return '' +
+      '<div class="adm-grid2">' +
+        '<div class="adm-field full"><label for="f-title">Título</label><input id="f-title" value="' + esc(c.title) + '"></div>' +
+        '<div class="adm-field"><label for="f-id">Identificador (link do curso)</label>' +
+          '<input id="f-id" value="' + esc(c.id) + '" ' + (isNew ? "" : "disabled") + '>' +
+          '<small>' + (isNew ? "Gerado pelo título. Use só letras minúsculas, números e hífen." : "Não muda depois de criado.") + '</small></div>' +
+        '<div class="adm-field"><label for="f-category">Categoria</label><input id="f-category" value="' + esc(c.category) + '" placeholder="Ex.: Marketing"></div>' +
+        '<div class="adm-field"><label for="f-level">Nível</label><input id="f-level" value="' + esc(c.level) + '" placeholder="Ex.: Iniciante"></div>' +
+        '<div class="adm-field"><label for="f-price">Preço no plano de um curso (R$ por mês)</label><input id="f-price" type="number" step="0.01" min="0" value="' + esc(c.price) + '"></div>' +
+        '<div class="adm-field"><label for="f-duration">Duração total</label><input id="f-duration" value="' + esc(c.duration) + '" placeholder="Ex.: 12h 30min"></div>' +
+        '<div class="adm-field"><label for="f-lessons">Número de aulas</label><input id="f-lessons" type="number" min="0" value="' + esc(c.lessons) + '"></div>' +
+        '<div class="adm-field"><label for="f-cover">Capa (caminho do arquivo)</label><input id="f-cover" value="' + esc(c.cover) + '" placeholder="assets/covers/nome.png"><small>A imagem precisa estar no repositório, na pasta assets/covers.</small></div>' +
+        '<div class="adm-field full"><label for="f-short">Descrição curta (aparece nos cartões)</label><textarea id="f-short" rows="2">' + esc(c.shortDescription) + '</textarea></div>' +
+        '<div class="adm-field full"><label for="f-desc">Descrição completa</label><textarea id="f-desc" rows="4">' + esc(c.description) + '</textarea></div>' +
+      '</div>' +
+      '<h3 class="adm-h">Professor</h3>' +
+      '<div class="adm-grid2">' +
+        '<div class="adm-field"><label for="f-iname">Nome</label><input id="f-iname" value="' + esc(c.instructor.name) + '"></div>' +
+        '<div class="adm-field"><label for="f-irole">Cargo</label><input id="f-irole" value="' + esc(c.instructor.role) + '"></div>' +
+        '<div class="adm-field"><label for="f-iinit">Iniciais (2 letras)</label><input id="f-iinit" maxlength="3" value="' + esc(c.instructor.initials) + '"></div>' +
+      '</div>' +
+      '<h3 class="adm-h">O que o aluno vai aprender</h3>' +
+      '<div class="adm-field"><textarea id="f-learn" rows="5" placeholder="Um item por linha">' + esc(learn) + '</textarea></div>' +
+      '<h3 class="adm-h">Módulos</h3>' +
+      '<div class="adm-field"><textarea id="f-modules" rows="6" placeholder="Título do módulo | número de aulas | duração&#10;Ex.: Fundamentos | 6 | 1h 40min">' + esc(modules) + '</textarea></div>' +
+      '<div class="adm-actions">' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
+          '<button type="button" class="btn btn-primary" id="btn-apply">Aplicar no curso</button>' +
+          (isNew ? "" : '<button type="button" class="btn btn-ghost adm-danger" id="btn-delete">Excluir curso</button>') +
+        '</div>' +
+        '<button type="button" class="btn btn-ghost" id="btn-cancel">Cancelar</button>' +
+      '</div>';
+  }
+
+  function render() {
+    root.innerHTML =
+      '<div class="adm-top"><h1>Painel do admin</h1>' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
+          '<button type="button" class="btn btn-ghost" id="btn-new">Novo curso</button>' +
+          '<button type="button" class="btn btn-primary" id="btn-save">Salvar no site</button>' +
+        '</div></div>' +
+      '<p id="adm-msg" class="adm-msg" role="status"></p>' +
+      '<div class="adm-cols">' +
+        '<div class="adm-card"><div class="adm-list">' + listHTML() + '</div></div>' +
+        '<div class="adm-card" id="adm-editor">' +
+          (selected < 0 && !isNew
+            ? '<p style="color:var(--muted)">Escolha um curso na lista para editar, ou crie um novo.</p>'
+            : formHTML(isNew ? blank() : courses[selected])) +
+        "</div>" +
+      "</div>";
+    bind();
+  }
+
+  function readForm() {
+    var v = function (id) { return document.getElementById(id).value; };
+    var learn = v("f-learn").split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+    var modules = v("f-modules").split("\n").map(function (line) {
+      var p = line.split("|").map(function (s) { return s.trim(); });
+      if (!p[0]) return null;
+      return { title: p[0], lessons: parseInt(p[1], 10) || 0, time: p[2] || "" };
+    }).filter(Boolean);
+    return {
+      id: isNew ? (v("f-id").trim() || slugify(v("f-title"))) : courses[selected].id,
+      title: v("f-title").trim(),
+      shortDescription: v("f-short").trim(),
+      description: v("f-desc").trim(),
+      category: v("f-category").trim(),
+      level: v("f-level").trim(),
+      instructor: { name: v("f-iname").trim(), role: v("f-irole").trim(), initials: (v("f-iinit").trim() || initialsOf(v("f-iname"))) },
+      price: parseFloat(v("f-price")) || 0,
+      duration: v("f-duration").trim(),
+      lessons: parseInt(v("f-lessons"), 10) || 0,
+      cover: v("f-cover").trim(),
+      gradient: "linear-gradient(135deg, #141414, #2a2a2a)",
+      learn: learn,
+      modules: modules
+    };
+  }
+
+  function bind() {
+    root.querySelectorAll(".adm-item").forEach(function (b) {
+      b.addEventListener("click", function () {
+        selected = parseInt(b.getAttribute("data-i"), 10);
+        isNew = false;
+        msg("");
+        render();
+      });
+    });
+    var nw = document.getElementById("btn-new");
+    if (nw) nw.addEventListener("click", function () { isNew = true; selected = -1; msg(""); render(); });
+
+    var cancel = document.getElementById("btn-cancel");
+    if (cancel) cancel.addEventListener("click", function () { selected = -1; isNew = false; msg(""); render(); });
+
+    var apply = document.getElementById("btn-apply");
+    if (apply) apply.addEventListener("click", function () {
+      var c = readForm();
+      if (!c.title) return msg("Informe o título do curso.", "err");
+      if (!c.id || !/^[a-z0-9-]{3,60}$/.test(c.id)) return msg("Identificador inválido. Use letras minúsculas, números e hífen (3 a 60 caracteres).", "err");
+      if (isNew && courses.some(function (x) { return x.id === c.id; })) return msg("Já existe um curso com este identificador.", "err");
+      if (isNew) { courses.push(c); selected = courses.length - 1; }
+      else { courses[selected] = c; }
+      isNew = false;
+      render();
+      msg("Alterações aplicadas. Clique em Salvar no site para publicar.", "ok");
+    });
+
+    var del = document.getElementById("btn-delete");
+    if (del) del.addEventListener("click", function () {
+      if (courses.length <= 1) return msg("O site precisa ter pelo menos um curso.", "err");
+      if (!window.confirm("Excluir este curso? Ele some do site ao salvar.")) return;
+      courses.splice(selected, 1);
+      selected = -1;
+      render();
+      msg("Curso removido. Clique em Salvar no site para publicar.", "ok");
+    });
+
+    var save = document.getElementById("btn-save");
+    if (save) save.addEventListener("click", function () {
+      save.disabled = true;
+      msg("Salvando...", "");
+      fetch("api/courses.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ courses: courses })
+      }).then(function (res) {
+        return res.json().then(function (j) { return { status: res.status, body: j }; });
+      }).then(function (r) {
+        save.disabled = false;
+        if (r.body && r.body.ok) {
+          courses = r.body.courses;
+          selected = -1; isNew = false;
+          render();
+          msg("Salvo. O site já mostra as alterações (pode ser preciso recarregar a página).", "ok");
+        } else {
+          msg((r.body && r.body.error) || "Não foi possível salvar.", "err");
+        }
+      }).catch(function () {
+        save.disabled = false;
+        msg("Sem conexão com o servidor. Tente de novo.", "err");
+      });
+    });
+  }
+
+  // Só o admin entra
+  fetch("api/auth.php?action=me", { credentials: "same-origin" })
+    .then(function (res) { return res.json(); })
+    .then(function (r) {
+      if (!r.ok || r.user.role !== "admin") {
+        root.innerHTML =
+          '<div class="adm-card adm-restricted">' +
+            "<h1>Acesso restrito</h1>" +
+            "<p>Esta área é só para o administrador do site.</p>" +
+            '<p><a class="btn btn-primary" href="entrar.html">Entrar</a></p>' +
+          "</div>";
+        return;
+      }
+      courses = (window.COURSES || []).map(function (c) { return JSON.parse(JSON.stringify(c)); });
+      render();
+    })
+    .catch(function () {
+      root.innerHTML = '<p>Não foi possível carregar o painel. Recarregue a página.</p>';
+    });
+})();
+</script>
+</body>
+</html>

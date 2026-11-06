@@ -12,6 +12,8 @@ function out($code, $data) {
     exit;
 }
 
+require_once __DIR__ . '/config.php';
+
 $dataDir  = dirname(__DIR__) . '/app-data';
 $dataFile = $dataDir . '/users.json';
 
@@ -27,7 +29,11 @@ session_start();
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
 if ($action === 'me') {
-    if (!empty($_SESSION['user'])) out(200, ['ok' => true, 'user' => $_SESSION['user']]);
+    if (!empty($_SESSION['user'])) {
+        $u = $_SESSION['user'];
+        $u['role'] = is_admin($u) ? 'admin' : 'aluno';
+        out(200, ['ok' => true, 'user' => $u]);
+    }
     out(401, ['ok' => false, 'error' => 'Não logado.']);
 }
 

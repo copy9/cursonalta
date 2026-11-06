@@ -256,14 +256,19 @@
                '<small>' + c.category + ' · ' + formatBRL(c.price) + '/mês</small></div>' +
              '</a>';
     }
-    function row(title, list) {
-      return '<div class="row">' +
-               '<h2 class="row-title">' + title + '</h2>' +
+    function row(title, list, link) {
+      var head = link
+        ? '<div style="display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin:0 4% 16px">' +
+            '<h2 class="row-title" style="margin:0">' + title + '</h2>' +
+            '<a href="' + link + '" style="color:var(--orange);font-weight:600;white-space:nowrap">Ver todos →</a>' +
+          '</div>'
+        : '<h2 class="row-title">' + title + '</h2>';
+      return '<div class="row">' + head +
                '<div class="row-track">' + list.map(poster).join("") + '</div>' +
              '</div>';
     }
 
-    var html = row("Todos os cursos", courses);
+    var html = row("Todos os cursos", courses, "cursos.html");
     var cats = [];
     courses.forEach(function (c) { if (cats.indexOf(c.category) === -1) cats.push(c.category); });
     cats.forEach(function (cat) {
