@@ -363,7 +363,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 
 /* Planos: por curso e todos os cursos */
 .plans-sec { padding: 96px 0; }
-.plans { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 880px; margin: 0 auto; }
+.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 1120px; margin: 0 auto; }
 .plan { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 36px; display: flex; flex-direction: column; }
 .plan p { color: var(--muted); margin-bottom: 16px; }
 .plan ul { list-style: none; display: grid; gap: 8px; margin-bottom: 26px; font-size: .95rem; }
