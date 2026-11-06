@@ -173,7 +173,22 @@
         '</div></div>' +
       '<p id="adm-msg" class="adm-msg" role="status"></p>' +
       '<div class="adm-cols">' +
-        '<div class="adm-card"><div class="adm-list">' + listHTML() + '</div></div>' +
+        '<div>' +
+          '<div class="adm-card"><div class="adm-list">' + listHTML() + '</div></div>' +
+          '<div class="adm-card" style="margin-top:20px">' +
+            '<h3 class="adm-h" style="margin-top:0">Liberar acesso de aluno</h3>' +
+            '<p style="color:var(--muted);font-size:.88rem;margin:0 0 12px">A pessoa precisa ter conta com este e-mail. O acesso aparece na área dela na hora.</p>' +
+            '<div style="display:grid;gap:12px">' +
+              '<div class="adm-field"><label for="ac-email">E-mail do aluno</label><input id="ac-email" type="email" placeholder="aluno@email.com"></div>' +
+              '<div class="adm-field"><label for="ac-plan">Plano</label><select id="ac-plan"><option value="curso">Um curso</option><option value="todos">Todos os cursos</option></select></div>' +
+              '<div class="adm-field" id="ac-course-wrap"><label for="ac-course">Curso liberado</label><select id="ac-course">' +
+                courses.map(function (c) { return '<option value="' + esc(c.id) + '">' + esc(c.title) + "</option>"; }).join("") +
+              '</select></div>' +
+              '<p id="ac-msg" class="adm-msg" role="status" style="margin:0"></p>' +
+              '<button type="button" class="btn btn-primary" id="btn-access" style="justify-self:start">Liberar acesso</button>' +
+            "</div>" +
+          "</div>" +
+        "</div>" +
         '<div class="adm-card" id="adm-editor">' +
           (selected < 0 && !isNew
             ? '<p style="color:var(--muted)">Escolha um curso na lista para editar, ou crie um novo.</p>'
@@ -290,6 +305,47 @@
           up.textContent = "Enviar imagem da capa";
           cmsg.textContent = "Sem conexão com o servidor. Tente de novo.";
           cmsg.style.color = "#b91c1c";
+        });
+    });
+
+    // Liberar acesso de aluno: escolhe o plano e, se for um curso, o curso
+    var acPlan = document.getElementById("ac-plan");
+    var acWrap = document.getElementById("ac-course-wrap");
+    if (acPlan && acWrap) {
+      var syncPlan = function () { acWrap.style.display = acPlan.value === "curso" ? "" : "none"; };
+      acPlan.addEventListener("change", syncPlan);
+      syncPlan();
+    }
+    var acBtn = document.getElementById("btn-access");
+    if (acBtn) acBtn.addEventListener("click", function () {
+      var out = document.getElementById("ac-msg");
+      var email = document.getElementById("ac-email").value.trim();
+      var plan = acPlan.value;
+      var course = document.getElementById("ac-course").value;
+      out.className = "adm-msg";
+      if (!email) { out.textContent = "Informe o e-mail do aluno."; out.classList.add("err"); return; }
+      if (!window.confirm("Liberar " + (plan === "todos" ? "todos os cursos" : "o curso escolhido") + " para " + email + "?")) return;
+      acBtn.disabled = true;
+      fetch("api/access.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({ email: email, plan: plan, course: course })
+      }).then(function (res) { return res.json().then(function (j) { return { status: res.status, body: j }; }); })
+        .then(function (r) {
+          acBtn.disabled = false;
+          if (r.body && r.body.ok) {
+            out.textContent = "Acesso liberado para " + r.body.email + ".";
+            out.classList.add("ok");
+          } else {
+            out.textContent = (r.body && r.body.error) || "Não foi possível liberar o acesso.";
+            out.classList.add("err");
+          }
+        })
+        .catch(function () {
+          acBtn.disabled = false;
+          out.textContent = "Sem conexão com o servidor. Tente de novo.";
+          out.classList.add("err");
         });
     });
 

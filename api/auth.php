@@ -33,6 +33,16 @@ $action = isset($_GET['action']) ? $_GET['action'] : '';
 if ($action === 'me') {
     if (!empty($_SESSION['user'])) {
         $u = $_SESSION['user'];
+        // Plano e curso vêm do cadastro, para que uma liberação feita pelo admin valha na hora
+        $email = $u['email'];
+        with_users($dataDir, $dataFile, function ($users) use ($email, &$u) {
+            if (isset($users[$email])) {
+                $u['course'] = isset($users[$email]['course']) ? $users[$email]['course'] : null;
+                $u['plan'] = isset($users[$email]['plan']) ? $users[$email]['plan'] : 'curso';
+            }
+            return null;
+        });
+        $_SESSION['user'] = $u;
         $u['role'] = is_admin($u) ? 'admin' : 'aluno';
         out(200, ['ok' => true, 'user' => $u]);
     }
