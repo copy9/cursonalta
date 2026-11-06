@@ -96,6 +96,18 @@
       var statN = document.getElementById("stat-count");
       var statL = document.getElementById("stat-label");
 
+      if (user.plan === "none") {
+        planName.textContent = "Sem plano ativo";
+        planDesc.textContent = "Seu acesso venceu ou foi cancelado. Assine para continuar.";
+        planChecks.innerHTML = "<li>Escolha um curso ou todos os cursos</li>";
+        statN.textContent = "0";
+        statL.textContent = "cursos no seu plano";
+        document.getElementById("course-slot").hidden = true;
+        document.getElementById("picker-slot").hidden = true;
+        document.getElementById("all-slot").hidden = true;
+        return;
+      }
+
       if (user.plan === "todos") {
         planName.textContent = "Todos os cursos";
         planDesc.textContent = formatBRL(window.ALL_ACCESS_PRICE) + " por mês, com renovação automática.";

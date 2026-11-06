@@ -7,6 +7,7 @@ header('X-Content-Type-Options: nosniff');
 header('Cache-Control: no-store');
 
 require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/lib.php';
 
 function out($code, $data) {
     http_response_code($code);
@@ -43,6 +44,21 @@ if (!$record) out(403, ['ok' => false, 'error' => 'Acesso não encontrado.']);
 $plan = isset($record['plan']) ? $record['plan'] : 'curso';
 $allowed = ($plan === 'todos') || (isset($record['course']) && $record['course'] === $courseId);
 if (!$allowed) out(403, ['ok' => false, 'error' => 'Seu plano não inclui este curso.']);
+
+// Plano de todos os cursos: convite de uso único para o grupo geral, válido por 1 dia
+if ($plan === 'todos' && (int)($record['plan_expires_at'] ?? 0) > time()) {
+    $grupo = (string)(settings_read()['tg_group_todos'] ?? '');
+    if ($grupo === '') out(503, ['ok' => false, 'error' => 'O grupo ainda não está configurado. Tente mais tarde.']);
+    [$code, $res] = tg_request('createChatInviteLink', [
+        'chat_id'      => $grupo,
+        'member_limit' => 1,
+        'expire_date'  => time() + 86400,
+        'name'         => user_tag($user['email']),
+    ]);
+    $url = is_array($res) && isset($res['result']['invite_link']) ? $res['result']['invite_link'] : '';
+    if ($code !== 200 || $url === '') out(502, ['ok' => false, 'error' => 'Não foi possível gerar seu convite. Tente de novo.']);
+    out(200, ['ok' => true, 'url' => $url]);
+}
 
 $coursesFile = dirname(__DIR__) . '/app-data/courses.json';
 $list = file_exists($coursesFile) ? json_decode(file_get_contents($coursesFile), true) : null;

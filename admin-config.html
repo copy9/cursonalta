@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Integrações | Cursonalta</title>
+  <link rel="icon" href="assets/logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .cfg { max-width: 640px; margin: 40px auto; padding: 0 16px; }
+    .cfg h1 { font-size: 1.6rem; margin: 0 0 6px; }
+    .cfg p.sub { color: var(--muted); margin: 0 0 24px; }
+    .cfg .card { background: #fff; border: 1px solid #e5e5e5; border-radius: 14px; padding: 20px; margin-bottom: 16px; }
+    .cfg label { display: block; font-weight: 600; font-size: .9rem; margin: 14px 0 6px; }
+    .cfg input { width: 100%; padding: 10px 12px; border: 1px solid #d4d4d4; border-radius: 8px; font: inherit; }
+    .cfg .ok { color: #1f7a3a; font-size: .85rem; margin-top: 4px; }
+    .cfg .no { color: #9a3412; font-size: .85rem; margin-top: 4px; }
+    .cfg .msg { margin-top: 12px; font-size: .92rem; }
+    .cfg code { background: #f3f3f3; padding: 2px 6px; border-radius: 6px; word-break: break-all; }
+    .cfg button { margin-top: 16px; }
+  </style>
+</head>
+<body>
+
+<main class="cfg">
+  <h1>Integrações</h1>
+  <p class="sub">Chaves do Mercado Pago e do Telegram. Os valores ficam salvos no servidor e não aparecem depois de salvos.</p>
+
+  <div id="gate" class="card" hidden>
+    <p>Entre com a conta de admin para continuar.</p>
+    <p><a href="entrar.html">Ir para o login</a></p>
+  </div>
+
+  <div id="panel" hidden>
+    <div class="card">
+      <strong>Mercado Pago</strong>
+      <label for="mp_access_token">Access token de produção</label>
+      <input id="mp_access_token" type="password" autocomplete="off" placeholder="APP_USR-...">
+      <div id="st-mp_access_token"></div>
+
+      <label for="mp_webhook_secret">Chave secreta do webhook</label>
+      <input id="mp_webhook_secret" type="password" autocomplete="off">
+      <div id="st-mp_webhook_secret"></div>
+    </div>
+
+    <div class="card">
+      <strong>Telegram</strong>
+      <label for="tg_bot_token">Token do bot</label>
+      <input id="tg_bot_token" type="password" autocomplete="off" placeholder="123456:ABC...">
+      <div id="st-tg_bot_token"></div>
+
+      <label for="tg_group_todos">ID do grupo de todos os cursos</label>
+      <input id="tg_group_todos" type="text" autocomplete="off" placeholder="-100...">
+      <div id="st-tg_group_todos"></div>
+
+      <label for="cron_token">Senha do cron (qualquer texto longo)</label>
+      <input id="cron_token" type="password" autocomplete="off">
+      <div id="st-cron_token"></div>
+    </div>
+
+    <button id="save" class="btn btn-primary" type="button">Salvar</button>
+    <div id="msg" class="msg"></div>
+
+    <div class="card" style="margin-top:24px">
+      <strong>Depois de salvar</strong>
+      <p>1. Clique para ligar o bot ao site:</p>
+      <button id="tg-setup" class="btn btn-ghost" type="button">Ligar o bot ao site</button>
+      <p>2. No cron do Hostinger, agende todo dia este comando, trocando SEU_TOKEN pela senha do cron:</p>
+      <p><code>curl -s "https://cursonalta.com/api/expire.php?token=SEU_TOKEN"</code></p>
+      <p>3. No painel do Mercado Pago, em Webhooks, cadastre o endereço <code>https://cursonalta.com/api/mp-webhook.php</code> e copie a chave secreta para o campo acima.</p>
+      <div id="setup-msg" class="msg"></div>
+    </div>
+  </div>
+</main>
+
+<script src="js/courses.js"></script>
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var FIELDS = ['mp_access_token', 'mp_webhook_secret', 'tg_bot_token', 'tg_group_todos', 'cron_token'];
+
+  function showStatus(saved) {
+    FIELDS.forEach(function (k) {
+      var el = $('st-' + k);
+      if (!el) return;
+      el.innerHTML = saved[k] ? '<span class="ok">Salvo</span>' : '<span class="no">Ainda não salvo</span>';
+    });
+  }
+
+  function load() {
+    fetch('api/settings.php', { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        if (!r.ok) { $('gate').hidden = false; return; }
+        $('panel').hidden = false;
+        showStatus(r.saved);
+      })
+      .catch(function () { $('gate').hidden = false; });
+  }
+
+  // Só mostra o painel se a sessão for de admin
+  fetch('api/auth.php?action=me', { credentials: 'same-origin' })
+    .then(function (r) { return r.json(); })
+    .then(function (r) {
+      if (!r.ok || !r.user || r.user.role !== 'admin') { $('gate').hidden = false; return; }
+      load();
+    })
+    .catch(function () { $('gate').hidden = false; });
+
+  $('save').addEventListener('click', function () {
+    var body = {};
+    FIELDS.forEach(function (k) {
+      var v = $(k).value.trim();
+      if (v !== '') body[k] = v;
+    });
+    var btn = $('save');
+    btn.disabled = true;
+    fetch('api/settings.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
+      body: JSON.stringify(body)
+    }).then(function (r) { return r.json(); })
+      .then(function (r) {
+        $('msg').textContent = r.ok ? 'Salvo. Os campos foram limpos por segurança.' : (r.error || 'Não foi possível salvar.');
+        if (r.ok) FIELDS.forEach(function (k) { $(k).value = ''; });
+        if (r.ok) load();
+      })
+      .catch(function () { $('msg').textContent = 'Sem conexão com o servidor.'; })
+      .finally(function () { btn.disabled = false; });
+  });
+
+  $('tg-setup').addEventListener('click', function () {
+    $('setup-msg').textContent = 'Ligando o bot...';
+    fetch('api/telegram-setup.php', { credentials: 'same-origin' })
+      .then(function (r) { return r.json(); })
+      .then(function (r) {
+        $('setup-msg').textContent = r.ok ? 'Bot ligado ao site.' : (r.error || r.telegram || 'Não foi possível ligar o bot.');
+      })
+      .catch(function () { $('setup-msg').textContent = 'Sem conexão com o servidor.'; });
+  });
+})();
+</script>
+</body>
+</html>

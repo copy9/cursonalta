@@ -1,0 +1,131 @@
+<?php
+// Recebe os avisos do Mercado Pago (pagamentos, assinaturas e cobranças recorrentes).
+// Confere a assinatura do aviso, consulta o recurso na API e atualiza o acesso do aluno.
+// Configure este endereço no painel do Mercado Pago: https://cursonalta.com/api/mp-webhook.php
+
+require_once __DIR__ . '/lib.php';
+
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') out(405, ['ok' => false]);
+
+$settings = settings_read();
+$secret = $settings['mp_webhook_secret'] ?? '';
+if ($secret === '') out(503, ['ok' => false, 'error' => 'Webhook ainda não configurado.']);
+
+$raw = file_get_contents('php://input');
+$body = json_decode($raw, true);
+if (!is_array($body)) $body = [];
+
+$type = isset($body['type']) ? (string)$body['type'] : (isset($_GET['type']) ? (string)$_GET['type'] : '');
+$dataId = isset($_GET['data_id']) ? (string)$_GET['data_id']
+    : (isset($body['data']['id']) ? (string)$body['data']['id'] : '');
+if ($dataId === '' && isset($_GET['data.id'])) $dataId = (string)$_GET['data.id'];
+
+// Assinatura: "ts=...,v1=..." com HMAC-SHA256 sobre o modelo de mensagem do Mercado Pago
+$sig = isset($_SERVER['HTTP_X_SIGNATURE']) ? $_SERVER['HTTP_X_SIGNATURE'] : '';
+$reqId = isset($_SERVER['HTTP_X_REQUEST_ID']) ? $_SERVER['HTTP_X_REQUEST_ID'] : '';
+$ts = ''; $v1 = '';
+foreach (explode(',', $sig) as $part) {
+    $kv = explode('=', trim($part), 2);
+    if (count($kv) === 2 && $kv[0] === 'ts') $ts = $kv[1];
+    if (count($kv) === 2 && $kv[0] === 'v1') $v1 = $kv[1];
+}
+$idPart = ctype_alnum($dataId) ? strtolower($dataId) : $dataId;
+$manifest = 'id:' . $idPart . ';request-id:' . $reqId . ';ts:' . $ts . ';';
+$expected = hash_hmac('sha256', $manifest, $secret);
+if ($v1 === '' || !hash_equals($expected, $v1)) out(401, ['ok' => false, 'error' => 'Assinatura inválida.']);
+
+if ($dataId === '') out(200, ['ok' => true, 'ignored' => true]);
+
+function parse_ref($ref) {
+    // "C|email|curso" = compra avulsa; "T|email" = assinatura de todos os cursos
+    $p = explode('|', (string)$ref, 3);
+    if ($p[0] === 'C' && count($p) === 3) return ['tipo' => 'curso', 'email' => strtolower($p[1]), 'curso' => $p[2]];
+    if ($p[0] === 'T' && count($p) === 2) return ['tipo' => 'todos', 'email' => strtolower($p[1]), 'curso' => null];
+    return null;
+}
+
+// Aplica uma mudança de acesso a um aluno, guardando o id do aviso para não repetir
+function grant($email, $fn, $avisoId) {
+    return users_modify(function (&$users) use ($email, $fn, $avisoId) {
+        if (!isset($users[$email])) return false;
+        $seen = $users[$email]['mp_seen'] ?? [];
+        if (in_array($avisoId, $seen, true)) return true;
+        $fn($users[$email]);
+        $seen[] = $avisoId;
+        $users[$email]['mp_seen'] = array_slice($seen, -50);
+        return true;
+    });
+}
+
+$now = time();
+
+if ($type === 'payment') {
+    [$code, $p] = mp_request('GET', '/v1/payments/' . rawurlencode($dataId));
+    if ($code !== 200 || !is_array($p)) out(200, ['ok' => true, 'skipped' => 'consulta falhou']);
+    $ref = parse_ref($p['external_reference'] ?? '');
+    if (!$ref || $ref['tipo'] !== 'curso') out(200, ['ok' => true, 'skipped' => 'referência']);
+    $status = $p['status'] ?? '';
+    $email = $ref['email'];
+    $curso = $ref['curso'];
+
+    if ($status === 'approved') {
+        grant($email, function (&$u) use ($curso) {
+            if (($u['plan'] ?? '') === 'todos') return;
+            $u['plan'] = 'curso';
+            if (empty($u['course'])) $u['course'] = $curso;
+        }, 'pay-' . $dataId);
+    } elseif (in_array($status, ['refunded', 'charged_back', 'cancelled'], true)) {
+        grant($email, function (&$u) use ($curso) {
+            if (($u['course'] ?? null) === $curso && ($u['plan'] ?? '') === 'curso') {
+                $u['plan'] = 'none';
+                $u['course'] = null;
+            }
+        }, 'pay-' . $dataId . '-' . $status);
+    }
+    out(200, ['ok' => true]);
+}
+
+if ($type === 'subscription_preapproval') {
+    [$code, $s] = mp_request('GET', '/preapproval/' . rawurlencode($dataId));
+    if ($code !== 200 || !is_array($s)) out(200, ['ok' => true, 'skipped' => 'consulta falhou']);
+    $ref = parse_ref($s['external_reference'] ?? '');
+    if (!$ref || $ref['tipo'] !== 'todos') out(200, ['ok' => true, 'skipped' => 'referência']);
+    $status = $s['status'] ?? '';
+    $email = $ref['email'];
+
+    users_modify(function (&$users) use ($email, $status, $dataId, $now) {
+        if (!isset($users[$email])) return;
+        $users[$email]['mp_preapproval_id'] = $dataId;
+        $users[$email]['mp_preapproval_status'] = $status;
+        // Cancelada ou pausada: o acesso segue até o fim do período já pago (plan_expires_at não muda)
+        if ($status === 'authorized') {
+            $users[$email]['plan'] = 'todos';
+            if (($users[$email]['plan_expires_at'] ?? 0) < $now) {
+                $users[$email]['plan_expires_at'] = $now + DAYS_TODOS * 86400;
+            }
+        }
+    });
+    out(200, ['ok' => true]);
+}
+
+if ($type === 'subscription_authorized_payment') {
+    [$code, $ap] = mp_request('GET', '/authorized_payments/' . rawurlencode($dataId));
+    if ($code !== 200 || !is_array($ap)) out(200, ['ok' => true, 'skipped' => 'consulta falhou']);
+    if (($ap['status'] ?? '') !== 'approved') out(200, ['ok' => true]);
+
+    [$c2, $s] = mp_request('GET', '/preapproval/' . rawurlencode((string)($ap['preapproval_id'] ?? '')));
+    if ($c2 !== 200 || !is_array($s)) out(200, ['ok' => true, 'skipped' => 'assinatura não encontrada']);
+    $ref = parse_ref($s['external_reference'] ?? '');
+    if (!$ref || $ref['tipo'] !== 'todos') out(200, ['ok' => true, 'skipped' => 'referência']);
+    $email = $ref['email'];
+
+    // Cada cobrança aprovada estende o acesso por um mês a partir do vencimento atual (ou de hoje)
+    grant($email, function (&$u) use ($now) {
+        $u['plan'] = 'todos';
+        $base = max($now, (int)($u['plan_expires_at'] ?? 0));
+        $u['plan_expires_at'] = $base + DAYS_TODOS * 86400;
+    }, 'ap-' . $dataId);
+    out(200, ['ok' => true]);
+}
+
+out(200, ['ok' => true, 'ignored' => $type]);

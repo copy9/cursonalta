@@ -109,7 +109,7 @@
             '<div class="series-meta"><span>' + c.category + "</span><span>" + c.level + "</span><span>" + c.lessons + " aulas</span><span>" + c.duration + "</span></div>" +
             '<p class="series-desc">' + c.shortDescription + "</p>" +
             '<div class="hero-cta">' +
-              '<a id="hero-buy" href="cadastro.html?curso=' + c.id + '" class="btn btn-primary">Comprar por ' + formatBRL(c.price) + "</a>" +
+              '<a id="hero-buy" href="api/checkout.php?plano=curso&curso=' + c.id + '" class="btn btn-primary">Comprar por ' + formatBRL(c.price) + "</a>" +
               '<a href="#episodios" class="btn btn-light">Ver módulos</a>' +
             "</div>" +
           "</div>" +
@@ -132,12 +132,12 @@
             '<div class="panel buy-card" id="buy-card">' +
               '<p class="plan-label">Este curso</p>' +
               '<div class="price-big">' + formatBRL(c.price) + '</div>' +
-              '<a href="cadastro.html?plano=curso&curso=' + c.id + '" class="btn btn-ghost btn-block">Comprar este curso</a>' +
+              '<a href="api/checkout.php?plano=curso&curso=' + c.id + '" class="btn btn-ghost btn-block">Comprar este curso</a>' +
               '<div class="plan-divider"><span>ou</span></div>' +
               '<p class="plan-label">Todos os cursos</p>' +
               '<div class="price-big">' + formatBRL(window.ALL_ACCESS_PRICE) + ' <small>/mês</small></div>' +
               '<ul><li>Acesso a todos os cursos da plataforma</li><li>Cancele a renovação quando quiser</li></ul>' +
-              '<a href="cadastro.html?plano=todos" class="btn btn-primary btn-block">Assinar todos os cursos</a>' +
+              '<a href="api/checkout.php?plano=todos" class="btn btn-primary btn-block">Assinar todos os cursos</a>' +
               '<p class="guarantee">Pagamento seguro</p>' +
             "</div>" +
             '<div class="panel" style="margin-top:20px">' +
