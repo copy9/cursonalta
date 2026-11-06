@@ -180,6 +180,12 @@
         gridView.style.display = "none";
         rowsView.style.display = "block";
         var html = row("", window.COURSES);
+        var byCategory = function (list) {
+          return window.COURSES.filter(function (c) { return list.indexOf(c.category) !== -1; });
+        };
+        html += row("Para começar do zero", window.COURSES.filter(function (c) { return c.level === "Iniciante" || c.level === "Todos os níveis"; }));
+        html += row("Carreira e produtividade", byCategory(["Produtividade", "Idiomas", "Finanças", "Concursos"]));
+        html += row("Criatividade e tecnologia", byCategory(["Design", "Tecnologia", "Marketing"]));
         categories.slice(1).forEach(function (cat) {
           var catList = window.COURSES.filter(function (c) { return c.category === cat; });
           if (catList.length >= 3) html += row(cat, catList);
