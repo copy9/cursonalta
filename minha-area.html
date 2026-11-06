@@ -36,6 +36,12 @@
     .ma-bar { height:8px; background:#2c2c2c; border-radius:99px; overflow:hidden; margin-top:6px; }
     .ma-bar span { display:block; height:100%; background:var(--orange); border-radius:99px; }
     .ma-course .ma-bar { background:#ececec; }
+    .ma-actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+    .ma-pick { font:inherit; text-align:left; cursor:pointer; width:100%; padding:0; }
+    .ma-pick:disabled { opacity:.6; cursor:wait; }
+    .ma-pick .ma-course-foot b { color:var(--orange); }
+    .ma-continue .btn-ghost { color:#fff; border-color:#4a4a4a; background:transparent; }
+    .ma-continue .btn-ghost:hover { border-color:#fff; }
     .ma-meta { font-size:.85rem; color:#bdbdbd; }
     .ma-continue .btn { align-self:flex-start; margin-top:8px; }
 
@@ -128,23 +134,14 @@
 
   <section class="container ma-body" id="area-account" style="visibility:hidden">
     <div class="ma-main">
-      <article class="ma-continue">
-        <img src="assets/covers/policia-civil-pi-agente.png" alt="">
-        <div class="ma-continue-info">
-          <span class="ma-tag">Continue de onde parou</span>
-          <h2>Polícia Civil do Piauí: Agente</h2>
-          <p>Você ainda não começou este curso. Comece pela primeira aula e o seu progresso aparece aqui.</p>
-          <div class="ma-bar"><span style="width:0%"></span></div>
-          <div class="ma-meta">0% concluído</div>
-          <a class="btn btn-primary" href="curso.html?id=policia-civil-pi-agente">Começar o curso</a>
-        </div>
-      </article>
+      <div id="course-slot" hidden></div>
 
-      <div class="ma-head">
-        <h2>Seus cursos</h2>
-        <a href="cursos.html">Ver catálogo</a>
+      <div id="picker-slot" hidden>
+        <div class="ma-head"><h2>Escolha o seu curso</h2></div>
+        <p class="ma-sub" style="margin:-4px 0 18px">Seu plano dá acesso a um curso. Você pode trocar depois.</p>
+        <p id="pick-msg" role="alert" style="color:#b91c1c;font-weight:600;margin:0 0 12px"></p>
+        <div class="ma-grid" id="picker-grid"></div>
       </div>
-      <div class="ma-grid" id="area-list"></div>
     </div>
 
     <aside class="ma-side">
@@ -211,21 +208,5 @@
 <script src="js/auth.js"></script>
 <script src="js/rows.js"></script>
 <script src="js/drt-popup.js"></script>
-<script>
-  (function () {
-    var list = document.getElementById("area-list");
-    list.innerHTML = window.COURSES.map(function (c) {
-      return '<a class="ma-course" href="curso.html?id=' + c.id + '">' +
-               '<div class="ma-course-img">' + (c.cover ? '<img src="' + c.cover + '" alt="" loading="lazy">' : "") + "</div>" +
-               '<div class="ma-course-body">' +
-                 '<span class="ma-course-cat">' + c.category + "</span>" +
-                 "<strong>" + c.title + "</strong>" +
-                 '<div class="ma-bar"><span style="width:0%"></span></div>' +
-                 '<div class="ma-course-foot"><span>0% concluído</span><b>Abrir curso</b></div>' +
-               "</div>" +
-             "</a>";
-    }).join("");
-  })();
-</script>
 </body>
 </html>

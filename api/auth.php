@@ -80,7 +80,7 @@ if ($action === 'register') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 190) out(422, ['ok' => false, 'error' => 'Informe um e-mail válido.']);
     if (strlen($password) < 8 || strlen($password) > 200) out(422, ['ok' => false, 'error' => 'A senha precisa ter no mínimo 8 caracteres.']);
 
-    $user = ['name' => $name, 'email' => $email];
+    $user = ['name' => $name, 'email' => $email, 'course' => null];
     $exists = with_users($dataDir, $dataFile, function (&$users) use ($email, $name, $password, &$user) {
         if (isset($users[$email])) return true;
         $users[$email] = [
@@ -113,10 +113,29 @@ if ($action === 'login') {
     $ok = password_verify($password, $hash);
     if (!$found || !$ok) out(401, ['ok' => false, 'error' => 'E-mail ou senha incorretos.']);
 
-    $user = ['name' => $found['name'], 'email' => $found['email']];
+    $user = ['name' => $found['name'], 'email' => $found['email'], 'course' => isset($found['course']) ? $found['course'] : null];
     session_regenerate_id(true);
     $_SESSION['user'] = $user;
     out(200, ['ok' => true, 'user' => $user]);
+}
+
+// Escolha do curso do plano (um curso). Só aceita ids da lista abaixo.
+if ($action === 'course') {
+    if (empty($_SESSION['user'])) out(401, ['ok' => false, 'error' => 'Entre na sua conta.']);
+    $course = isset($body['course']) ? (string)$body['course'] : '';
+    $valid = [
+        'policia-civil-pi-agente', 'marketing-digital-do-zero', 'excel-para-produtividade',
+        'design-com-ia', 'ingles-para-negocios', 'financas-pessoais', 'programacao-web-iniciante',
+    ];
+    if (!in_array($course, $valid, true)) out(422, ['ok' => false, 'error' => 'Curso inválido.']);
+
+    $email = $_SESSION['user']['email'];
+    with_users($dataDir, $dataFile, function (&$users) use ($email, $course) {
+        if (isset($users[$email])) $users[$email]['course'] = $course;
+        return null;
+    });
+    $_SESSION['user']['course'] = $course;
+    out(200, ['ok' => true, 'user' => $_SESSION['user']]);
 }
 
 out(400, ['ok' => false, 'error' => 'Ação inválida.']);

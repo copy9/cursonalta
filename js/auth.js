@@ -84,8 +84,76 @@
         document.getElementById("area-email").textContent = r.user.email;
         document.getElementById("area-hello").textContent = "Olá, " + r.user.name.split(" ")[0];
         area.style.visibility = "visible";
+        renderCourse(r.user.course);
       })
       .catch(function () { window.location.replace("entrar.html"); });
+
+    // Mostra o curso escolhido, ou a tela para escolher um (plano de um curso)
+    function renderCourse(courseId) {
+      var slot = document.getElementById("course-slot");
+      var picker = document.getElementById("picker-slot");
+      var course = null;
+      window.COURSES.forEach(function (c) { if (c.id === courseId) course = c; });
+      if (!course) { slot.hidden = true; showPicker(); return; }
+      picker.hidden = true;
+      slot.hidden = false;
+      slot.innerHTML =
+        '<article class="ma-continue">' +
+          '<img src="' + course.cover + '" alt="">' +
+          '<div class="ma-continue-info">' +
+            '<span class="ma-tag">Seu curso</span>' +
+            "<h2>" + course.title + "</h2>" +
+            "<p>" + course.shortDescription + "</p>" +
+            '<div class="ma-bar"><span style="width:0%"></span></div>' +
+            '<div class="ma-meta">0% concluído</div>' +
+            '<div class="ma-actions">' +
+              '<a class="btn btn-primary" href="curso.html?id=' + course.id + '">Começar o curso</a>' +
+              '<button type="button" class="btn btn-ghost" id="change-course">Trocar de curso</button>' +
+            "</div>" +
+          "</div>" +
+        "</article>";
+      document.getElementById("change-course").addEventListener("click", function () {
+        slot.hidden = true;
+        showPicker();
+      });
+    }
+
+    function showPicker() {
+      var picker = document.getElementById("picker-slot");
+      var grid = document.getElementById("picker-grid");
+      picker.hidden = false;
+      grid.innerHTML = window.COURSES.map(function (c) {
+        return '<button type="button" class="ma-course ma-pick" data-id="' + c.id + '">' +
+                 '<div class="ma-course-img">' + (c.cover ? '<img src="' + c.cover + '" alt="" loading="lazy">' : "") + "</div>" +
+                 '<div class="ma-course-body">' +
+                   '<span class="ma-course-cat">' + c.category + "</span>" +
+                   "<strong>" + c.title + "</strong>" +
+                   '<div class="ma-course-foot"><span>' + formatBRL(c.price) + "/mês no plano</span><b>Escolher</b></div>" +
+                 "</div>" +
+               "</button>";
+      }).join("");
+      grid.querySelectorAll(".ma-pick").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var msg = document.getElementById("pick-msg");
+          btn.disabled = true;
+          fetch(API + "?action=course", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            credentials: "same-origin",
+            body: JSON.stringify({ course: btn.getAttribute("data-id") })
+          }).then(function (res) { return res.json(); })
+            .then(function (r) {
+              if (r.ok) { renderCourse(r.user.course); return; }
+              msg.textContent = r.error || "Não foi possível escolher o curso.";
+              btn.disabled = false;
+            })
+            .catch(function () {
+              msg.textContent = "Sem conexão com o servidor. Tente novamente.";
+              btn.disabled = false;
+            });
+        });
+      });
+    }
 
     var out = document.getElementById("logout-btn");
     if (out) {
