@@ -113,9 +113,9 @@ foreach ($body['courses'] as $c) {
     $ins = isset($c['instructor']) && is_array($c['instructor']) ? $c['instructor'] : [];
     $clean[] = [
         'id'               => $id,
-        'title'            => text(isset($c['title']) ? $c['title'] : '', 120, 'título', 3),
-        'shortDescription' => text(isset($c['shortDescription']) ? $c['shortDescription'] : '', 240, 'descrição curta', 3),
-        'description'      => text(isset($c['description']) ? $c['description'] : '', 2000, 'descrição', 3),
+        'title'            => text(isset($c['title']) ? $c['title'] : '', 200, 'título', 1),
+        'shortDescription' => text(isset($c['shortDescription']) ? $c['shortDescription'] : '', 1000, 'descrição curta', 0),
+        'description'      => text(isset($c['description']) ? $c['description'] : '', 10000, 'descrição', 0),
         'category'         => text(isset($c['category']) ? $c['category'] : '', 40, 'categoria', 2),
         'level'            => text(isset($c['level']) ? $c['level'] : '', 40, 'nível', 2),
         'instructor'       => [
