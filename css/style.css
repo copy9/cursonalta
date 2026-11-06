@@ -201,6 +201,21 @@ main > section:not(.banner):not(.stats):not(.rows):not(.page-hero):not(.series-h
 .input, .select { padding: 12px 14px; }
 #rows-view .row-track { padding-left: 0; padding-right: 0; scroll-padding: 0; }
 #rows-view .row-title { margin-left: 0; margin-right: 0; }
+
+/* Setas e arraste das fileiras */
+.row { position: relative; }
+.row-track { cursor: grab; }
+.row-track.dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+.row-nav { position: absolute; right: 4%; top: -6px; display: flex; gap: 8px; z-index: 3; }
+#rows-view .row-nav { right: 0; }
+.row-btn {
+  width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line-2); background: #fff;
+  color: var(--text); font-size: 1.6rem; line-height: 1; cursor: pointer; box-shadow: 0 6px 16px -8px rgba(15, 15, 40, .3);
+  transition: background .2s, color .2s, border-color .2s, opacity .2s;
+}
+.row-btn:hover:not(:disabled) { background: var(--accent); color: #fff; border-color: var(--accent); }
+.row-btn:disabled { opacity: .35; cursor: default; }
+@media (max-width: 760px) { .row-btn { width: 36px; height: 36px; font-size: 1.3rem; } .row-nav { top: -4px; } }
 .input, .select {
   width: 100%; padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid var(--line-2); background: var(--surface);
   color: var(--text); outline: none; transition: border-color .2s;
