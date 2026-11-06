@@ -50,7 +50,7 @@
       </div>
       <div class="player">
         <img class="banner-poster" id="banner-poster" alt="">
-        <span class="play" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span>
+        <a class="play" id="banner-play" href="curso.html" aria-label="Ver o curso em destaque"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></a>
         <div class="player-bar"><span></span></div>
       </div>
     </div>
@@ -61,7 +61,7 @@
     <div class="container stats-grid">
       <div><strong>7</strong><span>cursos disponíveis</span></div>
       <div><strong>100%</strong><span>em vídeo, no seu ritmo</span></div>
-      <div><strong>R$ 39,90</strong><span>mensalidade a partir de</span></div>
+      <div><strong>R$ 14,99</strong><span>por mês, por curso</span></div>
       <div><strong>Sem fidelidade</strong><span>cancele quando quiser</span></div>
     </div>
   </section>
@@ -142,6 +142,33 @@
     </div>
   </section>
 
+  <!-- PLANOS -->
+  <section class="plans-sec" id="planos">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Planos</span>
+        <h2>Escolha como quer estudar</h2>
+        <p>Assine um curso ou tenha acesso a todos. Cancele a renovação quando quiser.</p>
+      </div>
+      <div class="plans">
+        <div class="plan">
+          <span class="plan-tag">Por curso</span>
+          <div class="plan-price">R$ 14,99<small>/mês</small></div>
+          <p>Acesso a um curso à sua escolha.</p>
+          <ul><li>Um curso à sua escolha</li><li>Cancele a renovação quando quiser</li></ul>
+          <a class="btn btn-ghost btn-block" href="cursos.html">Escolher um curso</a>
+        </div>
+        <div class="plan plan-featured">
+          <span class="plan-tag">Todos os cursos</span>
+          <div class="plan-price">R$ 29,90<small>/mês</small></div>
+          <p>Acesso a todos os cursos da plataforma.</p>
+          <ul><li>Todos os cursos da plataforma</li><li>Cancele a renovação quando quiser</li></ul>
+          <a class="btn btn-primary btn-block" href="cadastro.html?plano=todos">Assinar todos os cursos</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- FAQ -->
   <section style="padding-top:0" id="perguntas">
     <div class="container">
@@ -150,7 +177,7 @@
         <h2>Perguntas comuns</h2>
       </div>
       <div class="faq">
-        <details open><summary>Como funciona a assinatura?</summary><p>Você escolhe o curso e paga uma mensalidade. Enquanto a assinatura estiver ativa, o acesso ao curso continua liberado.</p></details>
+        <details open><summary>Como funciona a assinatura?</summary><p>Você escolhe entre assinar um curso por R$ 14,99 por mês ou todos os cursos da plataforma por R$ 29,90 por mês. Enquanto a assinatura estiver ativa, o acesso continua liberado.</p></details>
         <details><summary>Onde eu assisto às aulas?</summary><p>Após a confirmação do pagamento, você recebe acesso ao grupo exclusivo do curso no Telegram, onde ficam todas as aulas.</p></details>
         <details><summary>Posso cancelar quando quiser?</summary><p>Sim. Você pode cancelar a renovação a qualquer momento. O acesso segue até o fim do período já pago.</p></details>
         <details><summary>Preciso de experiência prévia?</summary><p>Cada curso indica o nível de conhecimento necessário. Muitos foram pensados para quem está começando do zero.</p></details>
@@ -208,6 +235,7 @@
       featured.category + " · " + featured.level + " · " + featured.duration;
     document.getElementById("banner-desc").textContent = featured.shortDescription;
     document.getElementById("banner-cta").href = "curso.html?id=" + featured.id;
+    document.getElementById("banner-play").href = "curso.html?id=" + featured.id;
 
     // Fileiras: uma por categoria, mais uma com todos os cursos
     function poster(c) {

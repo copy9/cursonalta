@@ -360,6 +360,28 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   outline: 3px solid var(--accent); outline-offset: 3px;
 }
 
+
+/* Planos: por curso e todos os cursos */
+.plans-sec { padding: 96px 0; }
+.plans { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; max-width: 880px; margin: 0 auto; }
+.plan { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 36px; display: flex; flex-direction: column; }
+.plan p { color: var(--muted); margin-bottom: 16px; }
+.plan ul { list-style: none; display: grid; gap: 8px; margin-bottom: 26px; font-size: .95rem; }
+.plan li::before { content: "✓ "; color: var(--accent); font-weight: 700; }
+.plan .btn { margin-top: auto; }
+.plan-tag { font-family: var(--mono); font-size: .75rem; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.plan-price { font-size: 3rem; font-weight: 800; letter-spacing: -0.04em; margin: 14px 0 8px; }
+.plan-price small { font-size: 1rem; color: var(--muted); font-weight: 500; }
+.plan-featured { background: #141414; border-color: #141414; color: #fff; }
+.plan-featured p, .plan-featured li { color: #c9c6bf; }
+.plan-featured .plan-price small { color: #a6a6a6; }
+.plan-featured .plan-tag { color: #ff8a52; }
+.plan-label { font-family: var(--mono); font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.plan-divider { position: relative; text-align: center; margin: 22px 0; }
+.plan-divider::before { content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 1px; background: var(--line); }
+.plan-divider span { position: relative; background: #fff; padding: 0 12px; color: var(--muted); font-size: .85rem; }
+@media (max-width: 760px) { .plans { grid-template-columns: 1fr; } .plan { padding: 28px; } .plans-sec { padding: 70px 0; } }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }

@@ -12,7 +12,7 @@ window.COURSES = [
     category: "Concursos",
     level: "Todos os níveis",
     instructor: { name: "Equipe Cursonalta", role: "Conteúdo de concursos", initials: "CN" },
-    price: 49.9,
+    price: 14.99,
     duration: "581h 4min",
     lessons: 0,
     cover: "assets/covers/policia-civil-pi-agente.png",
@@ -34,7 +34,7 @@ window.COURSES = [
     category: "Marketing",
     level: "Iniciante",
     instructor: { name: "Marco Antônio", role: "Estrategista digital", initials: "MA" },
-    price: 49.9,
+    price: 14.99,
     duration: "12h 30min",
     lessons: 36,
     cover: "assets/covers/marketing-digital-do-zero.png",
@@ -63,7 +63,7 @@ window.COURSES = [
     category: "Produtividade",
     level: "Todos os níveis",
     instructor: { name: "Juliana Prado", role: "Analista de dados", initials: "JP" },
-    price: 39.9,
+    price: 14.99,
     duration: "8h 15min",
     lessons: 28,
     cover: "assets/covers/excel-para-produtividade.png",
@@ -91,7 +91,7 @@ window.COURSES = [
     category: "Design",
     level: "Intermediário",
     instructor: { name: "Rafael Lima", role: "Designer e criador de conteúdo", initials: "RL" },
-    price: 59.9,
+    price: 14.99,
     duration: "10h 00min",
     lessons: 30,
     cover: "assets/covers/design-com-ia.png",
@@ -119,7 +119,7 @@ window.COURSES = [
     category: "Idiomas",
     level: "Intermediário",
     instructor: { name: "Camila Duarte", role: "Professora de inglês", initials: "CD" },
-    price: 69.9,
+    price: 14.99,
     duration: "15h 45min",
     lessons: 42,
     cover: "assets/covers/ingles-para-negocios.png",
@@ -147,7 +147,7 @@ window.COURSES = [
     category: "Finanças",
     level: "Iniciante",
     instructor: { name: "Paulo Henrique", role: "Planejador financeiro", initials: "PH" },
-    price: 44.9,
+    price: 14.99,
     duration: "6h 40min",
     lessons: 22,
     cover: "assets/covers/financas-pessoais.png",
@@ -175,7 +175,7 @@ window.COURSES = [
     category: "Tecnologia",
     level: "Iniciante",
     instructor: { name: "Lucas Ferreira", role: "Desenvolvedor front-end", initials: "LF" },
-    price: 79.9,
+    price: 14.99,
     duration: "20h 10min",
     lessons: 54,
     cover: "assets/covers/programacao-web-iniciante.png",
@@ -197,6 +197,8 @@ window.COURSES = [
   }
 ];
 
+
+window.ALL_ACCESS_PRICE = 29.9;
 
 window.formatBRL = function (value) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });

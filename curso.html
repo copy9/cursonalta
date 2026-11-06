@@ -129,15 +129,14 @@
           "</div>" +
           '<aside class="series-side">' +
             '<div class="panel buy-card">' +
-              '<p style="margin:0;color:var(--muted);font-weight:600">Assinatura mensal</p>' +
-              '<div class="price-big">' + formatBRL(c.price) + " <small>/mês</small></div>" +
-              "<ul>" +
-                "<li>Acesso a todas as " + c.lessons + " aulas</li>" +
-                "<li>Grupo exclusivo no Telegram</li>" +
-                "<li>Novas aulas incluídas</li>" +
-                "<li>Cancele a renovação quando quiser</li>" +
-              "</ul>" +
-              '<a href="cadastro.html?curso=' + c.id + '" class="btn btn-primary btn-block">Assinar este curso</a>' +
+              '<p class="plan-label">Este curso</p>' +
+              '<div class="price-big">' + formatBRL(c.price) + ' <small>/mês</small></div>' +
+              '<a href="cadastro.html?plano=curso&curso=' + c.id + '" class="btn btn-ghost btn-block">Assinar este curso</a>' +
+              '<div class="plan-divider"><span>ou</span></div>' +
+              '<p class="plan-label">Todos os cursos</p>' +
+              '<div class="price-big">' + formatBRL(window.ALL_ACCESS_PRICE) + ' <small>/mês</small></div>' +
+              '<ul><li>Acesso a todos os cursos da plataforma</li><li>Cancele a renovação quando quiser</li></ul>' +
+              '<a href="cadastro.html?plano=todos" class="btn btn-primary btn-block">Assinar todos os cursos</a>' +
               '<p class="guarantee">Pagamento seguro</p>' +
             "</div>" +
             '<div class="panel" style="margin-top:20px">' +
