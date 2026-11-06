@@ -388,3 +388,46 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 }
 .pop-close:hover { color: var(--text); }
 @media (max-width: 520px) { .pop { padding: 30px 22px 22px; } .pop h2 { font-size: 1.5rem; } .pop-actions .btn { width: 100%; } }
+
+/* Pop-up do DRT: visual sóbrio, escuro e elegante (sem imagens de terceiros) */
+.pop {
+  background: #141414; color: #f5f3ef; border-radius: 20px; width: min(500px, 100%);
+  padding: 44px 40px 30px; border: 1px solid rgba(255, 255, 255, .08);
+  box-shadow: 0 50px 100px -30px rgba(0, 0, 0, .7);
+  background-image: radial-gradient(420px 220px at 100% 0%, rgba(217, 72, 15, .22), transparent 70%);
+}
+.pop::before {
+  content: ""; position: absolute; left: 40px; top: 0; width: 56px; height: 3px; background: var(--accent); border-radius: 0 0 3px 3px;
+}
+.pop-kicker {
+  display: inline-block; font-size: .72rem; letter-spacing: .18em; text-transform: uppercase; color: #ff8a52; font-weight: 600;
+}
+.pop h2 {
+  font-family: Georgia, "Times New Roman", serif; font-weight: 700; font-size: 2rem; line-height: 1.15;
+  letter-spacing: -0.01em; color: #fff; margin: 14px 0 14px;
+}
+.pop p { color: #bdbab3; font-size: .98rem; line-height: 1.6; }
+.pop-lead { margin-bottom: 20px; }
+.pop-steps { list-style: none; display: grid; gap: 12px; margin-bottom: 20px; }
+.pop-steps li { display: flex; align-items: center; gap: 14px; color: #f5f3ef; font-size: .95rem; }
+.pop-steps span {
+  flex: none; width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--accent);
+  color: #ff8a52; display: grid; place-items: center; font-family: "JetBrains Mono", monospace; font-size: .8rem;
+}
+.pop-contact { font-size: .86rem; color: #9a978f; margin-bottom: 22px; }
+.pop-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 18px; }
+.pop-actions .btn { font-size: .95rem; }
+.btn-ghost-dark {
+  display: inline-flex; align-items: center; justify-content: center; padding: 12px 22px; border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .25); color: #f5f3ef; font-weight: 600; font-size: .95rem;
+  transition: border-color .2s, color .2s;
+}
+.btn-ghost-dark:hover { border-color: #ff8a52; color: #ff8a52; }
+.pop-note { font-size: .74rem !important; color: #7d7a73 !important; line-height: 1.5 !important; }
+.pop-close { color: #9a978f; }
+.pop-close:hover { color: #fff; }
+@media (max-width: 520px) {
+  .pop { padding: 40px 24px 24px; }
+  .pop h2 { font-size: 1.6rem; }
+  .pop-actions .btn, .pop-actions .btn-ghost-dark { width: 100%; }
+}

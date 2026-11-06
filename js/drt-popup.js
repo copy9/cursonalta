@@ -5,6 +5,7 @@
 (function () {
   var KEY = "drt-popup-seen";
   var WA = "https://wa.me/3530830124771?text=Quero%20tirar%20minha%20DRT";
+  var PAGE = "https://drt.cursonalta.com/";
 
   function seen() {
     try { return sessionStorage.getItem(KEY) === "1"; } catch (e) { return false; }
@@ -19,12 +20,18 @@
     wrap.innerHTML =
       '<div class="pop" role="dialog" aria-modal="true" aria-labelledby="pop-title">' +
         '<button type="button" class="pop-close" aria-label="Fechar">&times;</button>' +
-        '<span class="kicker">Serviço parceiro</span>' +
-        '<h2 id="pop-title">Precisa tirar sua DRT de jornalista?</h2>' +
-        '<p>Assessoria para o requerimento da sua DRT, do início à carteira. Atendimento direto pelo WhatsApp.</p>' +
+        '<span class="pop-kicker">Para jornalistas</span>' +
+        '<h2 id="pop-title">Você já escreve a sua história. Falta o registro.</h2>' +
+        '<p class="pop-lead">A DRT é o documento que reconhece a sua profissão. Cuidamos do requerimento inteiro, do protocolo à carteira, para você não perder tempo com a papelada.</p>' +
+        '<ul class="pop-steps">' +
+          '<li><span>1</span>Você envia os documentos</li>' +
+          '<li><span>2</span>Organizamos o requerimento</li>' +
+          '<li><span>3</span>Acompanhamos até a carteira</li>' +
+        '</ul>' +
+        '<p class="pop-contact">Atendimento direto com o jornalista responsável pelo processo, pelo WhatsApp.</p>' +
         '<div class="pop-actions">' +
-          '<a class="btn btn-primary" href="' + WA + '" target="_blank" rel="noopener">Falar no WhatsApp</a>' +
-          '<a class="btn btn-light" href="https://drt.cursonalta.com/">Conhecer o serviço</a>' +
+          '<a class="btn btn-primary" href="' + WA + '" target="_blank" rel="noopener">Quero tirar minha DRT</a>' +
+          '<a class="btn btn-ghost-dark" href="' + PAGE + '">Ver como funciona</a>' +
         '</div>' +
         '<p class="pop-note">Serviço de organização e protocolo do requerimento. A emissão depende de análise do órgão competente, e não há garantia de aprovação ou de prazo.</p>' +
       '</div>';
