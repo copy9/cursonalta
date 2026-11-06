@@ -203,7 +203,8 @@ window.COURSES = STATIC_COURSES;
 (function () {
   try {
     var x = new XMLHttpRequest();
-    x.open("GET", "api/courses.php", false);
+    // Parâmetro único evita que o navegador use uma lista antiga
+    x.open("GET", "api/courses.php?t=" + Date.now(), false);
     x.send(null);
     if (x.status === 200) {
       var j = JSON.parse(x.responseText);

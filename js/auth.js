@@ -138,6 +138,16 @@
       var picker = document.getElementById("picker-slot");
       var course = null;
       window.COURSES.forEach(function (c) { if (c.id === courseId) course = c; });
+      // Curso escolhido que saiu da lista do site: avisa, sem liberar nova escolha
+      if (!course && courseId) {
+        picker.hidden = true;
+        slot.hidden = false;
+        slot.innerHTML = '<div class="ma-card"><span class="ma-tag">Seu curso</span>' +
+          '<strong style="display:block;font-size:1.1rem">Este curso não está mais disponível.</strong>' +
+          '<p style="color:var(--muted);margin:8px 0 0">Fale com a gente pelas dúvidas para resolver o seu acesso.</p>' +
+          '<a href="index.html#perguntas" style="color:var(--orange);font-weight:600;display:inline-block;margin-top:12px">Ver dúvidas</a></div>';
+        return;
+      }
       if (!course) { slot.hidden = true; showPicker(); return; }
       picker.hidden = true;
       slot.hidden = false;
