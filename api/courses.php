@@ -54,6 +54,26 @@ function int_in($v, $min, $max, $field) {
     return (int)$v;
 }
 
+// Capa: caminho de imagem da pasta assets/covers (do repositório) ou enviada pelo painel (uploads/covers)
+function cover_path($v) {
+    $s = trim((string)$v);
+    if ($s === '') return '';
+    if (!preg_match('#^(assets/covers|uploads/covers)/[A-Za-z0-9._-]+\.(png|jpe?g|webp)$#i', $s)) {
+        out(422, ['ok' => false, 'error' => 'Capa inválida. Envie a imagem pelo painel.']);
+    }
+    return $s;
+}
+
+// Link do grupo do Telegram: só endereços t.me ou telegram.me
+function telegram_link($v) {
+    $s = trim((string)$v);
+    if ($s === '') return '';
+    if (!preg_match('#^https://(t\.me|telegram\.me)/[A-Za-z0-9_+/-]{3,}$#', $s)) {
+        out(422, ['ok' => false, 'error' => 'Link do Telegram inválido. Use um endereço como https://t.me/seugrupo.']);
+    }
+    return $s;
+}
+
 $clean = [];
 $ids = [];
 foreach ($body['courses'] as $c) {
@@ -103,7 +123,8 @@ foreach ($body['courses'] as $c) {
         'price'            => round($price, 2),
         'duration'         => text(isset($c['duration']) ? $c['duration'] : '', 40, 'duração'),
         'lessons'          => int_in(isset($c['lessons']) ? $c['lessons'] : 0, 0, 999, 'aulas'),
-        'cover'            => text(isset($c['cover']) ? $c['cover'] : '', 200, 'capa'),
+        'cover'            => cover_path(isset($c['cover']) ? $c['cover'] : ''),
+        'telegram'         => telegram_link(isset($c['telegram']) ? $c['telegram'] : ''),
         'gradient'         => 'linear-gradient(135deg, #141414, #2a2a2a)',
         'learn'            => $learn,
         'modules'          => $modules,

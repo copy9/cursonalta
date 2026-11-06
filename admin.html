@@ -130,7 +130,18 @@
         '<div class="adm-field"><label for="f-price">Preço no plano de um curso (R$ por mês)</label><input id="f-price" type="number" step="0.01" min="0" value="' + esc(c.price) + '"></div>' +
         '<div class="adm-field"><label for="f-duration">Duração total</label><input id="f-duration" value="' + esc(c.duration) + '" placeholder="Ex.: 12h 30min"></div>' +
         '<div class="adm-field"><label for="f-lessons">Número de aulas</label><input id="f-lessons" type="number" min="0" value="' + esc(c.lessons) + '"></div>' +
-        '<div class="adm-field"><label for="f-cover">Capa (caminho do arquivo)</label><input id="f-cover" value="' + esc(c.cover) + '" placeholder="assets/covers/nome.png"><small>A imagem precisa estar no repositório, na pasta assets/covers.</small></div>' +
+        '<div class="adm-field full"><label>Capa do curso</label>' +
+          '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">' +
+            '<img id="f-preview" alt="" src="' + esc(c.cover ? c.cover : "") + '" style="width:120px;aspect-ratio:16/10;object-fit:cover;border-radius:10px;background:#141414;' + (c.cover ? "" : "display:none;") + '">' +
+            '<div style="display:grid;gap:8px;flex:1;min-width:220px">' +
+              '<input type="file" id="f-file" accept="image/jpeg,image/png,image/webp">' +
+              '<button type="button" class="btn btn-ghost btn-sm" id="btn-upload" style="justify-self:start">Enviar imagem da capa</button>' +
+              '<small id="f-cover-msg" style="color:var(--muted)">JPG, PNG ou WebP, até 4 MB. Recomendado 1600 x 1000 px.</small>' +
+            '</div>' +
+          '</div>' +
+          '<input id="f-cover" type="hidden" value="' + esc(c.cover) + '">' +
+        '</div>' +
+        '<div class="adm-field full"><label for="f-telegram">Link do grupo no Telegram</label><input id="f-telegram" value="' + esc(c.telegram || "") + '" placeholder="https://t.me/seugrupo"><small>Aparece para o aluno que tem acesso ao curso, na área do aluno.</small></div>' +
         '<div class="adm-field full"><label for="f-short">Descrição curta (aparece nos cartões)</label><textarea id="f-short" rows="2">' + esc(c.shortDescription) + '</textarea></div>' +
         '<div class="adm-field full"><label for="f-desc">Descrição completa</label><textarea id="f-desc" rows="4">' + esc(c.description) + '</textarea></div>' +
       '</div>' +
@@ -192,6 +203,7 @@
       duration: v("f-duration").trim(),
       lessons: parseInt(v("f-lessons"), 10) || 0,
       cover: v("f-cover").trim(),
+      telegram: v("f-telegram").trim(),
       gradient: "linear-gradient(135deg, #141414, #2a2a2a)",
       learn: learn,
       modules: modules
@@ -234,6 +246,51 @@
       selected = -1;
       render();
       msg("Curso removido. Clique em Salvar no site para publicar.", "ok");
+    });
+
+    // Identificador: preenche sozinho com o título, até o admin digitar um próprio
+    var ft = document.getElementById("f-title");
+    var fi = document.getElementById("f-id");
+    if (ft && fi && !fi.disabled) {
+      ft.addEventListener("input", function () {
+        if (!fi.getAttribute("data-touched")) fi.value = slugify(ft.value);
+      });
+      fi.addEventListener("input", function () { fi.setAttribute("data-touched", "1"); });
+    }
+
+    // Capa: envia o arquivo escolhido e preenche o caminho automaticamente
+    var up = document.getElementById("btn-upload");
+    if (up) up.addEventListener("click", function () {
+      var input = document.getElementById("f-file");
+      var cmsg = document.getElementById("f-cover-msg");
+      if (!input.files || !input.files[0]) { cmsg.textContent = "Escolha uma imagem primeiro."; cmsg.style.color = "#b91c1c"; return; }
+      var fd = new FormData();
+      fd.append("file", input.files[0]);
+      up.disabled = true;
+      up.textContent = "Enviando...";
+      fetch("api/upload.php", { method: "POST", credentials: "same-origin", body: fd })
+        .then(function (res) { return res.json(); })
+        .then(function (r) {
+          up.disabled = false;
+          up.textContent = "Enviar imagem da capa";
+          if (r.ok) {
+            document.getElementById("f-cover").value = r.path;
+            var pv = document.getElementById("f-preview");
+            pv.src = r.path + "?v=" + Date.now();
+            pv.style.display = "block";
+            cmsg.textContent = "Capa enviada. Clique em Aplicar no curso para guardar.";
+            cmsg.style.color = "#1f7a3a";
+          } else {
+            cmsg.textContent = r.error || "Não foi possível enviar a imagem.";
+            cmsg.style.color = "#b91c1c";
+          }
+        })
+        .catch(function () {
+          up.disabled = false;
+          up.textContent = "Enviar imagem da capa";
+          cmsg.textContent = "Sem conexão com o servidor. Tente de novo.";
+          cmsg.style.color = "#b91c1c";
+        });
     });
 
     var save = document.getElementById("btn-save");

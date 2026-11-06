@@ -152,6 +152,7 @@
             '<div class="ma-meta">0% concluído</div>' +
             '<div class="ma-actions">' +
               '<a class="btn btn-primary" href="curso.html?id=' + course.id + '">Começar o curso</a>' +
+              (course.telegram ? '<a class="btn btn-ghost" href="' + course.telegram + '" target="_blank" rel="noopener">Entrar no grupo do Telegram</a>' : "") +
             "</div>" +
           "</div>" +
         "</article>";
