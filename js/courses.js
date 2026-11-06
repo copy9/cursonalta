@@ -198,7 +198,7 @@ window.COURSES = [
 ];
 
 
-window.ALL_ACCESS_PRICE = 29.9;
+window.ALL_ACCESS_PRICE = 24.99;
 
 window.formatBRL = function (value) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
