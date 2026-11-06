@@ -264,25 +264,61 @@
     });
   }
 
-  // Só o admin entra
+  function enter() {
+    courses = (window.COURSES || []).map(function (c) { return JSON.parse(JSON.stringify(c)); });
+    render();
+  }
+
+  // Login próprio do administrador (não passa pela tela de entrar do site)
+  function showLogin(note) {
+    root.innerHTML =
+      '<div class="adm-card adm-restricted" style="text-align:left">' +
+        '<h1 style="margin:0 0 6px">Login do administrador</h1>' +
+        '<p style="color:var(--muted);margin:0 0 18px">Entre com a conta de administrador para acessar o painel.</p>' +
+        '<p id="adm-login-msg" class="adm-msg err" role="alert">' + esc(note || "") + "</p>" +
+        '<form id="adm-login" style="display:grid;gap:14px">' +
+          '<div class="adm-field"><label for="a-email">E-mail</label><input id="a-email" type="email" autocomplete="username" required></div>' +
+          '<div class="adm-field"><label for="a-pass">Senha</label><input id="a-pass" type="password" autocomplete="current-password" required></div>' +
+          '<button type="submit" class="btn btn-primary btn-block" id="a-submit">Entrar no painel</button>' +
+        "</form>" +
+      "</div>";
+    document.getElementById("adm-login").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var btn = document.getElementById("a-submit");
+      var out = document.getElementById("adm-login-msg");
+      btn.disabled = true;
+      btn.textContent = "Aguarde...";
+      fetch("api/auth.php?action=login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "same-origin",
+        body: JSON.stringify({
+          email: document.getElementById("a-email").value,
+          password: document.getElementById("a-pass").value
+        })
+      }).then(function (res) { return res.json(); })
+        .then(function (r) {
+          if (r.ok && r.user && r.user.role === "admin") { enter(); return; }
+          out.textContent = r.ok ? "Esta conta não tem acesso de administrador." : (r.error || "Não foi possível entrar.");
+          btn.disabled = false;
+          btn.textContent = "Entrar no painel";
+        })
+        .catch(function () {
+          out.textContent = "Sem conexão com o servidor. Tente de novo.";
+          btn.disabled = false;
+          btn.textContent = "Entrar no painel";
+        });
+    });
+  }
+
+  // Abre o painel se já houver sessão de admin; senão mostra o login do administrador
   fetch("api/auth.php?action=me", { credentials: "same-origin" })
     .then(function (res) { return res.json(); })
     .then(function (r) {
-      if (!r.ok || r.user.role !== "admin") {
-        root.innerHTML =
-          '<div class="adm-card adm-restricted">' +
-            "<h1>Acesso restrito</h1>" +
-            "<p>Esta área é só para o administrador do site.</p>" +
-            '<p><a class="btn btn-primary" href="entrar.html">Entrar</a></p>' +
-          "</div>";
-        return;
-      }
-      courses = (window.COURSES || []).map(function (c) { return JSON.parse(JSON.stringify(c)); });
-      render();
+      if (r.ok && r.user && r.user.role === "admin") { enter(); return; }
+      showLogin("");
     })
-    .catch(function () {
-      root.innerHTML = '<p>Não foi possível carregar o painel. Recarregue a página.</p>';
-    });
+    .catch(function () { showLogin("Não foi possível verificar o acesso. Recarregue a página."); });
 })();
 </script>
 </body>
