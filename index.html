@@ -42,6 +42,11 @@
 
 <main>
   <!-- BANNER EM DESTAQUE (preenchido por JavaScript) -->
+  <style>
+    .banner-dots { display:flex; gap:8px; margin-top:18px; }
+    .banner-dot { width:10px; height:10px; border-radius:99px; border:0; background:rgba(20,20,20,.25); cursor:pointer; padding:0; }
+    .banner-dot.on { background:var(--orange); width:26px; }
+  </style>
   <section class="banner" id="banner">
     <div class="banner-bg" id="banner-bg"></div>
     <div class="container banner-inner">
@@ -50,6 +55,7 @@
         <h1 id="banner-title">Aprenda do jeito certo</h1>
         <p class="banner-meta" id="banner-meta"></p>
         <p class="banner-desc" id="banner-desc"></p>
+        <div class="banner-dots" id="banner-dots" aria-label="Escolher destaque"></div>
         <div class="hero-cta">
           <a href="#" class="btn btn-primary" id="banner-cta">Ver curso</a>
           <a href="cursos.html" class="btn btn-light">Todos os cursos</a>
@@ -258,21 +264,58 @@
   (function () {
     var courses = window.COURSES;
 
-    // Banner: o primeiro curso com capa vira o destaque
-    var featured = courses.find(function (c) { return c.cover; }) || courses[0];
-    document.getElementById("banner-bg").style.background = featured.gradient;
-    var bannerPoster = document.getElementById("banner-poster");
-    if (featured.cover) {
-      bannerPoster.src = featured.cover;
-    } else {
-      bannerPoster.style.display = "none";
+    // Banner em rodízio: troca de curso a cada 7 segundos, pausa quando o mouse está em cima
+    var slides = courses.filter(function (c) { return c.cover; });
+    if (!slides.length) slides = courses.slice();
+    var current = 0;
+    var dotsEl = document.getElementById("banner-dots");
+    var timer = null;
+
+    function show(i) {
+      current = (i + slides.length) % slides.length;
+      var featured = slides[current];
+      document.getElementById("banner-bg").style.background = featured.gradient;
+      var bannerPoster = document.getElementById("banner-poster");
+      if (featured.cover) {
+        bannerPoster.src = featured.cover;
+        bannerPoster.style.display = "";
+      } else {
+        bannerPoster.style.display = "none";
+      }
+      document.getElementById("banner-title").textContent = featured.title;
+      document.getElementById("banner-meta").textContent =
+        featured.category + " · " + featured.level + " · " + featured.duration;
+      document.getElementById("banner-desc").textContent = featured.shortDescription;
+      document.getElementById("banner-cta").href = "curso.html?id=" + featured.id;
+      document.getElementById("banner-play").href = "curso.html?id=" + featured.id;
+      if (dotsEl) {
+        dotsEl.innerHTML = slides.map(function (c, k) {
+          return '<button type="button" class="banner-dot' + (k === current ? " on" : "") + '" data-i="' + k + '" aria-label="Destaque ' + (k + 1) + '"></button>';
+        }).join("");
+      }
     }
-    document.getElementById("banner-title").textContent = featured.title;
-    document.getElementById("banner-meta").textContent =
-      featured.category + " · " + featured.level + " · " + featured.duration;
-    document.getElementById("banner-desc").textContent = featured.shortDescription;
-    document.getElementById("banner-cta").href = "curso.html?id=" + featured.id;
-    document.getElementById("banner-play").href = "curso.html?id=" + featured.id;
+
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    function start() {
+      stop();
+      if (slides.length < 2) return;
+      timer = setInterval(function () { show(current + 1); }, 7000);
+    }
+
+    if (dotsEl) dotsEl.addEventListener("click", function (e) {
+      var b = e.target.closest(".banner-dot");
+      if (!b) return;
+      show(parseInt(b.getAttribute("data-i"), 10));
+      start();
+    });
+    var bannerEl = document.getElementById("banner");
+    if (bannerEl) {
+      bannerEl.addEventListener("mouseenter", stop);
+      bannerEl.addEventListener("mouseleave", start);
+    }
+
+    show(0);
+    start();
 
     // Fileiras: uma por categoria, mais uma com todos os cursos
     function poster(c) {
