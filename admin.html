@@ -465,7 +465,6 @@
     var del = document.getElementById("btn-delete");
     if (del) del.addEventListener("click", function () {
       if (courses.length <= 1) return msg("O site precisa ter pelo menos um curso.", "err");
-      if (!window.confirm("Excluir este curso? Ele some do site ao salvar.")) return;
       courses.splice(selected, 1);
       selected = -1;
       render();
