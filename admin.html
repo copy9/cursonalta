@@ -13,6 +13,7 @@
   <style>
     .adm { --ink:#141414; --orange:#d9480f; --bg:#f6f5f2; --line:#e7e4de; --muted:#6b6b6b; background:var(--bg); min-height:80vh; padding:24px 0 96px; color:var(--ink); }
     .adm * { box-sizing:border-box; }
+    .adm-sticky { position:sticky; top:68px; z-index:40; background:var(--bg); padding:10px 0 0; margin:-10px 0 0; }
     .adm-bar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px; }
     .adm h1 { margin:0; font-size:1.5rem; }
     .adm-actions-top { display:flex; flex-wrap:wrap; gap:8px; }
@@ -59,8 +60,8 @@
     .adm-table td.num, .adm-table th.num { text-align:right; white-space:nowrap; }
     .adm-scroll { overflow-x:auto; }
     .adm-bar-row { display:grid; grid-template-columns:70px 1fr 110px; gap:10px; align-items:center; font-size:.85rem; padding:5px 0; }
-    .adm-bar { background:#efece6; border-radius:6px; height:14px; overflow:hidden; }
-    .adm-bar i { display:block; height:100%; background:var(--orange); border-radius:6px; }
+    .adm-meter { background:#efece6; border-radius:6px; height:14px; overflow:hidden; }
+    .adm-meter i { display:block; height:100%; background:var(--orange); border-radius:6px; }
     .adm-note { background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; border-radius:12px; padding:12px 14px; margin-bottom:16px; font-size:.9rem; }
     .adm-pill { display:inline-block; font-size:.75rem; font-weight:600; padding:2px 8px; border-radius:99px; background:#efece6; }
     .adm-pill.ok { background:#dcfce7; color:#166534; }
@@ -269,7 +270,7 @@
     var bars = stats.months.map(function (m) {
       var pct = Math.round((m.amount / max) * 100);
       var lbl = m.m.split("-").reverse().join("/");
-      return '<div class="adm-bar-row"><span>' + esc(lbl) + '</span><div class="adm-bar"><i style="width:' + pct + '%"></i></div><span style="text-align:right">' + brl(m.amount) + ' · ' + m.count + '</span></div>';
+      return '<div class="adm-bar-row"><span>' + esc(lbl) + '</span><div class="adm-meter"><i style="width:' + pct + '%"></i></div><span style="text-align:right">' + brl(m.amount) + ' · ' + m.count + '</span></div>';
     }).join("");
     var courseRows = stats.courses.length ? stats.courses.map(function (c) {
       return '<tr><td>' + esc(c.title) + '</td><td class="num">' + brl(c.price) + '</td><td class="num">' + c.students + '</td><td class="num">' + c.sales + '</td></tr>';
@@ -363,14 +364,14 @@
     }
 
     root.innerHTML =
-      '<div class="adm-bar"><h1>Painel do admin</h1>' +
+      '<div class="adm-sticky"><div class="adm-bar"><h1>Painel do admin</h1>' +
         '<div class="adm-actions-top">' +
           '<a class="btn btn-ghost btn-sm" href="admin-config.html">Integrações</a>' +
           '<button type="button" class="btn btn-ghost btn-sm" id="btn-new">Novo curso</button>' +
           '<button type="button" class="btn btn-primary btn-sm" id="btn-save">Salvar no site</button>' +
         '</div></div>' +
       '<p id="adm-msg" class="adm-msg" role="status"></p>' +
-      tabs + body + footer;
+      tabs + '</div>' + body + footer;
     bind();
   }
 
