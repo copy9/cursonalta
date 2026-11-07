@@ -132,7 +132,8 @@
             '<div class="panel buy-card" id="buy-card">' +
               '<p class="plan-label">Este curso</p>' +
               '<div class="price-big">' + formatBRL(c.price) + '</div>' +
-              '<a href="api/checkout.php?plano=curso&curso=' + c.id + '" class="btn btn-ghost btn-block">Comprar este curso</a>' +
+              '<label class="check" style="margin:14px 0 12px;font-size:.92rem;line-height:1.4"><input type="checkbox" id="bump-chk"> Adicionar acesso a todos os cursos por 1 mês (+ ' + formatBRL(window.PRICE_BUMP) + ')</label>' +
+              '<a href="api/checkout.php?plano=curso&curso=' + c.id + '" class="btn btn-ghost btn-block" onclick="this.href=\'api/checkout.php?plano=curso&curso=' + c.id + '\'+(document.getElementById(\'bump-chk\').checked?\'&bump=1\':\'\')">Comprar este curso</a>' +
               '<div class="plan-divider"><span>ou</span></div>' +
               '<p class="plan-label">Todos os cursos</p>' +
               '<div class="price-big">' + formatBRL(window.ALL_ACCESS_PRICE) + ' <small>/mês</small></div>' +

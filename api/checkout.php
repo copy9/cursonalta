@@ -65,13 +65,27 @@ if ($plano === 'todos') {
     }
     if ($titulo === null) out(422, ['ok' => false, 'error' => 'Este curso não está disponível.']);
 
-    [$code, $res] = mp_request('POST', '/checkout/preferences', [
-        'items' => [[
-            'title'      => 'Curso: ' . $titulo,
-            'quantity'   => 1,
-            'unit_price' => $preco,
+    // Order bump: mesmo pagamento libera também todos os cursos por 1 mês
+    $items = [[
+        'id'          => 'curso-' . $curso,
+        'title'       => 'Curso: ' . $titulo,
+        'quantity'    => 1,
+        'unit_price'  => $preco,
+        'currency_id' => 'BRL',
+    ]];
+    $bump = isset($_GET['bump']) && $_GET['bump'] === '1';
+    if ($bump) {
+        $items[] = [
+            'id'          => 'bump-todos',
+            'title'       => 'Acesso a todos os cursos por 1 mês',
+            'quantity'    => 1,
+            'unit_price'  => (float)PRICE_BUMP,
             'currency_id' => 'BRL',
-        ]],
+        ];
+    }
+    [$code, $res] = mp_request('POST', '/checkout/preferences', [
+        'items'    => $items,
+        'metadata' => ['bump' => $bump ? 'todos' : ''],
         'payer'              => ['email' => $email],
         'external_reference' => 'C|' . $email . '|' . $curso,
         'back_urls'          => [
@@ -85,8 +99,15 @@ if ($plano === 'todos') {
 
 $url = is_array($res) ? ($res['init_point'] ?? null) : null;
 if ($code < 200 || $code >= 300 || !$url) {
-    error_log('Mercado Pago checkout falhou: HTTP ' . $code);
-    header('Location: /minha-area.html?erro=pagamento');
+    error_log('Mercado Pago checkout falhou: HTTP ' . $code . ' ' . json_encode($res));
+    // Mostra ao aluno o motivo que o Mercado Pago informou (texto curto, sem dados sensíveis)
+    $motivo = '';
+    if (is_array($res)) {
+        $motivo = (string)($res['message'] ?? '');
+        if ($motivo === '' && !empty($res['cause'][0]['description'])) $motivo = (string)$res['cause'][0]['description'];
+    }
+    $motivo = mb_substr(trim($motivo), 0, 160);
+    header('Location: /minha-area.html?erro=pagamento&motivo=' . urlencode($motivo));
     exit;
 }
 

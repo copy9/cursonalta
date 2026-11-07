@@ -53,20 +53,23 @@ if ($type === 'payment') {
     $email = $ref['email'];
     $curso = $ref['curso'];
 
+    $bump = payment_has_bump($p);
     if ($status === 'approved') {
-        grant($email, function (&$u) use ($curso) {
+        grant($email, function (&$u) use ($curso, $bump) {
             if (($u['plan'] ?? '') !== 'todos') $u['plan'] = 'curso';
             $list = user_courses($u);
             if (!in_array($curso, $list, true)) $list[] = $curso;
             $u['courses'] = $list;
             $u['course'] = $list[0];
+            if ($bump) give_todos($u);
         }, 'pay-' . $dataId);
     } elseif (in_array($status, ['refunded', 'charged_back', 'cancelled'], true)) {
-        grant($email, function (&$u) use ($curso) {
+        grant($email, function (&$u) use ($curso, $bump) {
             $list = array_values(array_filter(user_courses($u), function ($c) use ($curso) { return $c !== $curso; }));
             $u['courses'] = $list;
             $u['course'] = $list[0] ?? null;
             if (!$list && ($u['plan'] ?? '') === 'curso') $u['plan'] = 'none';
+            if ($bump && ($u['plan'] ?? '') === 'todos') { $u['plan'] = 'none'; $u['plan_expires_at'] = 0; }
         }, 'pay-' . $dataId . '-' . $status);
     }
     out(200, ['ok' => true]);

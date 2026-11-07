@@ -6,6 +6,7 @@ require_once __DIR__ . '/config.php';
 
 const PRICE_CURSO = 14.99;   // um curso, pagamento único, acesso até concluir
 const PRICE_TODOS = 24.99;   // todos os cursos, assinatura mensal
+const PRICE_BUMP  = 10.00;    // order bump: acesso a todos os cursos por 1 mês, junto com um curso avulso
 const DAYS_TODOS  = 32;      // um mês + margem de atraso antes de remover do grupo
 
 if (!function_exists('out')) {
@@ -158,7 +159,8 @@ function sync_pending_purchases($email) {
             $status = $pay['status'] ?? '';
             if ($status === 'approved') {
                 $avisoId = 'pay-' . (string)($pay['id'] ?? '');
-                users_modify(function (&$users) use ($email, $curso, $avisoId) {
+                $bump = payment_has_bump($pay);
+                users_modify(function (&$users) use ($email, $curso, $avisoId, $bump) {
                     if (!isset($users[$email])) return;
                     $seen = $users[$email]['mp_seen'] ?? [];
                     if (in_array($avisoId, $seen, true)) return;
@@ -167,6 +169,7 @@ function sync_pending_purchases($email) {
                     if (!in_array($curso, $list2, true)) $list2[] = $curso;
                     $users[$email]['courses'] = $list2;
                     $users[$email]['course'] = $list2[0];
+                    if ($bump) give_todos($users[$email]);
                     $seen[] = $avisoId;
                     $users[$email]['mp_seen'] = array_slice($seen, -50);
                 });
@@ -184,4 +187,21 @@ function sync_pending_purchases($email) {
             }));
         });
     }
+}
+
+// Order bump: o aluno marcou "todos os cursos por 1 mês" junto com o curso avulso (mesmo pagamento)
+function payment_has_bump($pay) {
+    if (($pay['metadata']['bump'] ?? '') === 'todos') return true;
+    foreach (($pay['additional_info']['items'] ?? []) as $it) {
+        if (($it['id'] ?? '') === 'bump-todos') return true;
+    }
+    return false;
+}
+
+// Libera o plano de todos os cursos por DAYS_TODOS a partir de hoje (ou soma ao que já existe)
+function give_todos(&$u) {
+    $now = time();
+    $base = max($now, (int)($u['plan_expires_at'] ?? 0));
+    $u['plan'] = 'todos';
+    $u['plan_expires_at'] = $base + DAYS_TODOS * 86400;
 }
