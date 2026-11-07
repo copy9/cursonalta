@@ -114,7 +114,7 @@
     { g: ["forma"], a: "Os pagamentos são feitos pelo Mercado Pago, por Pix ou cartão. As opções de parcelamento, se houver, aparecem na tela de pagamento do Mercado Pago." },
     { g: ["pagar"], a: "Para pagar, escolha o curso ou o pacote e siga as etapas na tela de pagamento do Mercado Pago. Pix e cartão são aceitos." },
     { g: ["reembolso"], a: "Não tenho essa informação aqui. Para pedir reembolso ou tirar dúvida sobre uma compra, fale com a equipe pelos canais de contato do site." },
-    { g: ["falha", "pagar"], a: "Se o pagamento foi aprovado, o acesso é liberado em instantes. Confira na Minha área, em \"Seus cursos\", e aguarde alguns minutos: a página atualiza sozinha. Se continuar sem acesso, recarregue a página ou fale com a equipe." },
+    { g: ["falha", "pagar"], a: "Se o pagamento foi aprovado, o acesso é liberado em instantes. Confira na Minha área, em \"Seus cursos\". Aguarde até 5 minutos e atualize a página. Se continuar sem acesso, fale com a equipe." },
     { g: ["falha", "acesso"], a: "Se o acesso não aparece, confira na Minha área, em \"Seus cursos\". Aguarde alguns minutos e recarregue a página. Se continuar, fale com a equipe pelos canais do site." },
     { g: ["falha", "curso"], a: "Se o curso não aparece, confira na Minha área, em \"Seus cursos\". Depois do pagamento aprovado, ele é liberado em instantes. Se não aparecer, fale com a equipe." },
     { g: ["tempo", "avulso"], a: "O curso avulso fica com você até concluir. Não tem prazo para terminar." },
