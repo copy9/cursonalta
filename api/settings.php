@@ -9,7 +9,7 @@ header('Cache-Control: no-store');
 
 require_once __DIR__ . '/lib.php';
 
-const ALLOWED_KEYS = ['mp_access_token', 'mp_webhook_secret', 'tg_bot_token', 'tg_group_todos', 'cron_token', 'ai_api_key'];
+const ALLOWED_KEYS = ['mp_access_token', 'mp_webhook_secret', 'tg_bot_token', 'tg_group_todos', 'cron_token'];
 
 ini_set('session.gc_maxlifetime', '2592000');
 session_set_cookie_params(['lifetime' => 2592000, 'path' => '/', 'secure' => true, 'httponly' => true, 'samesite' => 'Lax']);

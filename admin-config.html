@@ -60,10 +60,6 @@
       <label for="cron_token">Senha do cron (qualquer texto longo)</label>
       <input id="cron_token" type="password" autocomplete="off">
       <div id="st-cron_token"></div>
-
-      <label for="ai_api_key">Chave da API de IA (chatbot de dúvidas)</label>
-      <input id="ai_api_key" type="password" autocomplete="off">
-      <div id="st-ai_api_key"></div>
     </div>
 
     <button id="save" class="btn btn-primary" type="button">Salvar</button>
@@ -85,7 +81,7 @@
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
-  var FIELDS = ['mp_access_token', 'mp_webhook_secret', 'tg_bot_token', 'tg_group_todos', 'cron_token', 'ai_api_key'];
+  var FIELDS = ['mp_access_token', 'mp_webhook_secret', 'tg_bot_token', 'tg_group_todos', 'cron_token'];
 
   function showStatus(saved) {
     FIELDS.forEach(function (k) {
