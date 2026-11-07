@@ -8,36 +8,56 @@
   <link rel="icon" href="assets/logo.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <style>
-    .adm { --ink:#141414; --orange:#d9480f; --bg:#f6f5f2; --line:#e7e4de; --muted:#5f5f5f; background:var(--bg); min-height:70vh; padding:32px 0 72px; color:var(--ink); }
-    .adm-top { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:14px; margin-bottom:22px; }
-    .adm h1 { margin:0; font-size:1.7rem; }
-    .adm-msg { min-height:1.2em; font-weight:600; margin:0 0 14px; }
+    .adm { --ink:#141414; --orange:#d9480f; --bg:#f6f5f2; --line:#e7e4de; --muted:#6b6b6b; background:var(--bg); min-height:80vh; padding:24px 0 96px; color:var(--ink); }
+    .adm * { box-sizing:border-box; }
+    .adm-bar { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:12px; margin-bottom:18px; }
+    .adm h1 { margin:0; font-size:1.5rem; }
+    .adm-actions-top { display:flex; flex-wrap:wrap; gap:8px; }
+    .adm-tabs { display:flex; gap:6px; border-bottom:1px solid var(--line); margin-bottom:18px; overflow-x:auto; }
+    .adm-tab { background:none; border:0; border-bottom:3px solid transparent; padding:10px 14px; font:inherit; font-weight:600; color:var(--muted); cursor:pointer; white-space:nowrap; }
+    .adm-tab.on { color:var(--ink); border-bottom-color:var(--orange); }
+    .adm-msg { min-height:1.2em; font-weight:600; margin:0 0 14px; font-size:.95rem; }
     .adm-msg.ok { color:#1f7a3a; }
     .adm-msg.err { color:#b91c1c; }
-    .adm-cols { display:grid; grid-template-columns:320px minmax(0,1fr); gap:24px; align-items:start; }
-    .adm-card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:20px; min-width:0; }
-    .adm-list { display:grid; gap:8px; }
-    .adm-item { text-align:left; background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 14px; cursor:pointer; font:inherit; color:var(--ink); }
-    .adm-item.on { border-color:var(--orange); box-shadow:0 0 0 2px rgba(217,72,15,.15); }
-    .adm-item strong { display:block; font-size:.95rem; }
-    .adm-item small { color:var(--muted); }
+    .adm-card { background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px; min-width:0; }
+    .adm-search { width:100%; font:inherit; padding:11px 14px; border:1px solid #cfcac2; border-radius:12px; background:#fff; margin-bottom:16px; }
+    .adm-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(250px,1fr)); gap:14px; }
+    .adm-item { text-align:left; background:#fff; border:1px solid var(--line); border-radius:14px; padding:0; overflow:hidden; cursor:pointer; font:inherit; color:var(--ink); display:flex; flex-direction:column; }
+    .adm-item:hover { border-color:#cfcac2; }
+    .adm-item .thumb { width:100%; aspect-ratio:16/10; background:#141414 center/cover no-repeat; }
+    .adm-item .body { padding:12px 14px 14px; display:grid; gap:4px; }
+    .adm-item strong { font-size:.98rem; line-height:1.25; }
+    .adm-item small { color:var(--muted); font-size:.8rem; }
+    .adm-empty { color:var(--muted); padding:24px 0; text-align:center; }
+    .adm-back { margin-bottom:14px; }
+    .adm-sec { border:1px solid var(--line); border-radius:14px; padding:18px; margin-bottom:14px; background:#fff; }
+    .adm-sec h2 { font-size:1rem; margin:0 0 14px; }
     .adm-grid2 { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
     .adm-field { display:grid; gap:6px; min-width:0; }
     .adm-field.full { grid-column:1 / -1; }
     .adm-field label { font-size:.85rem; font-weight:600; }
     .adm-field input, .adm-field textarea, .adm-field select { font:inherit; padding:10px 12px; border:1px solid #cfcac2; border-radius:10px; background:#fff; color:var(--ink); width:100%; min-width:0; }
+    .adm-field input:disabled { background:#f3f1ed; color:var(--muted); }
     .adm-field textarea { min-height:90px; resize:vertical; }
     .adm-field small { color:var(--muted); font-size:.78rem; }
-    .adm-h { font-size:1rem; margin:22px 0 10px; }
-    .adm-actions { display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; margin-top:22px; }
+    .adm-footbar { position:fixed; left:0; right:0; bottom:0; background:#fff; border-top:1px solid var(--line); padding:12px 16px; display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; z-index:20; }
+    .adm-footbar .grp { display:flex; gap:10px; flex-wrap:wrap; }
     .adm-danger { color:#b91c1c; border-color:#e0b4b4; }
     .adm-restricted { max-width:520px; margin:60px auto; text-align:center; }
-    @media (max-width: 860px) {
-      .adm-cols { grid-template-columns:1fr; }
+    .adm-access { max-width:560px; }
+    @media (max-width: 700px) {
       .adm-grid2 { grid-template-columns:1fr; }
+      .adm-grid { grid-template-columns:1fr 1fr; gap:10px; }
+      .adm h1 { font-size:1.3rem; }
+      .adm-sec { padding:14px; }
+    }
+    @media (max-width: 460px) {
+      .adm-grid { grid-template-columns:1fr; }
+      .adm-footbar .grp { width:100%; }
+      .adm-footbar .btn { flex:1; }
     }
   </style>
 </head>
@@ -73,8 +93,10 @@
 (function () {
   var root = document.getElementById("adm-root");
   var courses = [];
-  var selected = -1;   // índice do curso em edição; -1 = novo curso
-  var isNew = false;
+  var selected = -1;      // índice do curso em edição
+  var isNew = false;      // criando um curso novo
+  var tab = "cursos";     // "cursos" ou "acesso"
+  var query = "";         // busca na lista de cursos
 
   function esc(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -107,98 +129,136 @@
     el.className = "adm-msg " + (kind || "");
   }
 
+  function coverStyle(c) {
+    return c.cover ? "background-image:url('" + esc(c.cover) + "')" : "";
+  }
+
   function listHTML() {
-    return courses.map(function (c, i) {
-      return '<button type="button" class="adm-item' + (i === selected && !isNew ? " on" : "") + '" data-i="' + i + '">' +
-               "<strong>" + esc(c.title) + "</strong>" +
-               "<small>" + esc(c.category) + " · R$ " + Number(c.price).toFixed(2).replace(".", ",") + "</small>" +
+    var q = query.trim().toLowerCase();
+    var items = courses.map(function (c, i) { return { c: c, i: i }; }).filter(function (x) {
+      if (!q) return true;
+      return (x.c.title + " " + x.c.category).toLowerCase().indexOf(q) !== -1;
+    });
+    if (!courses.length) return '<p class="adm-empty">Nenhum curso ainda. Clique em "Novo curso" para começar.</p>';
+    if (!items.length) return '<p class="adm-empty">Nenhum curso encontrado para "' + esc(query) + '".</p>';
+    return '<div class="adm-grid">' + items.map(function (x) {
+      var c = x.c;
+      return '<button type="button" class="adm-item" data-i="' + x.i + '">' +
+               '<div class="thumb" style="' + coverStyle(c) + '"></div>' +
+               '<div class="body"><strong>' + esc(c.title || "(sem título)") + '</strong>' +
+               '<small>' + esc(c.category || "Sem categoria") + '</small></div>' +
              "</button>";
-    }).join("");
+    }).join("") + "</div>";
   }
 
   function formHTML(c) {
     var modules = (c.modules || []).map(function (m) { return m.title + " | " + m.lessons + " | " + m.time; }).join("\n");
     var learn = (c.learn || []).join("\n");
     return '' +
-      '<div class="adm-grid2">' +
+      '<section class="adm-sec"><h2>Informações do curso</h2><div class="adm-grid2">' +
         '<div class="adm-field full"><label for="f-title">Título</label><input id="f-title" value="' + esc(c.title) + '"></div>' +
         '<div class="adm-field"><label for="f-id">Identificador (link do curso)</label>' +
           '<input id="f-id" value="' + esc(c.id) + '" ' + (isNew ? "" : "disabled") + '>' +
-          '<small>' + (isNew ? "Gerado pelo título. Use só letras minúsculas, números e hífen." : "Não muda depois de criado.") + '</small></div>' +
+          '<small>' + (isNew ? "Gerado pelo título. Só letras minúsculas, números e hífen." : "Não muda depois de criado.") + '</small></div>' +
         '<div class="adm-field"><label for="f-category">Categoria</label><input id="f-category" value="' + esc(c.category) + '" placeholder="Ex.: Marketing"></div>' +
         '<div class="adm-field"><label for="f-level">Nível</label><input id="f-level" value="' + esc(c.level) + '" placeholder="Ex.: Iniciante"></div>' +
-        '<div class="adm-field"><label for="f-price">Preço de um curso (R$, pagamento único)</label><input id="f-price" type="number" step="0.01" min="0" value="' + esc(c.price) + '"></div>' +
+        '<div class="adm-field"><label for="f-price">Preço (R$, pagamento único)</label><input id="f-price" type="number" step="0.01" min="0" value="' + esc(c.price) + '"></div>' +
         '<div class="adm-field"><label for="f-duration">Duração total</label><input id="f-duration" value="' + esc(c.duration) + '" placeholder="Ex.: 12h 30min"></div>' +
         '<div class="adm-field"><label for="f-lessons">Número de aulas</label><input id="f-lessons" type="number" min="0" value="' + esc(c.lessons) + '"></div>' +
-        '<div class="adm-field full"><label>Capa do curso</label>' +
-          '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">' +
-            '<img id="f-preview" alt="" src="' + esc(c.cover ? c.cover : "") + '" style="width:120px;aspect-ratio:16/10;object-fit:cover;border-radius:10px;background:#141414;' + (c.cover ? "" : "display:none;") + '">' +
-            '<div style="display:grid;gap:8px;flex:1;min-width:220px">' +
-              '<input type="file" id="f-file" accept="image/jpeg,image/png,image/webp">' +
-              '<button type="button" class="btn btn-ghost btn-sm" id="btn-upload" style="justify-self:start">Enviar imagem da capa</button>' +
-              '<small id="f-cover-msg" style="color:var(--muted)">JPG, PNG ou WebP, até 4 MB. Recomendado 1600 x 1000 px.</small>' +
-            '</div>' +
+        '<div class="adm-field full"><label for="f-telegram">Link do grupo no Telegram</label><input id="f-telegram" value="' + esc(c.telegram || "") + '" placeholder="https://t.me/seugrupo"><small>Aparece para o aluno que tem acesso ao curso.</small></div>' +
+      '</div></section>' +
+
+      '<section class="adm-sec"><h2>Capa</h2>' +
+        '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">' +
+          '<img id="f-preview" alt="" src="' + esc(c.cover ? c.cover : "") + '" style="width:160px;aspect-ratio:16/10;object-fit:cover;border-radius:10px;background:#141414;' + (c.cover ? "" : "display:none;") + '">' +
+          '<div style="display:grid;gap:8px;flex:1;min-width:220px">' +
+            '<input type="file" id="f-file" accept="image/jpeg,image/png,image/webp">' +
+            '<button type="button" class="btn btn-ghost btn-sm" id="btn-upload" style="justify-self:start">Enviar imagem da capa</button>' +
+            '<small id="f-cover-msg" style="color:var(--muted)">JPG, PNG ou WebP, até 4 MB. Recomendado 1600 x 1000 px.</small>' +
           '</div>' +
-          '<input id="f-cover" type="hidden" value="' + esc(c.cover) + '">' +
         '</div>' +
-        '<div class="adm-field full"><label for="f-telegram">Link do grupo no Telegram</label><input id="f-telegram" value="' + esc(c.telegram || "") + '" placeholder="https://t.me/seugrupo"><small>Aparece para o aluno que tem acesso ao curso, na área do aluno.</small></div>' +
+        '<input id="f-cover" type="hidden" value="' + esc(c.cover) + '">' +
+      '</section>' +
+
+      '<section class="adm-sec"><h2>Textos</h2><div class="adm-grid2">' +
         '<div class="adm-field full"><label for="f-short">Descrição curta (aparece nos cartões)</label><textarea id="f-short" rows="2">' + esc(c.shortDescription) + '</textarea></div>' +
         '<div class="adm-field full"><label for="f-desc">Descrição completa</label><textarea id="f-desc" rows="4">' + esc(c.description) + '</textarea></div>' +
-      '</div>' +
-      '<h3 class="adm-h">Professor</h3>' +
-      '<div class="adm-grid2">' +
+        '<div class="adm-field full"><label for="f-learn">O que o aluno vai aprender (um item por linha)</label><textarea id="f-learn" rows="4">' + esc(learn) + '</textarea></div>' +
+      '</div></section>' +
+
+      '<section class="adm-sec"><h2>Professor</h2><div class="adm-grid2">' +
         '<div class="adm-field"><label for="f-iname">Nome</label><input id="f-iname" value="' + esc(c.instructor.name) + '"></div>' +
         '<div class="adm-field"><label for="f-irole">Cargo</label><input id="f-irole" value="' + esc(c.instructor.role) + '"></div>' +
         '<div class="adm-field"><label for="f-iinit">Iniciais (2 letras)</label><input id="f-iinit" maxlength="3" value="' + esc(c.instructor.initials) + '"></div>' +
-      '</div>' +
-      '<h3 class="adm-h">O que o aluno vai aprender</h3>' +
-      '<div class="adm-field"><textarea id="f-learn" rows="5" placeholder="Um item por linha">' + esc(learn) + '</textarea></div>' +
-      '<h3 class="adm-h">Módulos</h3>' +
-      '<div class="adm-field"><textarea id="f-modules" rows="6" placeholder="Título do módulo | número de aulas | duração&#10;Ex.: Fundamentos | 6 | 1h 40min">' + esc(modules) + '</textarea></div>' +
-      '<div class="adm-actions">' +
-        '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
-          '<button type="button" class="btn btn-primary" id="btn-apply">Aplicar no curso</button>' +
-          (isNew ? "" : '<button type="button" class="btn btn-ghost adm-danger" id="btn-delete">Excluir curso</button>') +
-        '</div>' +
-        '<button type="button" class="btn btn-ghost" id="btn-cancel">Cancelar</button>' +
-      '</div>';
+      '</div></section>' +
+
+      '<section class="adm-sec"><h2>Módulos</h2>' +
+        '<div class="adm-field"><label for="f-modules">Um módulo por linha: título | aulas | duração</label>' +
+        '<textarea id="f-modules" rows="5" placeholder="Fundamentos | 6 | 1h 40min">' + esc(modules) + '</textarea></div>' +
+      '</section>';
   }
 
+  function accessHTML() {
+    return '<div class="adm-card adm-access">' +
+      '<h2 style="font-size:1.05rem;margin:0 0 6px">Liberar acesso de aluno</h2>' +
+      '<p style="color:var(--muted);font-size:.9rem;margin:0 0 16px">A pessoa precisa ter conta com este e-mail. O acesso aparece na área dela na hora.</p>' +
+      '<div style="display:grid;gap:14px">' +
+        '<div class="adm-field"><label for="ac-email">E-mail do aluno</label><input id="ac-email" type="email" placeholder="aluno@email.com"></div>' +
+        '<div class="adm-field"><label for="ac-plan">Plano</label><select id="ac-plan"><option value="curso">Um curso</option><option value="todos">Todos os cursos</option></select></div>' +
+        '<div class="adm-field" id="ac-course-wrap"><label for="ac-course">Curso liberado</label><select id="ac-course">' +
+          courses.map(function (c) { return '<option value="' + esc(c.id) + '">' + esc(c.title) + "</option>"; }).join("") +
+        '</select></div>' +
+        '<p id="ac-msg" class="adm-msg" role="status" style="margin:0"></p>' +
+        '<button type="button" class="btn btn-primary" id="btn-access" style="justify-self:start">Liberar acesso</button>' +
+      "</div></div>";
+  }
+
+  function editing() { return isNew || selected >= 0; }
+
   function render() {
+    var tabs =
+      '<div class="adm-tabs" role="tablist">' +
+        '<button type="button" class="adm-tab' + (tab === "cursos" ? " on" : "") + '" id="tab-cursos">Cursos</button>' +
+        '<button type="button" class="adm-tab' + (tab === "acesso" ? " on" : "") + '" id="tab-acesso">Acesso de alunos</button>' +
+      "</div>";
+
+    var body;
+    if (tab === "acesso") {
+      body = accessHTML();
+    } else if (editing()) {
+      body = '<button type="button" class="btn btn-ghost btn-sm adm-back" id="btn-cancel">← Voltar para a lista</button>' +
+             formHTML(isNew ? blank() : courses[selected]);
+    } else {
+      body = '<div class="adm-card">' +
+               '<input id="adm-q" class="adm-search" type="search" placeholder="Buscar curso pelo título ou categoria" value="' + esc(query) + '">' +
+               '<div id="adm-list">' + listHTML() + "</div>" +
+             "</div>";
+    }
+
+    var footer = "";
+    if (tab === "cursos" && editing()) {
+      footer = '<div class="adm-footbar">' +
+        '<div class="grp">' +
+          '<button type="button" class="btn btn-primary" id="btn-apply">Aplicar no curso</button>' +
+          (isNew ? "" : '<button type="button" class="btn btn-ghost adm-danger" id="btn-delete">Excluir</button>') +
+        '</div>' +
+        '<div class="grp"><button type="button" class="btn btn-ghost" id="btn-cancel2">Cancelar</button></div>' +
+      "</div>";
+    }
+
     root.innerHTML =
-      '<div class="adm-top"><h1>Painel do admin</h1>' +
-        '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
-          '<a class="btn btn-ghost" href="admin-config.html">Integrações</a>' +
-          '<button type="button" class="btn btn-ghost" id="btn-new">Novo curso</button>' +
-          '<button type="button" class="btn btn-primary" id="btn-save">Salvar no site</button>' +
+      '<div class="adm-bar"><h1>Painel do admin</h1>' +
+        '<div class="adm-actions-top">' +
+          '<a class="btn btn-ghost btn-sm" href="admin-config.html">Integrações</a>' +
+          '<button type="button" class="btn btn-ghost btn-sm" id="btn-new">Novo curso</button>' +
+          '<button type="button" class="btn btn-primary btn-sm" id="btn-save">Salvar no site</button>' +
         '</div></div>' +
       '<p id="adm-msg" class="adm-msg" role="status"></p>' +
-      '<div class="adm-cols">' +
-        '<div>' +
-          '<div class="adm-card"><div class="adm-list">' + listHTML() + '</div></div>' +
-          '<div class="adm-card" style="margin-top:20px">' +
-            '<h3 class="adm-h" style="margin-top:0">Liberar acesso de aluno</h3>' +
-            '<p style="color:var(--muted);font-size:.88rem;margin:0 0 12px">A pessoa precisa ter conta com este e-mail. O acesso aparece na área dela na hora.</p>' +
-            '<div style="display:grid;gap:12px">' +
-              '<div class="adm-field"><label for="ac-email">E-mail do aluno</label><input id="ac-email" type="email" placeholder="aluno@email.com"></div>' +
-              '<div class="adm-field"><label for="ac-plan">Plano</label><select id="ac-plan"><option value="curso">Um curso</option><option value="todos">Todos os cursos</option></select></div>' +
-              '<div class="adm-field" id="ac-course-wrap"><label for="ac-course">Curso liberado</label><select id="ac-course">' +
-                courses.map(function (c) { return '<option value="' + esc(c.id) + '">' + esc(c.title) + "</option>"; }).join("") +
-              '</select></div>' +
-              '<p id="ac-msg" class="adm-msg" role="status" style="margin:0"></p>' +
-              '<button type="button" class="btn btn-primary" id="btn-access" style="justify-self:start">Liberar acesso</button>' +
-            "</div>" +
-          "</div>" +
-        "</div>" +
-        '<div class="adm-card" id="adm-editor">' +
-          (selected < 0 && !isNew
-            ? '<p style="color:var(--muted)">Escolha um curso na lista para editar, ou crie um novo.</p>'
-            : formHTML(isNew ? blank() : courses[selected])) +
-        "</div>" +
-      "</div>";
+      tabs + body + footer;
     bind();
   }
 
+  // Monta o curso a partir do formulário
   function readForm() {
     var v = function (id) { return document.getElementById(id).value; };
     var learn = v("f-learn").split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
@@ -226,20 +286,30 @@
     };
   }
 
+  function goList() { selected = -1; isNew = false; msg(""); render(); }
+
   function bind() {
-    root.querySelectorAll(".adm-item").forEach(function (b) {
-      b.addEventListener("click", function () {
-        selected = parseInt(b.getAttribute("data-i"), 10);
-        isNew = false;
-        msg("");
-        render();
-      });
+    var t1 = document.getElementById("tab-cursos");
+    if (t1) t1.addEventListener("click", function () { tab = "cursos"; msg(""); render(); });
+    var t2 = document.getElementById("tab-acesso");
+    if (t2) t2.addEventListener("click", function () { tab = "acesso"; msg(""); render(); });
+
+    // Busca: atualiza só a lista, sem perder o foco do campo
+    var q = document.getElementById("adm-q");
+    if (q) q.addEventListener("input", function () {
+      query = q.value;
+      document.getElementById("adm-list").innerHTML = listHTML();
+      bindItems();
     });
+    bindItems();
+
     var nw = document.getElementById("btn-new");
-    if (nw) nw.addEventListener("click", function () { isNew = true; selected = -1; msg(""); render(); });
+    if (nw) nw.addEventListener("click", function () { tab = "cursos"; isNew = true; selected = -1; msg(""); render(); });
 
     var cancel = document.getElementById("btn-cancel");
-    if (cancel) cancel.addEventListener("click", function () { selected = -1; isNew = false; msg(""); render(); });
+    if (cancel) cancel.addEventListener("click", goList);
+    var cancel2 = document.getElementById("btn-cancel2");
+    if (cancel2) cancel2.addEventListener("click", goList);
 
     var apply = document.getElementById("btn-apply");
     if (apply) apply.addEventListener("click", function () {
@@ -250,10 +320,10 @@
       if (isNew) { courses.push(c); selected = courses.length - 1; }
       else { courses[selected] = c; }
       isNew = false;
+      selected = -1;
       render();
       // Publica na hora: o curso aparece no site assim que você aplica
-      var sv = document.getElementById("btn-save");
-      if (sv) sv.click();
+      document.getElementById("btn-save").click();
     });
 
     var del = document.getElementById("btn-delete");
@@ -378,6 +448,17 @@
       }).catch(function () {
         save.disabled = false;
         msg("Sem conexão com o servidor. Tente de novo.", "err");
+      });
+    });
+  }
+
+  function bindItems() {
+    root.querySelectorAll(".adm-item").forEach(function (b) {
+      b.addEventListener("click", function () {
+        selected = parseInt(b.getAttribute("data-i"), 10);
+        isNew = false;
+        msg("");
+        render();
       });
     });
   }
