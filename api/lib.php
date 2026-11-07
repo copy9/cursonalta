@@ -98,7 +98,8 @@ function http_call($method, $url, array $headers = [], $body = null) {
         CURLOPT_HTTPHEADER     => $headers,
         CURLOPT_TIMEOUT        => 20,
     ];
-    if ($body !== null) $opts[CURLOPT_POSTFIELDS] = json_encode($body);
+    // JSON limpo: sem barras escapadas (\/) nem acentos em \uXXXX, que o firewall do Mercado Pago pode recusar
+    if ($body !== null) $opts[CURLOPT_POSTFIELDS] = json_encode($body, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     curl_setopt_array($ch, $opts);
     $raw = curl_exec($ch);
     $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -113,7 +114,19 @@ function mp_request($method, $path, $body = null) {
     return http_call($method, 'https://api.mercadopago.com' . $path, [
         'Authorization: Bearer ' . $token,
         'Content-Type: application/json',
+        'Accept: application/json',
+        'User-Agent: Cursonalta/1.0 (PHP)',
+        'X-Idempotency-Key: ' . bin2hex(random_bytes(16)),
     ], $body);
+}
+
+// Texto seguro para enviar ao Mercado Pago (títulos e descrições):
+// tira HTML, emojis e símbolos que o firewall deles costuma bloquear, mantém letras com acento.
+function mp_text($s, $max = 120) {
+    $s = html_entity_decode(strip_tags((string)$s), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    $s = preg_replace('/[^\p{L}\p{N} .,:()\-]+/u', ' ', $s);
+    $s = trim(preg_replace('/\s+/u', ' ', $s));
+    return mb_substr($s, 0, $max);
 }
 
 function tg_request($method, array $body) {

@@ -39,7 +39,7 @@ if ($hasAll || $hasOne) {
 
 if ($plano === 'todos') {
     [$code, $res] = mp_request('POST', '/preapproval', [
-        'reason'            => 'Cursonalta: todos os cursos',
+        'reason'            => 'Cursonalta - todos os cursos',
         'external_reference' => 'T|' . $email,
         'payer_email'       => $email,
         'auto_recurring'    => [
@@ -68,8 +68,8 @@ if ($plano === 'todos') {
 
     // Order bump: mesmo pagamento libera também todos os cursos por 1 mês
     $items = [[
-        'id'          => 'curso-' . $curso,
-        'title'       => 'Curso: ' . $titulo,
+        'id'          => 'curso-' . preg_replace('/[^A-Za-z0-9_-]/', '', $curso),
+        'title'       => mp_text('Curso: ' . $titulo),
         'quantity'    => 1,
         'unit_price'  => $preco,
         'currency_id' => 'BRL',
@@ -100,7 +100,7 @@ if ($plano === 'todos') {
 
 $url = is_array($res) ? ($res['init_point'] ?? null) : null;
 if ($code < 200 || $code >= 300 || !$url) {
-    error_log('Mercado Pago checkout falhou: HTTP ' . $code . ' ' . json_encode($res));
+    error_log('Mercado Pago checkout (' . $plano . ') falhou: HTTP ' . $code . ' ' . json_encode($res));
     // Mostra ao aluno o motivo que o Mercado Pago informou (texto curto, sem dados sensíveis)
     $motivo = '';
     if (is_array($res)) {
