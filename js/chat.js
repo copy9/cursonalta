@@ -58,43 +58,140 @@
     return d;
   }
 
-  // ---- Base de respostas (fatos da plataforma). Não usa IA paga: entende pelas palavras-chave ----
-  var BASE = [
-    { k: ["oi", "ola", "bom dia", "boa tarde", "boa noite", "e ai", "eai", "tudo bem"], a: "Oi! Pode perguntar sobre preços, pagamento, acesso aos cursos, grupo do Telegram ou a DRT de jornalista." },
-    { k: ["obrigad", "valeu", "brigado", "thanks"], a: "De nada! Se tiver mais dúvidas, é só perguntar." },
-    { k: ["quanto custa", "preco", "valor", "custa", "quanto e", "quanto fica"], a: "Cada curso avulso custa R$ 14,99 e fica com você até concluir. Também existe o pacote de todos os cursos por R$ 24,99, que dá acesso a todos os cursos por 32 dias." },
-    { k: ["pacote", "todos os cursos", "todos cursos", "acesso a todos", "plano", "assinatura", "assinar", "mensal", "1 mes", "um mes"], a: "O pacote de todos os cursos custa R$ 24,99, pagamento único, e dá acesso a todos os cursos da plataforma por 32 dias. Não há cobrança automática: quando o prazo acabar, você compra de novo se quiser continuar." },
-    { k: ["order bump", "bump", "adicionar acesso", "marcar a opcao", "caixinha"], a: "Na página do curso, marque a opção \"Adicionar acesso a todos os cursos por 1 mês (+ R$ 10,00)\". Você paga R$ 24,99 no total: o curso e 1 mês de todos os cursos." },
-    { k: ["renov", "cancel", "cobranca", "cobra todo mes", "cobrar todo mes", "debito automatico"], a: "Não há renovação automática. O pagamento é único, então não existe cobrança recorrente para cancelar. O acesso segue até o fim do prazo já pago." },
-    { k: ["pix", "cartao", "boleto", "forma de pagamento", "formas de pagamento", "como pago", "como pagar", "pagar", "pagamento"], a: "Os pagamentos são feitos pelo Mercado Pago, por Pix ou cartão. Escolha o curso ou o pacote e siga as etapas na tela de pagamento." },
-    { k: ["reembolso", "devolver", "devolucao", "estorno", "dinheiro de volta", "cancelar compra"], a: "Não tenho essa informação aqui. Para pedir reembolso ou tirar dúvida sobre uma compra, fale com a equipe pelos canais de contato do site." },
-    { k: ["nao apareceu", "nao aparece", "nao liberou", "nao libera", "nao ta liberado", "paguei", "ja paguei", "pagamento aprovado", "acesso nao", "cade meu curso", "meu curso"], a: "Depois que o pagamento é aprovado, o acesso é liberado em instantes. Confira na Minha área, em \"Seus cursos\", e aguarde alguns minutos: a página atualiza sozinha. Se continuar sem acesso, recarregue a página ou fale com a equipe." },
-    { k: ["minha area", "area do aluno", "onde vejo", "onde assisto", "onde fica meu curso", "entrar", "login", "logar"], a: "Você acompanha seus cursos, seu plano e seu progresso na Minha área. Para entrar, use o botão \"Entrar\" no topo do site." },
-    { k: ["senha", "esqueci", "recuperar", "trocar senha", "mudar senha"], a: "Não tenho uma opção automática para trocar a senha aqui. Fale com a equipe pelos canais de contato do site para ajudar com isso." },
-    { k: ["criar conta", "cadastro", "cadastrar", "registrar", "conta gratis", "criar uma conta"], a: "Criar conta é grátis. Use o botão \"Criar conta\" no topo do site e depois escolha o curso ou o pacote." },
-    { k: ["telegram", "grupo", "link do grupo", "convite", "expirou", "entrar no grupo"], a: "Alguns cursos têm grupo no Telegram, e o link fica na Minha área, para quem tem acesso. Quem tem o pacote de todos os cursos recebe um convite individual para o grupo geral. Se o convite expirar, peça outro pela Minha área. Quando o prazo do pacote acaba, o aluno é removido do grupo geral na verificação diária." },
-    { k: ["drt", "jornalista", "registro profissional", "carteira de jornalista"], a: "A Cursonalta também organiza o requerimento da DRT de jornalista. Você envia os documentos e a equipe cuida da papelada até a carteira. Mais informações em drt.cursonalta.com." },
-    { k: ["certificado", "certificacao", "diploma"], a: "Não tenho essa informação aqui. Fale com a equipe pelos canais de contato do site." },
-    { k: ["o que e", "que e a cursonalta", "sobre a plataforma", "o que voce faz", "como funciona", "como funciona a plataforma", "para que serve"], a: "A Cursonalta é uma plataforma de cursos online em vídeo. Você cria uma conta grátis, compra um curso ou o pacote de todos os cursos e assiste pela Minha área." },
-    { k: ["contato", "falar com", "atendimento", "suporte", "humano", "pessoa"], a: "Para falar com a equipe, use os canais de contato indicados no site." }
+  // ---- Entendimento: sinônimos, variações e erros de digitação leves. Tudo local, sem custo ----
+  // Cada grupo: a palavra "canônica" (primeira) e tudo o que significa a mesma coisa
+  var GROUPS = {
+    curso: ["curso", "aula", "video", "conteudo", "materia", "treinamento", "formacao", "trilha"],
+    avulso: ["avulso", "unitario", "unitaria", "individual", "separado", "solto", "unico", "unica", "1curso", "umcurso", "comprar um", "um so"],
+    pacote: ["pacote", "todos", "tudo", "geral", "completo", "ilimitado", "assinatura", "assinar", "plano", "planos", "mensal", "mensalidade", "combo", "bundle"],
+    preco: ["preco", "precos", "valor", "valores", "custa", "custo", "custam", "cobram", "cobra", "barato", "caro", "reais", "rs", "price", "taxa", "tabela"],
+    pagar: ["pagar", "pagamento", "pagamentos", "pago", "paguei", "pagou", "pagou", "comprar", "compra", "compro", "comprei", "finalizar", "checkout", "cobranca", "cobrou", "cobrado", "debitado", "dinheiro"],
+    forma: ["pix", "cartao", "cartoes", "credito", "debito", "boleto", "forma", "formas", "meio", "meios", "opcao", "opcoes", "parcelar", "parcela", "parcelado", "parcelas", "vezes", "mercadopago", "mp"],
+    acesso: ["acesso", "acessar", "acessei", "acessou", "liberado", "liberou", "libera", "liberar", "liberacao", "assistir", "abrir", "ver", "vejo", "entrar", "entro", "assisto", "vizualizar", "visualizar"],
+    falha: ["nao", "sumiu", "sumi", "cade", "bloqueado", "bloqueou", "travou", "erro", "errado", "problema", "bug", "deu", "falhou", "falha", "demora", "demorou", "ainda"],
+    area: ["area", "painel", "dashboard", "perfil", "minha area", "meus cursos", "seus cursos", "seu plano", "meu plano"],
+    renovar: ["renovar", "renovacao", "renova", "renovo", "cancelar", "cancela", "cancelamento", "desmarcar", "recorrente", "recorrencia", "automatica", "automatico", "debito automatico", "assinatura automatica", "parar", "todo mes", "todo mês", "mensalmente", "cobra todo mes", "cobranca mensal"],
+    reembolso: ["reembolso", "reembolsar", "reembolsa", "estorno", "estornar", "devolucao", "devolver", "devolve", "arrependi", "arrependimento", "dinheiro de volta", "voltar o dinheiro", "garantia"],
+    grupo: ["grupo", "telegram", "tele", "canal", "convite", "convites", "link", "comunidade", "turma", "sala"],
+    senha: ["senha", "senhas", "esqueci", "esqueceu", "esquecida", "recuperar", "recuperacao", "redefinir", "trocar", "mudar", "alterar", "reset", "login", "logar"],
+    criar: ["criar", "cadastro", "cadastrar", "cadastre", "registrar", "registro", "inscrever", "inscricao", "novo", "nova"],
+    drt: ["drt", "jornalista", "jornalismo", "jornalistas", "registro profissional", "carteira", "requerimento", "papelada"],
+    certificado: ["certificado", "certificados", "certificacao", "diploma", "certificate", "comprovante", "atestado"],
+    oi: ["oi", "ola", "eai", "opa", "oie", "hey", "hello", "bom dia", "boa tarde", "boa noite", "fala ai", "salve", "tudo bem", "tudo bom", "e ai"],
+    obrigado: ["obrigado", "obrigada", "valeu", "brigado", "brigada", "thanks", "vlw", "agradeco", "agradecido", "show", "perfeito", "ok"],
+    contato: ["contato", "contatar", "falar", "atendente", "atendimento", "suporte", "humano", "pessoa", "equipe", "whatsapp", "email", "telefone", "socorro", "ajuda", "ajudar", "responder"],
+    site: ["sobre", "plataforma", "site", "cursonalta", "empresa", "quem", "funciona", "servir", "oque", "significa", "faz", "fazem"],
+    celular: ["celular", "mobile", "android", "iphone", "app", "aplicativo", "tablet", "computador", "pc", "notebook", "navegador", "tela"],
+    tempo: ["prazo", "dura", "duracao", "validade", "valido", "vencer", "vence", "vencimento", "expira", "expiracao", "acaba", "acabar", "termina", "terminar", "ate quando", "quantos dias", "dias"],
+    catalogo: ["quantidade", "quantos", "quantas", "numero", "total", "catalogo", "disponivel", "disponiveis", "lista", "opcoes", "variedade", "tem", "existe", "existem"],
+    bump: ["bump", "adicionar", "adiciono", "marcar", "marco", "checkbox", "caixinha", "extra", "junto", "junto com", "combinado", "tambem", "tambem"],
+    trocar: ["trocar", "mudar", "upgrade", "migrar", "alterar", "outro", "outra", "mais um"],
+    comparar: ["diferenca", "diferente", "comparar", "comparacao", "melhor", "vale", "compensa", "qual", "qual e", "escolher", "escolho"],
+    intro: ["como", "funciona", "fazer", "faco", "usar", "uso", "passo", "passos", "tutorial", "explica", "explicar", "explique", "ensina"]
+  };
+
+  // Palavras que não ajudam a entender a pergunta
+  var STOP = { "de": 1, "do": 1, "da": 1, "dos": 1, "das": 1, "o": 1, "a": 1, "os": 1, "as": 1, "um": 1, "uma": 1, "e": 1, "que": 1, "pra": 1, "para": 1, "em": 1, "no": 1, "na": 1, "nos": 1, "nas": 1, "eu": 1, "vc": 1, "voce": 1, "com": 1, "por": 1, "ta": 1, "to": 1, "isso": 1, "esse": 1, "essa": 1, "sou": 1, "tenho": 1, "tem": 1, "ter": 1, "foi": 1, "se": 1, "ao": 1, "ja": 1, "so": 1, "mais": 1 };
+
+  // Respostas (fatos da plataforma). Cada uma liga a um conjunto de grupos de palavras.
+  var INTENTS = [
+    { g: ["oi"], a: "Oi! Pode perguntar sobre preços, pacote de todos os cursos, pagamento, acesso, grupo do Telegram ou a DRT de jornalista." },
+    { g: ["obrigado"], a: "De nada! Se tiver mais dúvidas, é só perguntar." },
+    { g: ["avulso"], a: "O curso avulso custa R$ 14,99. Você paga uma vez, e o curso fica com você até concluir. Não tem renovação." },
+    { g: ["avulso", "preco"], a: "O curso avulso custa R$ 14,99. Você paga uma vez, e o curso fica com você até concluir. Não tem renovação." },
+    { g: ["pacote"], a: "O pacote de todos os cursos custa R$ 24,99, pagamento único. Ele dá acesso a todos os cursos da plataforma por 32 dias. Não há cobrança automática." },
+    { g: ["bump"], a: "Na página do curso, marque \"Adicionar acesso a todos os cursos por 1 mês (+ R$ 10,00)\". Você paga R$ 24,99 no total: o curso e 1 mês de todos os cursos." },
+    { g: ["avulso", "curso", "preco"], a: "O curso avulso custa R$ 14,99. Você paga uma vez, e o curso fica com você até concluir. Não tem renovação." },
+    { g: ["pacote", "preco"], a: "O pacote de todos os cursos custa R$ 24,99, pagamento único. Ele dá acesso a todos os cursos da plataforma por 32 dias. Não há cobrança automática: quando o prazo acabar, você compra de novo se quiser continuar." },
+    { g: ["pacote", "avulso", "comparar"], a: "Curso avulso: R$ 14,99 por curso, e o curso fica com você até concluir. Pacote de todos os cursos: R$ 24,99 por 32 dias, com acesso a todos os cursos. Se você quer um curso só, o avulso sai mais barato. Se quer vários, o pacote compensa." },
+    { g: ["preco"], a: "Preços: curso avulso R$ 14,99 (fica com você até concluir) e pacote de todos os cursos R$ 24,99 (32 dias de acesso a todos os cursos, pagamento único)." },
+    { g: ["bump", "avulso", "pacote"], a: "Na página do curso, marque \"Adicionar acesso a todos os cursos por 1 mês (+ R$ 10,00)\". Você paga R$ 24,99 no total: o curso e 1 mês de todos os cursos." },
+    { g: ["renovar"], a: "Não há renovação automática. O pagamento é único, então não existe cobrança recorrente para cancelar. O acesso segue até o fim do prazo já pago." },
+    { g: ["forma", "pagar"], a: "Os pagamentos são feitos pelo Mercado Pago, por Pix ou cartão. Escolha o curso ou o pacote e siga as etapas na tela de pagamento." },
+    { g: ["forma"], a: "Os pagamentos são feitos pelo Mercado Pago, por Pix ou cartão. As opções de parcelamento, se houver, aparecem na tela de pagamento do Mercado Pago." },
+    { g: ["pagar"], a: "Para pagar, escolha o curso ou o pacote e siga as etapas na tela de pagamento do Mercado Pago. Pix e cartão são aceitos." },
+    { g: ["reembolso"], a: "Não tenho essa informação aqui. Para pedir reembolso ou tirar dúvida sobre uma compra, fale com a equipe pelos canais de contato do site." },
+    { g: ["falha", "pagar"], a: "Se o pagamento foi aprovado, o acesso é liberado em instantes. Confira na Minha área, em \"Seus cursos\", e aguarde alguns minutos: a página atualiza sozinha. Se continuar sem acesso, recarregue a página ou fale com a equipe." },
+    { g: ["falha", "acesso"], a: "Se o acesso não aparece, confira na Minha área, em \"Seus cursos\". Aguarde alguns minutos e recarregue a página. Se continuar, fale com a equipe pelos canais do site." },
+    { g: ["falha", "curso"], a: "Se o curso não aparece, confira na Minha área, em \"Seus cursos\". Depois do pagamento aprovado, ele é liberado em instantes. Se não aparecer, fale com a equipe." },
+    { g: ["tempo", "avulso"], a: "O curso avulso fica com você até concluir. Não tem prazo para terminar." },
+    { g: ["tempo", "pacote"], a: "O pacote de todos os cursos dá acesso por 32 dias, a partir do pagamento. Depois disso, você compra de novo se quiser continuar." },
+    { g: ["tempo"], a: "O curso avulso fica com você até concluir. O pacote de todos os cursos dá 32 dias de acesso." },
+    { g: ["area"], a: "Na Minha área você acompanha seus cursos, seu plano e seu progresso. Para entrar, use o botão \"Entrar\" no topo do site." },
+    { g: ["acesso", "area"], a: "O acesso aos seus cursos fica na Minha área, em \"Seus cursos\". Para entrar, use o botão \"Entrar\" no topo do site." },
+    { g: ["acesso"], a: "Depois que o pagamento é aprovado, o acesso é liberado. Você assiste pela Minha área, em \"Seus cursos\"." },
+    { g: ["trocar", "pacote"], a: "Na Minha área, em \"Seu plano\", você pode comprar o pacote de todos os cursos ou outro curso avulso." },
+    { g: ["trocar"], a: "Na Minha área, em \"Seu plano\", você pode comprar o pacote de todos os cursos ou outro curso avulso." },
+    { g: ["senha"], a: "Não tenho uma opção automática para trocar a senha aqui. Fale com a equipe pelos canais de contato do site para ajudar com isso." },
+    { g: ["criar"], a: "Criar conta é grátis. Use o botão \"Criar conta\" no topo do site e depois escolha o curso ou o pacote." },
+    { g: ["grupo"], a: "Alguns cursos têm grupo no Telegram, e o link fica na Minha área, para quem tem acesso. Quem tem o pacote de todos os cursos recebe um convite individual para o grupo geral. Se o convite expirar, peça outro pela Minha área. Quando o prazo do pacote acaba, o aluno é removido do grupo geral na verificação diária." },
+    { g: ["grupo", "falha"], a: "Se o link do grupo não funciona, peça outro pela Minha área. O convite do pacote é individual e vale por pouco tempo. Se continuar com problema, fale com a equipe." },
+    { g: ["drt"], a: "A Cursonalta também organiza o requerimento da DRT de jornalista. Você envia os documentos e a equipe cuida da papelada até a carteira. Mais informações em drt.cursonalta.com." },
+    { g: ["certificado"], a: "Não tenho essa informação aqui. Fale com a equipe pelos canais de contato do site." },
+    { g: ["celular"], a: "Você pode assistir pelo navegador, no celular ou no computador. O site se adapta à tela." },
+    { g: ["site"], a: "A Cursonalta é uma plataforma de cursos online em vídeo. Você cria uma conta grátis, compra um curso avulso ou o pacote de todos os cursos e assiste pela Minha área." },
+    { g: ["contato"], a: "Para falar com a equipe, use os canais de contato indicados no site." },
+    { g: ["catalogo"], a: "Há vários cursos disponíveis. Veja todos na página Cursos, com busca e filtros por categoria e nível." }
   ];
 
   function norm(t) {
     return String(t || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9 ]+/g, " ").replace(/\s+/g, " ").trim();
   }
 
-  function answer(text) {
+  // Distância de edição (para aceitar erros de digitação leves)
+  function lev(a, b) {
+    var m = a.length, n = b.length, d = [], i, j;
+    for (i = 0; i <= m; i++) { d[i] = [i]; }
+    for (j = 0; j <= n; j++) { d[0][j] = j; }
+    for (i = 1; i <= m; i++) for (j = 1; j <= n; j++) {
+      d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    }
+    return d[m][n];
+  }
+
+  // Quais grupos a pergunta toca: procura cada termo do grupo como palavra ou expressão
+  function groupsIn(text) {
+    var hits = {};
     var q = " " + norm(text) + " ";
-    var best = null, bestScore = 0;
-    BASE.forEach(function (item) {
-      var score = 0;
-      item.k.forEach(function (kw) {
-        if (q.indexOf(" " + norm(kw) + " ") !== -1 || q.indexOf(norm(kw)) !== -1 && norm(kw).length > 4) score += norm(kw).split(" ").length + (norm(kw).length > 6 ? 1 : 0);
+    var words = norm(text).split(" ").filter(function (w) { return w && !STOP[w]; });
+    Object.keys(GROUPS).forEach(function (g) {
+      GROUPS[g].forEach(function (term) {
+        var t = norm(term);
+        if (!t) return;
+        if (t.indexOf(" ") !== -1) { if (q.indexOf(" " + t + " ") !== -1) hits[g] = true; return; }
+        words.forEach(function (w) {
+          if (w === t) hits[g] = true;
+          else if (t.length >= 5 && w.length >= 5 && (w.indexOf(t) === 0 || t.indexOf(w) === 0)) hits[g] = true;   // plural/radical
+          else if (t.length >= 5 && w.length >= 5 && lev(w, t) <= 1) hits[g] = true;                             // erro de digitação
+        });
       });
-      if (score > bestScore) { bestScore = score; best = item; }
     });
-    if (best && bestScore > 0) return best.a;
-    return "Não entendi bem a sua pergunta. Tente perguntar sobre preços, pagamento, acesso aos cursos, grupo do Telegram, pacote de todos os cursos ou a DRT de jornalista. Se preferir, fale com a equipe pelos canais de contato do site.";
+    return hits;
+  }
+
+  // Peso de cada assunto: os específicos valem mais; as palavras genéricas quase não contam
+  var STRONG = { renovar: 1, reembolso: 1, grupo: 1, senha: 1, criar: 1, drt: 1, certificado: 1, celular: 1, bump: 1, site: 1 };
+  var GENERIC = { intro: 1, comparar: 1, catalogo: 1 };
+  function weight(g) { return STRONG[g] ? 2 : (GENERIC[g] ? 0.5 : 1); }
+
+  function answer(text) {
+    var hits = groupsIn(text);
+    var best = null, bestScore = 0;
+    // Primeiro: respostas em que todos os assuntos da resposta aparecem na pergunta
+    INTENTS.forEach(function (it) {
+      if (!it.g.every(function (g) { return hits[g]; })) return;
+      var score = it.g.reduce(function (acc, g) { return acc + weight(g); }, 0) + it.g.length * 0.01;
+      if (score > bestScore) { bestScore = score; best = it; }
+    });
+    if (best) return best.a;
+    // Depois: a resposta que mais se aproxima, se a pergunta tiver pelo menos dois assuntos conhecidos
+    var partial = null, ps = 0;
+    INTENTS.forEach(function (it) {
+      var sc = it.g.reduce(function (acc, g) { return acc + (hits[g] ? weight(g) : 0); }, 0);
+      if (sc > ps) { ps = sc; partial = it; }
+    });
+    if (partial && ps >= 2) return partial.a;
+    return "Não entendi essa pergunta. Tente algo como: \"quanto custa um curso?\", \"como pago com Pix?\", \"paguei e não liberou\", \"como entro no grupo do Telegram?\", \"tem reembolso?\" ou \"o que é a DRT?\". Se preferir, fale com a equipe pelos canais de contato do site.";
   }
 
   function open(on) {
