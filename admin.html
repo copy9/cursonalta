@@ -48,7 +48,26 @@
     .adm-danger { color:#b91c1c; border-color:#e0b4b4; }
     .adm-restricted { max-width:520px; margin:60px auto; text-align:center; }
     .adm-access { max-width:560px; }
+    .adm-kpis { display:grid; grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); gap:12px; margin-bottom:18px; }
+    .adm-kpi { background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
+    .adm-kpi span { display:block; color:var(--muted); font-size:.8rem; font-weight:600; }
+    .adm-kpi strong { display:block; font-size:1.35rem; margin-top:4px; }
+    .adm-two { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; }
+    .adm-table { width:100%; border-collapse:collapse; font-size:.9rem; }
+    .adm-table th, .adm-table td { text-align:left; padding:9px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+    .adm-table th { color:var(--muted); font-size:.78rem; font-weight:600; }
+    .adm-table td.num, .adm-table th.num { text-align:right; white-space:nowrap; }
+    .adm-scroll { overflow-x:auto; }
+    .adm-bar-row { display:grid; grid-template-columns:70px 1fr 110px; gap:10px; align-items:center; font-size:.85rem; padding:5px 0; }
+    .adm-bar { background:#efece6; border-radius:6px; height:14px; overflow:hidden; }
+    .adm-bar i { display:block; height:100%; background:var(--orange); border-radius:6px; }
+    .adm-note { background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; border-radius:12px; padding:12px 14px; margin-bottom:16px; font-size:.9rem; }
+    .adm-pill { display:inline-block; font-size:.75rem; font-weight:600; padding:2px 8px; border-radius:99px; background:#efece6; }
+    .adm-pill.ok { background:#dcfce7; color:#166534; }
+    .adm-pill.warn { background:#fef3c7; color:#92400e; }
     @media (max-width: 700px) {
+      .adm-two { grid-template-columns:1fr; }
+      .adm-bar-row { grid-template-columns:60px 1fr 96px; }
       .adm-grid2 { grid-template-columns:1fr; }
       .adm-grid { grid-template-columns:1fr 1fr; gap:10px; }
       .adm h1 { font-size:1.3rem; }
@@ -95,7 +114,7 @@
   var courses = [];
   var selected = -1;      // índice do curso em edição
   var isNew = false;      // criando um curso novo
-  var tab = "cursos";     // "cursos" ou "acesso"
+  var tab = "painel";     // "painel", "cursos", "alunos" ou "acesso"
   var query = "";         // busca na lista de cursos
 
   function esc(s) {
@@ -215,15 +234,112 @@
 
   function editing() { return isNew || selected >= 0; }
 
+  var stats = null;       // dados do painel (api/admin-stats.php)
+  var statsErr = "";
+  var alunoQ = "";
+
+  function brl(n) { return "R$ " + Number(n || 0).toFixed(2).replace(".", ","); }
+
+  function loadStats(then) {
+    statsErr = "";
+    fetch("api/admin-stats.php", { credentials: "same-origin" })
+      .then(function (res) { return res.json().then(function (j) { return { status: res.status, body: j }; }); })
+      .then(function (r) {
+        if (r.body && r.body.ok) stats = r.body;
+        else statsErr = (r.body && r.body.error) || "Não foi possível carregar o painel.";
+        if (then) then();
+        else render();
+      })
+      .catch(function () {
+        statsErr = "Sem conexão com o servidor. Tente de novo.";
+        if (then) then(); else render();
+      });
+  }
+
+  function dashHTML() {
+    if (!stats) {
+      return '<div class="adm-card">' + (statsErr
+        ? '<p class="adm-msg err" style="margin:0 0 12px">' + esc(statsErr) + '</p>'
+        : '<p style="color:var(--muted);margin:0">Carregando o painel...</p>') +
+        '<button type="button" class="btn btn-ghost btn-sm" id="dash-refresh" style="margin-top:10px">Tentar de novo</button></div>';
+    }
+    var k = stats.kpis;
+    var kpi = function (label, value) { return '<div class="adm-kpi"><span>' + esc(label) + '</span><strong>' + value + '</strong></div>'; };
+    var max = Math.max.apply(null, [1].concat(stats.months.map(function (m) { return m.amount; })));
+    var bars = stats.months.map(function (m) {
+      var pct = Math.round((m.amount / max) * 100);
+      var lbl = m.m.split("-").reverse().join("/");
+      return '<div class="adm-bar-row"><span>' + esc(lbl) + '</span><div class="adm-bar"><i style="width:' + pct + '%"></i></div><span style="text-align:right">' + brl(m.amount) + ' · ' + m.count + '</span></div>';
+    }).join("");
+    var courseRows = stats.courses.length ? stats.courses.map(function (c) {
+      return '<tr><td>' + esc(c.title) + '</td><td class="num">' + brl(c.price) + '</td><td class="num">' + c.students + '</td><td class="num">' + c.sales + '</td></tr>';
+    }).join("") : '<tr><td colspan="4" style="color:var(--muted)">Nenhum curso publicado.</td></tr>';
+    var recentRows = stats.recent.length ? stats.recent.map(function (s) {
+      var st = s.status === "approved" ? '<span class="adm-pill ok">aprovada</span>' : '<span class="adm-pill warn">' + esc(s.status) + '</span>';
+      return '<tr><td>' + esc(s.date) + '</td><td>' + esc(s.email) + '</td><td>' + esc(s.item || s.type) + '</td><td class="num">' + brl(s.amount) + '</td><td>' + st + '</td></tr>';
+    }).join("") : '<tr><td colspan="5" style="color:var(--muted)">Nenhuma venda encontrada.</td></tr>';
+    var note = stats.sales.ok ? "" : '<div class="adm-note">' + esc(stats.sales.error || "Vendas indisponíveis.") + '</div>';
+
+    return note +
+      '<div class="adm-bar" style="margin-bottom:12px"><p style="margin:0;color:var(--muted);font-size:.85rem">Atualizado em ' + esc(stats.generatedAt) + '</p>' +
+        '<button type="button" class="btn btn-ghost btn-sm" id="dash-refresh">Atualizar</button></div>' +
+      '<div class="adm-kpis">' +
+        kpi("Alunos cadastrados", k.students) +
+        kpi("Assinantes ativos (todos os cursos)", k.todos_active) +
+        kpi("Compraram curso avulso", k.curso_buyers) +
+        kpi("Sem plano ativo", k.no_plan) +
+        kpi("Vendas aprovadas", k.sales_count) +
+        kpi("Receita total", brl(k.revenue_total)) +
+        kpi("Receita 30 dias", brl(k.revenue_30d)) +
+        kpi("Vendas 30 dias", k.sales_30d) +
+        kpi("Cursos publicados", k.courses) +
+        kpi("Reembolsos", k.refunds) +
+      '</div>' +
+      '<div class="adm-two">' +
+        '<div class="adm-card"><h2 style="font-size:1rem;margin:0 0 10px">Faturamento dos últimos 6 meses</h2>' + bars + '</div>' +
+        '<div class="adm-card"><h2 style="font-size:1rem;margin:0 0 10px">Cursos</h2><div class="adm-scroll"><table class="adm-table">' +
+          '<tr><th>Curso</th><th class="num">Preço</th><th class="num">Alunos</th><th class="num">Vendas</th></tr>' + courseRows + '</table></div></div>' +
+      '</div>' +
+      '<div class="adm-card" style="margin-top:14px"><h2 style="font-size:1rem;margin:0 0 10px">Vendas recentes</h2><div class="adm-scroll"><table class="adm-table">' +
+        '<tr><th>Data</th><th>Aluno</th><th>Item</th><th class="num">Valor</th><th>Situação</th></tr>' + recentRows + '</table></div></div>';
+  }
+
+  function alunosRowsHTML() {
+    if (!stats) return '<p class="adm-empty">Carregando...</p>';
+    var q = alunoQ.trim().toLowerCase();
+    var list = stats.students.filter(function (s) {
+      return !q || (s.name + " " + s.email).toLowerCase().indexOf(q) !== -1;
+    });
+    if (!list.length) return '<p class="adm-empty">Nenhum aluno encontrado.</p>';
+    var planLabel = function (p) { return p === "todos" ? '<span class="adm-pill ok">Todos os cursos</span>' : p === "curso" ? '<span class="adm-pill">Cursos avulsos</span>' : '<span class="adm-pill warn">Sem plano</span>'; };
+    return '<div class="adm-scroll"><table class="adm-table"><tr><th>Nome</th><th>E-mail</th><th>Plano</th><th>Vence</th><th class="num">Cursos</th><th>Cadastro</th></tr>' +
+      list.map(function (s) {
+        return '<tr><td>' + esc(s.name) + '</td><td>' + esc(s.email) + '</td><td>' + planLabel(s.plan) + '</td><td>' + esc(s.expires || "—") + '</td><td class="num">' + s.courses + '</td><td>' + esc((s.created || "").slice(0, 10)) + '</td></tr>';
+      }).join("") + '</table></div>';
+  }
+
+  function alunosPanelHTML() {
+    if (!stats) return dashHTML();
+    return '<div class="adm-card">' +
+      '<div class="adm-bar" style="margin-bottom:12px"><input id="al-q" class="adm-search" type="search" style="margin:0;max-width:420px" placeholder="Buscar aluno por nome ou e-mail" value="' + esc(alunoQ) + '"><span style="color:var(--muted);font-size:.85rem">' + stats.students.length + ' alunos</span></div>' +
+      '<div id="al-list">' + alunosRowsHTML() + '</div></div>';
+  }
+
   function render() {
     var tabs =
       '<div class="adm-tabs" role="tablist">' +
+        '<button type="button" class="adm-tab' + (tab === "painel" ? " on" : "") + '" id="tab-painel">Painel</button>' +
         '<button type="button" class="adm-tab' + (tab === "cursos" ? " on" : "") + '" id="tab-cursos">Cursos</button>' +
-        '<button type="button" class="adm-tab' + (tab === "acesso" ? " on" : "") + '" id="tab-acesso">Acesso de alunos</button>' +
+        '<button type="button" class="adm-tab' + (tab === "alunos" ? " on" : "") + '" id="tab-alunos">Alunos</button>' +
+        '<button type="button" class="adm-tab' + (tab === "acesso" ? " on" : "") + '" id="tab-acesso">Acesso</button>' +
       "</div>";
 
     var body;
-    if (tab === "acesso") {
+    if (tab === "painel") {
+      body = dashHTML();
+    } else if (tab === "alunos") {
+      body = alunosPanelHTML();
+    } else if (tab === "acesso") {
       body = accessHTML();
     } else if (editing()) {
       body = '<button type="button" class="btn btn-ghost btn-sm adm-back" id="btn-cancel">← Voltar para a lista</button>' +
@@ -289,6 +405,17 @@
   function goList() { selected = -1; isNew = false; msg(""); render(); }
 
   function bind() {
+    var tp = document.getElementById("tab-painel");
+    if (tp) tp.addEventListener("click", function () { tab = "painel"; msg(""); if (!stats) loadStats(); else render(); });
+    var ta = document.getElementById("tab-alunos");
+    if (ta) ta.addEventListener("click", function () { tab = "alunos"; msg(""); if (!stats) loadStats(); else render(); });
+    var dr = document.getElementById("dash-refresh");
+    if (dr) dr.addEventListener("click", function () { stats = null; render(); loadStats(); });
+    var aq = document.getElementById("al-q");
+    if (aq) aq.addEventListener("input", function () {
+      alunoQ = aq.value;
+      document.getElementById("al-list").innerHTML = alunosRowsHTML();
+    });
     var t1 = document.getElementById("tab-cursos");
     if (t1) t1.addEventListener("click", function () { tab = "cursos"; msg(""); render(); });
     var t2 = document.getElementById("tab-acesso");
@@ -439,6 +566,7 @@
           courses = r.body.courses;
           selected = -1; isNew = false;
           render();
+          loadStats();
           msg("Salvo. O site já mostra as alterações (pode ser preciso recarregar a página).", "ok");
         } else {
           msg(r.status === 403
@@ -466,6 +594,7 @@
   function enter() {
     courses = (window.COURSES || []).map(function (c) { return JSON.parse(JSON.stringify(c)); });
     render();
+    loadStats();
   }
 
   // Login próprio do administrador (não passa pela tela de entrar do site)
