@@ -86,7 +86,7 @@ function telegram_link($v) {
     if ($s === '') return '';
     // Aceita convites (t.me/+codigo) e grupos públicos (t.me/nome), com ou sem https
     if (!preg_match('#^(https?://)?(www\.)?(t\.me|telegram\.me)/\S+$#i', $s)) {
-        out(422, ['ok' => false, 'error' => 'Link do Telegram inválido. Use um endereço como https://t.me/+codigo ou https://t.me/seugrupo.']);
+        out(422, ['ok' => false, 'error' => 'Link do Telegram inválido: "' . mb_substr((string)$v, 0, 80) . '". Use um endereço como https://t.me/+codigo ou https://t.me/seugrupo.']);
     }
     if (!preg_match('#^https?://#i', $s)) $s = 'https://' . $s;
     return mb_substr($s, 0, 200);
