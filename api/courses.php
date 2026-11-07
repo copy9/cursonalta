@@ -60,6 +60,11 @@ function text($v, $max, $field, $min = 0) {
     return $s;
 }
 
+// Textos longos são cortados no limite, em vez de bloquear o salvamento
+function clip($v, $max) {
+    return mb_substr(trim((string)$v), 0, $max);
+}
+
 function int_in($v, $min, $max, $field) {
     if (!is_numeric($v) || (int)$v < $min || (int)$v > $max) out(422, ['ok' => false, 'error' => "Número inválido: $field."]);
     return (int)$v;
@@ -122,8 +127,8 @@ foreach ($body['courses'] as $c) {
     $clean[] = [
         'id'               => $id,
         'title'            => text(isset($c['title']) ? $c['title'] : '', 200, 'título', 1),
-        'shortDescription' => text(isset($c['shortDescription']) ? $c['shortDescription'] : '', 1000, 'descrição curta', 0),
-        'description'      => text(isset($c['description']) ? $c['description'] : '', 10000, 'descrição', 0),
+        'shortDescription' => clip(isset($c['shortDescription']) ? $c['shortDescription'] : '', 1000),
+        'description'      => clip(isset($c['description']) ? $c['description'] : '', 20000),
         'category'         => text(isset($c['category']) ? $c['category'] : '', 40, 'categoria', 2),
         'level'            => text(isset($c['level']) ? $c['level'] : '', 40, 'nível', 2),
         'instructor'       => [
