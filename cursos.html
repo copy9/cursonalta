@@ -182,17 +182,22 @@
       } else {
         gridView.style.display = "none";
         rowsView.style.display = "block";
-        var html = row("", window.COURSES);
-        var byCategory = function (list) {
-          return window.COURSES.filter(function (c) { return list.indexOf(c.category) !== -1; });
+        // Cada curso aparece em só uma faixa: a primeira que o aceita
+        var used = {};
+        var pick = function (list) { return list.filter(function (c) { return !used[c.id]; }); };
+        var take = function (list) { list.forEach(function (c) { used[c.id] = true; }); return list; };
+        var html = "";
+        var put = function (title, list) {
+          if (list.length) { html += row(title, take(list)); }
         };
-        html += row("Para começar do zero", window.COURSES.filter(function (c) { return c.level === "Iniciante" || c.level === "Todos os níveis"; }));
-        html += row("Carreira e produtividade", byCategory(["Produtividade", "Idiomas", "Finanças", "Concursos"]));
-        html += row("Criatividade e tecnologia", byCategory(["Design", "Tecnologia", "Marketing"]));
+        put("Para começar do zero", pick(window.COURSES.filter(function (c) { return c.level === "Iniciante" || c.level === "Todos os níveis"; })));
+        put("Carreira e produtividade", pick(byCategory(["Produtividade", "Idiomas", "Finanças", "Concursos"])));
+        put("Criatividade e tecnologia", pick(byCategory(["Design", "Tecnologia", "Marketing"])));
         categories.slice(1).forEach(function (cat) {
-          var catList = window.COURSES.filter(function (c) { return c.category === cat; });
-          if (catList.length >= 3) html += row(cat, catList);
+          var catList = pick(window.COURSES.filter(function (c) { return c.category === cat; }));
+          if (catList.length >= 3) put(cat, catList);
         });
+        put("Outros cursos", pick(window.COURSES));
         rowsView.innerHTML = html;
       }
     }

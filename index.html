@@ -297,14 +297,18 @@
              '</div>';
     }
 
-    var html = row("Todos os cursos", courses, "cursos.html");
+    // Cada curso aparece em só uma fileira: a da sua categoria (ou "Outros cursos")
+    var html = "";
+    var used = {};
     var cats = [];
     courses.forEach(function (c) { if (cats.indexOf(c.category) === -1) cats.push(c.category); });
     cats.forEach(function (cat) {
-      var list = courses.filter(function (c) { return c.category === cat; });
+      var list = courses.filter(function (c) { return c.category === cat && !used[c.id]; });
       // Só mostra a fileira da categoria quando ela tem cursos suficientes para encher a linha
-      if (list.length >= 3) html += row(cat, list);
+      if (list.length >= 3) { list.forEach(function (c) { used[c.id] = true; }); html += row(cat, list); }
     });
+    var rest = courses.filter(function (c) { return !used[c.id]; });
+    if (rest.length) html += row("Outros cursos", rest, "cursos.html");
     document.getElementById("rows").innerHTML = html;
   })();
 </script>
