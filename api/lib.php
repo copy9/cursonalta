@@ -186,8 +186,9 @@ function sync_pending_purchases($email) {
         $ref = (string)($p['ref'] ?? '');
         if ($ref === '' || ($p['at'] ?? 0) <= $now - 86400) { $done[] = $ref; continue; }
         $parts = ref_parts($ref);
-        if (count($parts) !== 3 || $parts[0] !== 'C') { $done[] = $ref; continue; }
-        $curso = $parts[2];
+        $ehMensal = count($parts) === 2 && $parts[0] === 'M';
+        if (!$ehMensal && (count($parts) !== 3 || $parts[0] !== 'C')) { $done[] = $ref; continue; }
+        $curso = $ehMensal ? null : $parts[2];
         [$code, $res] = mp_request('GET', '/v1/payments/search?sort=date_created&criteria=desc&limit=5&external_reference=' . rawurlencode($ref));
         if ($code !== 200 || !is_array($res)) continue;
         foreach (($res['results'] ?? []) as $pay) {
@@ -196,16 +197,20 @@ function sync_pending_purchases($email) {
             if ($status === 'approved') {
                 $avisoId = 'pay-' . (string)($pay['id'] ?? '');
                 $bump = payment_has_bump($pay);
-                users_modify(function (&$users) use ($email, $curso, $avisoId, $bump) {
+                users_modify(function (&$users) use ($email, $curso, $avisoId, $bump, $ehMensal) {
                     if (!isset($users[$email])) return;
                     $seen = $users[$email]['mp_seen'] ?? [];
                     if (in_array($avisoId, $seen, true)) return;
-                    if (($users[$email]['plan'] ?? '') !== 'todos') $users[$email]['plan'] = 'curso';
-                    $list2 = user_courses($users[$email]);
-                    if (!in_array($curso, $list2, true)) $list2[] = $curso;
-                    $users[$email]['courses'] = $list2;
-                    $users[$email]['course'] = $list2[0];
-                    if ($bump) give_todos($users[$email]);
+                    if ($ehMensal) {
+                        give_todos($users[$email]);
+                    } else {
+                        if (($users[$email]['plan'] ?? '') !== 'todos') $users[$email]['plan'] = 'curso';
+                        $list2 = user_courses($users[$email]);
+                        if (!in_array($curso, $list2, true)) $list2[] = $curso;
+                        $users[$email]['courses'] = $list2;
+                        $users[$email]['course'] = $list2[0];
+                        if ($bump) give_todos($users[$email]);
+                    }
                     $seen[] = $avisoId;
                     $users[$email]['mp_seen'] = array_slice($seen, -50);
                 });

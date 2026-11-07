@@ -132,8 +132,8 @@
 
       if (user.plan === "todos") {
         planName.textContent = "Todos os cursos";
-        planDesc.textContent = formatBRL(window.ALL_ACCESS_PRICE) + " por mês, com renovação automática.";
-        planChecks.innerHTML = "<li>Acesso a todos os cursos da plataforma</li><li>Cancele a renovação quando quiser</li>";
+        planDesc.textContent = formatBRL(window.ALL_ACCESS_PRICE) + " por 1 mês, pagamento único (sem renovação automática).";
+        planChecks.innerHTML = "<li>Acesso a todos os cursos da plataforma</li><li>32 dias de acesso, sem renovação automática</li>";
         statN.textContent = String(window.COURSES.length);
         statL.textContent = "cursos no seu plano";
         document.getElementById("course-slot").hidden = true;
