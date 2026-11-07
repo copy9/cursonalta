@@ -405,6 +405,20 @@
 
   function goList() { selected = -1; isNew = false; msg(""); render(); }
 
+  // Passa o formulário aberto para a lista. Devolve mensagem de erro, ou null se deu certo.
+  function applyOpenForm() {
+    if (!editing() || tab !== "cursos") return null;
+    var c = readForm();
+    if (!c.title) return "Informe o título do curso.";
+    if (!c.id || !/^[a-z0-9-]{3,60}$/.test(c.id)) return "Identificador inválido. Use letras minúsculas, números e hífen (3 a 60 caracteres).";
+    if (isNew && courses.some(function (x) { return x.id === c.id; })) return "Já existe um curso com este identificador.";
+    if (isNew) { courses.push(c); selected = courses.length - 1; }
+    else { courses[selected] = c; }
+    isNew = false;
+    selected = -1;
+    return null;
+  }
+
   function bind() {
     var tp = document.getElementById("tab-painel");
     if (tp) tp.addEventListener("click", function () { tab = "painel"; msg(""); if (!stats) loadStats(); else render(); });
@@ -441,14 +455,8 @@
 
     var apply = document.getElementById("btn-apply");
     if (apply) apply.addEventListener("click", function () {
-      var c = readForm();
-      if (!c.title) return msg("Informe o título do curso.", "err");
-      if (!c.id || !/^[a-z0-9-]{3,60}$/.test(c.id)) return msg("Identificador inválido. Use letras minúsculas, números e hífen (3 a 60 caracteres).", "err");
-      if (isNew && courses.some(function (x) { return x.id === c.id; })) return msg("Já existe um curso com este identificador.", "err");
-      if (isNew) { courses.push(c); selected = courses.length - 1; }
-      else { courses[selected] = c; }
-      isNew = false;
-      selected = -1;
+      var err = applyOpenForm();
+      if (err) return msg(err, "err");
       render();
       // Publica na hora: o curso aparece no site assim que você aplica
       document.getElementById("btn-save").click();
@@ -552,6 +560,9 @@
 
     var save = document.getElementById("btn-save");
     if (save) save.addEventListener("click", function () {
+      // Se há um curso aberto no formulário, ele entra na lista antes de salvar
+      var formErr = applyOpenForm();
+      if (formErr) return msg(formErr, "err");
       save.disabled = true;
       msg("Salvando...", "");
       fetch("api/courses.php", {
@@ -566,9 +577,10 @@
         if (r.body && r.body.ok) {
           courses = r.body.courses;
           selected = -1; isNew = false;
-          render();
-          loadStats();
-          msg("Salvo. O site já mostra as alterações (pode ser preciso recarregar a página).", "ok");
+          loadStats(function () {
+            render();
+            msg("Salvo. O site já mostra as alterações (pode ser preciso recarregar a página).", "ok");
+          });
         } else {
           msg(r.status === 403
             ? "Sua sessão expirou. Recarregue a página e entre de novo para salvar."
