@@ -37,21 +37,52 @@ if ($hasAll || $hasOne) {
     exit;
 }
 
+$mensalAvulso = false;
 if ($plano === 'todos') {
-    [$code, $res] = mp_request('POST', '/preapproval', [
-        'reason'            => 'Cursonalta - todos os cursos',
+    $assinatura = [
+        'reason'             => 'Cursonalta - todos os cursos',
         'external_reference' => 'T~' . $email,
-        'payer_email'       => $email,
-        'auto_recurring'    => [
+        'payer_email'        => $email,
+        'auto_recurring'     => [
             'frequency'          => 1,
             'frequency_type'     => 'months',
-            // Começa agora (o Mercado Pago exige data de início; 5 minutos à frente evita rejeição por horário)
-            'start_date'         => (new DateTime('@' . (time() + 300)))->setTimezone(new DateTimeZone('America/Sao_Paulo'))->format('Y-m-d\TH:i:s.000P'),
             'transaction_amount' => PRICE_TODOS,
             'currency_id'        => 'BRL',
         ],
-        'back_url'          => 'https://cursonalta.com/minha-area.html',
-    ]);
+        'back_url'           => 'https://cursonalta.com/minha-area.html',
+        'status'             => 'pending',
+    ];
+    [$code, $res] = mp_request('POST', '/preapproval', $assinatura);
+    if ($code < 200 || $code >= 300 || empty($res['init_point'])) {
+        mp_log_error('assinatura (sem start_date)');
+        // Segunda tentativa: com data de início (alguns perfis de conta exigem)
+        $assinatura['auto_recurring']['start_date'] = gmdate('Y-m-d\TH:i:s.000\Z', time() + 300);
+        unset($assinatura['status']);
+        [$code, $res] = mp_request('POST', '/preapproval', $assinatura);
+    }
+    if ($code < 200 || $code >= 300 || empty($res['init_point'])) {
+        // A conta não aceitou a assinatura: cobra o mês por pagamento único (Pix ou cartão).
+        // O acesso a todos os cursos é liberado por 1 mês quando o pagamento é aprovado.
+        mp_log_error('assinatura (com start_date)');
+        $mensalAvulso = true;
+        [$code, $res] = mp_request('POST', '/checkout/preferences', [
+            'items' => [[
+                'id'          => 'todos-1-mes',
+                'title'       => 'Cursonalta - todos os cursos por 1 mes',
+                'quantity'    => 1,
+                'unit_price'  => (float)PRICE_TODOS,
+                'currency_id' => 'BRL',
+            ]],
+            'payer'              => ['email' => $email],
+            'external_reference' => 'M~' . $email,
+            'back_urls'          => [
+                'success' => 'https://cursonalta.com/minha-area.html',
+                'pending' => 'https://cursonalta.com/minha-area.html',
+                'failure' => 'https://cursonalta.com/minha-area.html',
+            ],
+            'auto_return'        => 'approved',
+        ]);
+    }
 } else {
     $cursos = [];
     $file = app_dir() . '/courses.json';
@@ -116,6 +147,7 @@ if ($code < 200 || $code >= 300 || !$url) {
 }
 
 if ($plano === 'curso') remember_pending_purchase($email, 'C~' . $email . '~' . $curso);
+if ($mensalAvulso) remember_pending_purchase($email, 'M~' . $email);
 
 header('Location: ' . $url);
 exit;

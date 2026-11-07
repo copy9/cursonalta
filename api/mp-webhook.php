@@ -26,6 +26,8 @@ function parse_ref($ref) {
     $p = ref_parts($ref);
     if ($p[0] === 'C' && count($p) === 3) return ['tipo' => 'curso', 'email' => strtolower($p[1]), 'curso' => $p[2]];
     if ($p[0] === 'T' && count($p) === 2) return ['tipo' => 'todos', 'email' => strtolower($p[1]), 'curso' => null];
+    // "M~email" = um mês de todos os cursos pago à vista (quando a assinatura não está disponível)
+    if ($p[0] === 'M' && count($p) === 2) return ['tipo' => 'mes', 'email' => strtolower($p[1]), 'curso' => null];
     return null;
 }
 
@@ -48,6 +50,15 @@ if ($type === 'payment') {
     [$code, $p] = mp_request('GET', '/v1/payments/' . rawurlencode($dataId));
     if ($code !== 200 || !is_array($p)) out(200, ['ok' => true, 'skipped' => 'consulta falhou']);
     $ref = parse_ref($p['external_reference'] ?? '');
+    if ($ref && $ref['tipo'] === 'mes') {
+        $status = $p['status'] ?? '';
+        if ($status === 'approved') {
+            grant($ref['email'], function (&$u) { give_todos($u); }, 'pay-' . $dataId);
+        } elseif (in_array($status, ['refunded', 'charged_back', 'cancelled'], true)) {
+            grant($ref['email'], function (&$u) { if (($u['plan'] ?? '') === 'todos') { $u['plan'] = 'none'; $u['plan_expires_at'] = 0; } }, 'pay-' . $dataId . '-' . $status);
+        }
+        out(200, ['ok' => true]);
+    }
     if (!$ref || $ref['tipo'] !== 'curso') out(200, ['ok' => true, 'skipped' => 'referência']);
     $status = $p['status'] ?? '';
     $email = $ref['email'];
