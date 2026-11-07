@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin.html
+Disallow: /admin-config.html
+Disallow: /minha-area.html
+
+Sitemap: https://cursonalta.com/sitemap.xml
