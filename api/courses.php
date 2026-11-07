@@ -82,12 +82,14 @@ function cover_path($v) {
 
 // Link do grupo do Telegram: só endereços t.me ou telegram.me
 function telegram_link($v) {
-    $s = trim((string)$v);
+    $s = preg_replace('/\s+/', '', (string)$v);
     if ($s === '') return '';
-    if (!preg_match('#^https://(t\.me|telegram\.me)/[A-Za-z0-9_+/-]{3,}$#', $s)) {
-        out(422, ['ok' => false, 'error' => 'Link do Telegram inválido. Use um endereço como https://t.me/seugrupo.']);
+    // Aceita convites (t.me/+codigo) e grupos públicos (t.me/nome), com ou sem https
+    if (!preg_match('#^(https?://)?(www\.)?(t\.me|telegram\.me)/\S+$#i', $s)) {
+        out(422, ['ok' => false, 'error' => 'Link do Telegram inválido. Use um endereço como https://t.me/+codigo ou https://t.me/seugrupo.']);
     }
-    return $s;
+    if (!preg_match('#^https?://#i', $s)) $s = 'https://' . $s;
+    return mb_substr($s, 0, 200);
 }
 
 $clean = [];
