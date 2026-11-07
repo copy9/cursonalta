@@ -118,7 +118,7 @@ foreach ($body['courses'] as $c) {
             $modules[] = [
                 'title'   => text(isset($m['title']) ? $m['title'] : '', 160, 'título do módulo', 1),
                 'lessons' => int_in(isset($m['lessons']) ? $m['lessons'] : 0, 0, 999, 'aulas do módulo'),
-                'time'    => text(isset($m['time']) ? $m['time'] : '', 40, 'duração do módulo'),
+                'time'    => clip(isset($m['time']) ? $m['time'] : '', 40),
             ];
         }
     }
@@ -132,12 +132,12 @@ foreach ($body['courses'] as $c) {
         'category'         => clip(isset($c['category']) ? $c['category'] : '', 40),
         'level'            => clip(isset($c['level']) ? $c['level'] : '', 40),
         'instructor'       => [
-            'name'     => text(isset($ins['name']) ? $ins['name'] : '', 80, 'nome do professor'),
-            'role'     => text(isset($ins['role']) ? $ins['role'] : '', 80, 'cargo do professor'),
-            'initials' => text(isset($ins['initials']) ? $ins['initials'] : '', 3, 'iniciais'),
+            'name'     => clip(isset($ins['name']) ? $ins['name'] : '', 80),
+            'role'     => clip(isset($ins['role']) ? $ins['role'] : '', 80),
+            'initials' => clip(isset($ins['initials']) ? $ins['initials'] : '', 3),
         ],
         'price'            => round($price, 2),
-        'duration'         => text(isset($c['duration']) ? $c['duration'] : '', 40, 'duração'),
+        'duration'         => clip(isset($c['duration']) ? $c['duration'] : '', 40),
         'lessons'          => int_in(isset($c['lessons']) ? $c['lessons'] : 0, 0, 999, 'aulas'),
         'cover'            => cover_path(isset($c['cover']) ? $c['cover'] : ''),
         'telegram'         => telegram_link(isset($c['telegram']) ? $c['telegram'] : ''),
