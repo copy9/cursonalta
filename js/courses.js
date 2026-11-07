@@ -213,6 +213,30 @@ window.COURSES = STATIC_COURSES;
   } catch (e) { /* sem conexão: usa a lista padrão */ }
 })();
 
+// Textos digitados em CAIXA ALTA aparecem em formato normal (só na exibição, o admin guarda o que digitou)
+window.normalText = function (t, mode) {
+  var s = String(t == null ? "" : t);
+  var letters = s.replace(/[^A-Za-zÀ-ÿ]/g, "");
+  if (letters.length < 4 || letters !== letters.toUpperCase()) return s;
+  var lower = s.toLowerCase();
+  if (mode === "sentence") {
+    return lower.replace(/(^\s*|[.!?]\s+)([a-zà-ÿ])/g, function (m, a, b) { return a + b.toUpperCase(); });
+  }
+  var small = { de: 1, da: 1, do: 1, das: 1, dos: 1, e: 1, em: 1, para: 1, com: 1, por: 1, a: 1, o: 1, no: 1, na: 1, nos: 1, nas: 1, ao: 1, à: 1, às: 1 };
+  var first = true;
+  return lower.replace(/[^\s–—\-+:|]+/g, function (w) {
+    var out = (!first && small[w]) ? w : w.charAt(0).toUpperCase() + w.slice(1);
+    first = false;
+    return out;
+  });
+};
+(function () {
+  (window.COURSES || []).forEach(function (c) {
+    if (c.title) c.title = window.normalText(c.title, "title");
+    if (c.shortDescription) c.shortDescription = window.normalText(c.shortDescription, "sentence");
+  });
+})();
+
 window.ALL_ACCESS_PRICE = 24.99;
 
 window.formatBRL = function (value) {
