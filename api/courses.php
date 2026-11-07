@@ -129,8 +129,8 @@ foreach ($body['courses'] as $c) {
         'title'            => text(isset($c['title']) ? $c['title'] : '', 200, 'título', 1),
         'shortDescription' => clip(isset($c['shortDescription']) ? $c['shortDescription'] : '', 1000),
         'description'      => clip(isset($c['description']) ? $c['description'] : '', 20000),
-        'category'         => text(isset($c['category']) ? $c['category'] : '', 40, 'categoria', 2),
-        'level'            => text(isset($c['level']) ? $c['level'] : '', 40, 'nível', 2),
+        'category'         => clip(isset($c['category']) ? $c['category'] : '', 40),
+        'level'            => clip(isset($c['level']) ? $c['level'] : '', 40),
         'instructor'       => [
             'name'     => text(isset($ins['name']) ? $ins['name'] : '', 80, 'nome do professor'),
             'role'     => text(isset($ins['role']) ? $ins['role'] : '', 80, 'cargo do professor'),
