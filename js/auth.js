@@ -107,6 +107,21 @@
         document.getElementById("area-hello").textContent = "Olá, " + r.user.name.split(" ")[0];
         area.style.visibility = "visible";
         renderArea(r.user);
+        // Pagamento recém-feito: confere de novo a cada 6 segundos (por até 5 minutos) e recarrega quando o acesso mudar
+        var sig = JSON.stringify([r.user.plan, r.user.course, r.user.courses || null]);
+        var tries = 0;
+        var timer = setInterval(function () {
+          tries++;
+          if (tries > 50) { clearInterval(timer); return; }
+          fetch(API + "?action=me", { credentials: "same-origin", cache: "no-store" })
+            .then(function (res) { return res.json(); })
+            .then(function (n) {
+              if (!n.ok) return;
+              var now = JSON.stringify([n.user.plan, n.user.course, n.user.courses || null]);
+              if (now !== sig) { clearInterval(timer); window.location.reload(); }
+            })
+            .catch(function () { /* tenta de novo na próxima volta */ });
+        }, 6000);
       })
       .catch(function () { window.location.replace("entrar.html"); });
 
