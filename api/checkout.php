@@ -51,7 +51,6 @@ if ($plano === 'todos') {
             'currency_id'        => 'BRL',
         ],
         'back_url'          => 'https://cursonalta.com/minha-area.html',
-        'status'            => 'pending',
     ]);
 } else {
     $cursos = [];
@@ -106,7 +105,9 @@ if ($code < 200 || $code >= 300 || !$url) {
     $motivo = '';
     if (is_array($res)) {
         $motivo = (string)($res['message'] ?? '');
-        if ($motivo === '' && !empty($res['cause'][0]['description'])) $motivo = (string)$res['cause'][0]['description'];
+        $causas = [];
+        foreach (($res['cause'] ?? []) as $c) { if (!empty($c['description'])) $causas[] = (string)$c['description']; elseif (!empty($c['code'])) $causas[] = 'código ' . $c['code']; }
+        if ($causas) $motivo .= ($motivo !== '' ? ' - ' : '') . implode('; ', $causas);
     }
     $motivo = mb_substr(trim($motivo), 0, 160);
     header('Location: /minha-area.html?erro=pagamento&motivo=' . urlencode($motivo));
