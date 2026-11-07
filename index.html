@@ -43,9 +43,13 @@
 <main>
   <!-- BANNER EM DESTAQUE (preenchido por JavaScript) -->
   <style>
-    .banner-dots { display:flex; gap:8px; margin-top:18px; }
-    .banner-dot { width:10px; height:10px; border-radius:99px; border:0; background:rgba(20,20,20,.25); cursor:pointer; padding:0; }
-    .banner-dot.on { background:var(--orange); width:26px; }
+    .banner-dots { position:absolute; left:0; bottom:72px; display:flex; flex-wrap:wrap; gap:6px; z-index:3; max-width:100%; }
+    .banner-dot { width:8px; height:8px; border-radius:99px; border:0; background:rgba(20,20,20,.22); cursor:pointer; padding:0; }
+    .banner-dot.on { background:var(--orange); width:22px; }
+    .banner h1 { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; min-height:3em; }
+    .banner-desc { display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; min-height:6.4em; }
+    .banner-inner > .banner-content { min-width:0; }
+    .banner-poster { max-width:100%; }
   </style>
   <section class="banner" id="banner">
     <div class="banner-bg" id="banner-bg"></div>
@@ -264,7 +268,13 @@
   (function () {
     var courses = window.COURSES;
 
-    // Banner em rodízio: troca de curso a cada 7 segundos, pausa quando o mouse está em cima
+    // Texto puro e curto para o banner: tira marcações de markdown (#, **, |) e corta no limite
+    function plainText(t, max) {
+      var s = String(t || "").replace(/[#*_`>|]+/g, " ").replace(/\s+/g, " ").trim();
+      return s.length > max ? s.slice(0, max).replace(/\s+\S*$/, "") + "…" : s;
+    }
+
+    // Banner em rodízio automático: troca de curso a cada 7 segundos, sem precisar clicar
     var slides = courses.filter(function (c) { return c.cover; });
     if (!slides.length) slides = courses.slice();
     var current = 0;
@@ -284,8 +294,8 @@
       }
       document.getElementById("banner-title").textContent = featured.title;
       document.getElementById("banner-meta").textContent =
-        featured.category + " · " + featured.level + " · " + featured.duration;
-      document.getElementById("banner-desc").textContent = featured.shortDescription;
+        [featured.category, featured.level, featured.duration].filter(Boolean).join(" · ");
+      document.getElementById("banner-desc").textContent = plainText(featured.shortDescription, 200);
       document.getElementById("banner-cta").href = "curso.html?id=" + featured.id;
       document.getElementById("banner-play").href = "curso.html?id=" + featured.id;
       if (dotsEl) {
@@ -308,11 +318,6 @@
       show(parseInt(b.getAttribute("data-i"), 10));
       start();
     });
-    var bannerEl = document.getElementById("banner");
-    if (bannerEl) {
-      bannerEl.addEventListener("mouseenter", stop);
-      bannerEl.addEventListener("mouseleave", start);
-    }
 
     show(0);
     start();
