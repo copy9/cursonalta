@@ -103,7 +103,10 @@ function http_call($method, $url, array $headers = [], $body = null) {
     curl_setopt_array($ch, $opts);
     $raw = curl_exec($ch);
     $code = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    $err = curl_error($ch);
     curl_close($ch);
+    // Guarda a última chamada (sem cabeçalhos, que têm o token) para diagnóstico
+    $GLOBALS['last_http'] = ['url' => $url, 'sent' => $opts[CURLOPT_POSTFIELDS] ?? null, 'code' => $code, 'raw' => is_string($raw) ? mb_substr($raw, 0, 2000) : null, 'curl_error' => $err];
     $json = is_string($raw) ? json_decode($raw, true) : null;
     return [$code, $json];
 }
@@ -124,6 +127,20 @@ function mp_request($method, $path, $body = null) {
 // Compras antigas usavam "|", que o firewall do Mercado Pago pode bloquear; as duas formas são aceitas.
 function ref_parts($ref) {
     return preg_split('/[|~]/', (string)$ref, 3);
+}
+
+// Grava o último erro do Mercado Pago em app-data (bloqueado para a web), para o admin conferir.
+// Do token só guarda o formato: tamanho, começo e se tem espaço ou quebra de linha.
+function mp_log_error($contexto) {
+    $t = (string)(settings_read()['mp_access_token'] ?? '');
+    ensure_app_dir();
+    @file_put_contents(app_dir() . '/mp-last-error.json', json_encode([
+        'at'       => date('c'),
+        'contexto' => $contexto,
+        'call'     => $GLOBALS['last_http'] ?? null,
+        'token'    => ['len' => strlen($t), 'inicio' => substr($t, 0, 8), 'tem_espaco' => (bool)preg_match('/\s/', $t), 'so_ascii' => (bool)preg_match('/^[\x21-\x7E]*$/', $t)],
+        'php'      => PHP_VERSION,
+    ], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
 }
 
 // Texto seguro para enviar ao Mercado Pago (títulos e descrições):

@@ -101,6 +101,7 @@ if ($plano === 'todos') {
 $url = is_array($res) ? ($res['init_point'] ?? null) : null;
 if ($code < 200 || $code >= 300 || !$url) {
     error_log('Mercado Pago checkout (' . $plano . ') falhou: HTTP ' . $code . ' ' . json_encode($res));
+    mp_log_error('checkout ' . $plano);
     // Mostra ao aluno o motivo que o Mercado Pago informou (texto curto, sem dados sensíveis)
     $motivo = '';
     if (is_array($res)) {
