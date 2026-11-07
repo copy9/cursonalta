@@ -87,7 +87,8 @@
     bump: ["bump", "adicionar", "adiciono", "marcar", "marco", "checkbox", "caixinha", "extra", "junto", "junto com", "combinado", "tambem", "tambem"],
     trocar: ["trocar", "mudar", "upgrade", "migrar", "alterar", "outro", "outra", "mais um"],
     comparar: ["diferenca", "diferente", "comparar", "comparacao", "melhor", "vale", "compensa", "qual", "qual e", "escolher", "escolho"],
-    intro: ["como", "funciona", "fazer", "faco", "usar", "uso", "passo", "passos", "tutorial", "explica", "explicar", "explique", "ensina"]
+    intro: ["como", "funciona", "fazer", "faco", "usar", "uso", "passo", "passos", "tutorial", "explica", "explicar", "explique", "ensina"],
+    perder: ["perco", "perder", "perdo", "perde", "perdi", "perca", "perdem", "perderei", "sumir", "some", "sumem", "depois", "e depois", "fim", "expirar", "encerrar", "encerra", "acabou", "acaba", "perdo o acesso"]
   };
 
   // Palavras que não ajudam a entender a pergunta
@@ -100,6 +101,8 @@
     { g: ["avulso"], a: "O curso avulso custa R$ 14,99. Você paga uma vez, e o curso fica com você até concluir. Não tem renovação." },
     { g: ["avulso", "preco"], a: "O curso avulso custa R$ 14,99. Você paga uma vez, e o curso fica com você até concluir. Não tem renovação." },
     { g: ["pacote"], a: "O pacote de todos os cursos custa R$ 24,99, pagamento único. Ele dá acesso a todos os cursos da plataforma por 32 dias. Não há cobrança automática." },
+    { g: ["perder", "tempo"], a: "Quando os 32 dias do pacote de todos os cursos acabam, o acesso a todos os cursos é encerrado, e você sai do grupo geral. Os cursos que você comprou avulso continuam com você até concluir. Para voltar a ter todos os cursos, compre o pacote de novo." },
+    { g: ["perder"], a: "Quando o prazo do pacote de todos os cursos acaba, o acesso a todos os cursos é encerrado, e você sai do grupo geral. Os cursos que você comprou avulso continuam com você até concluir. Para voltar a ter todos os cursos, compre o pacote de novo." },
     { g: ["bump"], a: "Na página do curso, marque \"Adicionar acesso a todos os cursos por 1 mês (+ R$ 10,00)\". Você paga R$ 24,99 no total: o curso e 1 mês de todos os cursos." },
     { g: ["avulso", "curso", "preco"], a: "O curso avulso custa R$ 14,99. Você paga uma vez, e o curso fica com você até concluir. Não tem renovação." },
     { g: ["pacote", "preco"], a: "O pacote de todos os cursos custa R$ 24,99, pagamento único. Ele dá acesso a todos os cursos da plataforma por 32 dias. Não há cobrança automática: quando o prazo acabar, você compra de novo se quiser continuar." },
