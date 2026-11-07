@@ -22,8 +22,8 @@ if ($dataId === '' && isset($_GET['data.id'])) $dataId = (string)$_GET['data.id'
 if ($dataId === '') out(200, ['ok' => true, 'ignored' => true]);
 
 function parse_ref($ref) {
-    // "C|email|curso" = compra avulsa; "T|email" = assinatura de todos os cursos
-    $p = explode('|', (string)$ref, 3);
+    // "C~email~curso" = compra avulsa; "T~email" = assinatura de todos os cursos
+    $p = ref_parts($ref);
     if ($p[0] === 'C' && count($p) === 3) return ['tipo' => 'curso', 'email' => strtolower($p[1]), 'curso' => $p[2]];
     if ($p[0] === 'T' && count($p) === 2) return ['tipo' => 'todos', 'email' => strtolower($p[1]), 'curso' => null];
     return null;

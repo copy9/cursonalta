@@ -105,12 +105,12 @@ foreach ($payments as $p) {
     $status = $p['status'] ?? '';
     $amount = (float)($p['transaction_amount'] ?? 0);
     $ref = (string)($p['external_reference'] ?? '');
-    $parts = explode('|', $ref, 3);
+    $parts = ref_parts($ref);
     $email = count($parts) >= 2 ? $parts[1] : (($p['payer']['email'] ?? '') ?: '');
     $cursoId = (count($parts) === 3 && $parts[0] === 'C') ? $parts[2] : null;
     $type = $cursoId ? 'Curso avulso' : ((count($parts) >= 1 && $parts[0] === 'T') ? 'Assinatura' : 'Outro');
     $when = isset($p['date_created']) ? strtotime($p['date_created']) : 0;
-    // Só conta pagamentos feitos pela plataforma (referência C| ou T|); outros pagamentos da conta Mercado Pago são ignorados
+    // Só conta pagamentos feitos pela plataforma (referência C~ ou T~, ou C| e T| das compras antigas); outros pagamentos da conta Mercado Pago são ignorados
     if (!in_array($parts[0] ?? '', ['C', 'T'], true)) continue;
 
     if (in_array($status, ['refunded', 'charged_back'], true)) $refunds++;

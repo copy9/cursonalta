@@ -40,7 +40,7 @@ if ($hasAll || $hasOne) {
 if ($plano === 'todos') {
     [$code, $res] = mp_request('POST', '/preapproval', [
         'reason'            => 'Cursonalta - todos os cursos',
-        'external_reference' => 'T|' . $email,
+        'external_reference' => 'T~' . $email,
         'payer_email'       => $email,
         'auto_recurring'    => [
             'frequency'          => 1,
@@ -88,7 +88,7 @@ if ($plano === 'todos') {
         'items'    => $items,
         'metadata' => ['bump' => $bump ? 'todos' : ''],
         'payer'              => ['email' => $email],
-        'external_reference' => 'C|' . $email . '|' . $curso,
+        'external_reference' => 'C~' . $email . '~' . $curso,
         'back_urls'          => [
             'success' => 'https://cursonalta.com/minha-area.html',
             'pending' => 'https://cursonalta.com/minha-area.html',
@@ -114,7 +114,7 @@ if ($code < 200 || $code >= 300 || !$url) {
     exit;
 }
 
-if ($plano === 'curso') remember_pending_purchase($email, 'C|' . $email . '|' . $curso);
+if ($plano === 'curso') remember_pending_purchase($email, 'C~' . $email . '~' . $curso);
 
 header('Location: ' . $url);
 exit;

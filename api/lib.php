@@ -120,6 +120,12 @@ function mp_request($method, $path, $body = null) {
     ], $body);
 }
 
+// Referência do pedido: "C~email~curso" ou "T~email".
+// Compras antigas usavam "|", que o firewall do Mercado Pago pode bloquear; as duas formas são aceitas.
+function ref_parts($ref) {
+    return preg_split('/[|~]/', (string)$ref, 3);
+}
+
 // Texto seguro para enviar ao Mercado Pago (títulos e descrições):
 // tira HTML, emojis e símbolos que o firewall deles costuma bloquear, mantém letras com acento.
 function mp_text($s, $max = 120) {
@@ -162,7 +168,7 @@ function sync_pending_purchases($email) {
     foreach ($list as $p) {
         $ref = (string)($p['ref'] ?? '');
         if ($ref === '' || ($p['at'] ?? 0) <= $now - 86400) { $done[] = $ref; continue; }
-        $parts = explode('|', $ref, 3);
+        $parts = ref_parts($ref);
         if (count($parts) !== 3 || $parts[0] !== 'C') { $done[] = $ref; continue; }
         $curso = $parts[2];
         [$code, $res] = mp_request('GET', '/v1/payments/search?sort=date_created&criteria=desc&limit=5&external_reference=' . rawurlencode($ref));
