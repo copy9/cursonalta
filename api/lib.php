@@ -5,7 +5,7 @@
 require_once __DIR__ . '/config.php';
 
 const PRICE_CURSO = 14.99;   // um curso, pagamento único, acesso até concluir
-const PRICE_TODOS = 24.99;   // todos os cursos, assinatura mensal
+const PRICE_TODOS = 0.50;   // TESTE: valor temporário de R$ 0,50 para compra de teste (voltar para 24.99)   // todos os cursos, assinatura mensal
 const PRICE_BUMP  = 10.00;    // order bump: acesso a todos os cursos por 1 mês, junto com um curso avulso
 const DAYS_TODOS  = 32;      // um mês + margem de atraso antes de remover do grupo
 
