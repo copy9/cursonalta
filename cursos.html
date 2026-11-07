@@ -186,6 +186,9 @@
         var used = {};
         var pick = function (list) { return list.filter(function (c) { return !used[c.id]; }); };
         var take = function (list) { list.forEach(function (c) { used[c.id] = true; }); return list; };
+        var byCategory = function (cats) {
+          return window.COURSES.filter(function (c) { return cats.indexOf(c.category) !== -1; });
+        };
         var html = "";
         var put = function (title, list) {
           if (list.length) { html += row(title, take(list)); }
