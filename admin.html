@@ -243,7 +243,7 @@
 
   function loadStats(then) {
     statsErr = "";
-    fetch("api/admin-stats.php", { credentials: "same-origin" })
+    fetch("api/admin-stats.php?t=" + Date.now(), { cache: "no-store", credentials: "same-origin" })
       .then(function (res) { return res.json().then(function (j) { return { status: res.status, body: j }; }); })
       .then(function (r) {
         if (r.body && r.body.ok) stats = r.body;
@@ -469,7 +469,8 @@
       courses.splice(selected, 1);
       selected = -1;
       render();
-      msg("Curso removido. Clique em Salvar no site para publicar.", "ok");
+      // Exclui de vez: salva no servidor na hora, sem precisar clicar em "Salvar no site"
+      document.getElementById("btn-save").click();
     });
 
     // Identificador: preenche sozinho com o título, até o admin digitar um próprio
