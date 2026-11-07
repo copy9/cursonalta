@@ -129,8 +129,16 @@
     var chipsEl = document.getElementById("chips");
 
     var activeCat = new URLSearchParams(window.location.search).get("cat") || "Todos";
+    function catKey(c) { return String(c || "").trim().toLowerCase(); }
+    function catLabel(c) { var t = catKey(c); return t ? t.charAt(0).toUpperCase() + t.slice(1) : ""; }
     var categories = ["Todos"];
-    window.COURSES.forEach(function (c) { if (categories.indexOf(c.category) === -1) categories.push(c.category); });
+    var seenCat = {};
+    window.COURSES.forEach(function (c) {
+      var k = catKey(c.category);
+      if (!k || seenCat[k]) return;
+      seenCat[k] = true;
+      categories.push(catLabel(c.category));
+    });
 
     function poster(c) {
       var img = c.cover
@@ -152,7 +160,7 @@
       var term = search.value.trim().toLowerCase();
       var lvl = level.value;
       var list = window.COURSES.filter(function (c) {
-        var matchCat = activeCat === "Todos" || c.category === activeCat;
+        var matchCat = activeCat === "Todos" || catKey(c.category) === catKey(activeCat);
         var matchLvl = !lvl || c.level === lvl;
         var hay = (c.title + " " + c.shortDescription + " " + c.category + " " + c.instructor.name).toLowerCase();
         return matchCat && matchLvl && (!term || hay.indexOf(term) !== -1);
@@ -175,34 +183,10 @@
       count.textContent = r.list.length + (r.list.length === 1 ? " curso encontrado" : " cursos encontrados");
       empty.style.display = r.list.length ? "none" : "block";
 
-      if (r.filtering) {
-        rowsView.style.display = "none";
-        gridView.style.display = r.list.length ? "block" : "none";
-        grid.innerHTML = r.list.map(poster).join("");
-      } else {
-        gridView.style.display = "none";
-        rowsView.style.display = "block";
-        // Cada curso aparece em só uma faixa: a primeira que o aceita
-        var used = {};
-        var pick = function (list) { return list.filter(function (c) { return !used[c.id]; }); };
-        var take = function (list) { list.forEach(function (c) { used[c.id] = true; }); return list; };
-        var byCategory = function (cats) {
-          return window.COURSES.filter(function (c) { return cats.indexOf(c.category) !== -1; });
-        };
-        var html = "";
-        var put = function (title, list) {
-          if (list.length) { html += row(title, take(list)); }
-        };
-        put("Para começar do zero", pick(window.COURSES.filter(function (c) { return c.level === "Iniciante" || c.level === "Todos os níveis"; })));
-        put("Carreira e produtividade", pick(byCategory(["Produtividade", "Idiomas", "Finanças", "Concursos"])));
-        put("Criatividade e tecnologia", pick(byCategory(["Design", "Tecnologia", "Marketing"])));
-        categories.slice(1).forEach(function (cat) {
-          var catList = pick(window.COURSES.filter(function (c) { return c.category === cat; }));
-          if (catList.length >= 3) put(cat, catList);
-        });
-        put("Outros cursos", pick(window.COURSES));
-        rowsView.innerHTML = html;
-      }
+      // Visão padrão e filtrada: grade com todos os cursos, sem precisar arrastar faixas
+      rowsView.style.display = "none";
+      gridView.style.display = r.list.length ? "block" : "none";
+      grid.innerHTML = r.list.map(poster).join("");
     }
 
     chipsEl.addEventListener("click", function (e) {
