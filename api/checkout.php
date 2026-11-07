@@ -17,7 +17,9 @@ $curso = isset($_GET['curso']) ? (string)$_GET['curso'] : '';
 if ($plano !== 'curso' && $plano !== 'todos') out(422, ['ok' => false, 'error' => 'Escolha o plano.']);
 
 if (empty($_SESSION['user'])) {
-    header('Location: /cadastro.html?plano=' . $plano . ($curso !== '' ? '&curso=' . urlencode($curso) : ''));
+    // Depois de criar a conta ou entrar, o aluno volta direto para esta compra
+    $volta = 'api/checkout.php?plano=' . $plano . ($curso !== '' ? '&curso=' . urlencode($curso) : '');
+    header('Location: /cadastro.html?next=' . urlencode($volta));
     exit;
 }
 

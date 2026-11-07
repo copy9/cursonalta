@@ -24,6 +24,28 @@
     btn.textContent = busy ? "Aguarde..." : label;
   }
 
+  // Se o aluno veio de uma compra (?next=api/checkout.php?...), volta para ela depois de entrar
+  function nextPage() {
+    try {
+      var n = new URLSearchParams(window.location.search).get("next") || "";
+      if (/^api\/checkout\.php\?plano=(curso|todos)(&curso=[A-Za-z0-9_-]+)?$/.test(n)) return n;
+    } catch (e) { /* sem leitura da URL: segue o fluxo normal */ }
+    return null;
+  }
+  function afterAuth(r) {
+    var n = nextPage();
+    if (n) return n;
+    return r.user.role === "admin" ? "admin.html" : "minha-area.html";
+  }
+  // Mantém o ?next nos links entre entrar e criar conta
+  (function keepNext() {
+    var n = nextPage();
+    if (!n) return;
+    document.querySelectorAll('a[href="entrar.html"], a[href="cadastro.html"]').forEach(function (a) {
+      a.href = a.getAttribute("href") + "?next=" + encodeURIComponent(n);
+    });
+  })();
+
   // Cadastro
   var signup = document.getElementById("signup-form");
   if (signup) {
@@ -39,7 +61,7 @@
         email: document.getElementById("email").value,
         password: document.getElementById("password").value
       }).then(function (r) {
-        if (r.ok) { window.location.href = r.user.role === "admin" ? "admin.html" : "minha-area.html"; return; }
+        if (r.ok) { window.location.href = afterAuth(r); return; }
         showMsg(msg, r.error || "Não foi possível criar sua conta.");
         setBusy(btn, false, label);
       }).catch(function () {
@@ -63,7 +85,7 @@
         email: document.getElementById("email").value,
         password: document.getElementById("password").value
       }).then(function (r) {
-        if (r.ok) { window.location.href = r.user.role === "admin" ? "admin.html" : "minha-area.html"; return; }
+        if (r.ok) { window.location.href = afterAuth(r); return; }
         showMsg(lmsg, r.error || "Não foi possível entrar.");
         setBusy(btn, false, label);
       }).catch(function () {
