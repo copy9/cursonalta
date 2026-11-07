@@ -313,11 +313,29 @@
     });
     if (!list.length) return '<p class="adm-empty">Nenhum aluno encontrado.</p>';
     var planLabel = function (p) { return p === "todos" ? '<span class="adm-pill ok">Todos os cursos</span>' : p === "curso" ? '<span class="adm-pill">Cursos avulsos</span>' : '<span class="adm-pill warn">Sem plano</span>'; };
-    return '<div class="adm-scroll"><table class="adm-table"><tr><th>Nome</th><th>E-mail</th><th>Plano</th><th>Vence</th><th class="num">Cursos</th><th>Cadastro</th></tr>' +
+    return '<div class="adm-scroll"><table class="adm-table"><tr><th>Nome</th><th>E-mail</th><th>Plano</th><th>Vence</th><th class="num">Cursos</th><th>Cadastro</th><th></th></tr>' +
       list.map(function (s) {
-        return '<tr><td>' + esc(s.name) + '</td><td>' + esc(s.email) + '</td><td>' + planLabel(s.plan) + '</td><td>' + esc(s.expires || "—") + '</td><td class="num">' + s.courses + '</td><td>' + esc((s.created || "").slice(0, 10)) + '</td></tr>';
+        return '<tr><td>' + esc(s.name) + '</td><td>' + esc(s.email) + '</td><td>' + planLabel(s.plan) + '</td><td>' + esc(s.expires || "—") + '</td><td class="num">' + s.courses + '</td><td>' + esc((s.created || "").slice(0, 10)) + '</td><td><button type="button" class="adm-btn ghost al-del" data-email="' + esc(s.email) + '" style="color:#b42318">Excluir</button></td></tr>';
       }).join("") + '</table></div>';
   }
+
+  function excluirAluno(email) {
+    fetch("api/student-delete.php", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email })
+    }).then(function (res) { return res.json().catch(function () { return { ok: false, error: "Resposta inválida." }; }); })
+      .then(function (r) {
+        if (!r.ok) { alert(r.error || "Não foi possível excluir."); return; }
+        loadStats(function () { render(); });
+      })
+      .catch(function () { alert("Sem conexão. Tente de novo."); });
+  }
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest(".al-del");
+    if (b) excluirAluno(b.getAttribute("data-email"));
+  });
 
   function alunosPanelHTML() {
     if (!stats) return dashHTML();
