@@ -45,6 +45,8 @@ if ($plano === 'todos') {
         'auto_recurring'    => [
             'frequency'          => 1,
             'frequency_type'     => 'months',
+            // Começa agora (o Mercado Pago exige data de início; 5 minutos à frente evita rejeição por horário)
+            'start_date'         => (new DateTime('@' . (time() + 300)))->setTimezone(new DateTimeZone('America/Sao_Paulo'))->format('Y-m-d\TH:i:s.000P'),
             'transaction_amount' => PRICE_TODOS,
             'currency_id'        => 'BRL',
         ],
