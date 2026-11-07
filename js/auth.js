@@ -211,7 +211,7 @@
             '<div class="ma-meta">0% concluído</div>' +
             '<div class="ma-actions">' +
               '<a class="btn btn-primary" href="curso.html?id=' + course.id + '">Começar o curso</a>' +
-              '<button type="button" class="btn btn-ghost" id="tg-btn" data-course="' + course.id + '">Entrar no grupo do Telegram</button>' +
+              '<button type="button" class="btn btn-ghost tg-btn" id="tg-btn" data-course="' + course.id + '">Entrar no grupo do Telegram</button>' +
             "</div>" +
           "</div>" +
         "</article>";

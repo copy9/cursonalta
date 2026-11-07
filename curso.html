@@ -172,10 +172,29 @@
             '<p class="plan-label">Seu acesso</p>' +
             '<div class="price-big">Liberado</div>' +
             "<p>Este curso já faz parte do seu plano.</p>" +
-            '<a href="minha-area.html" class="btn btn-primary btn-block">Ir para minha área</a>';
+            '<button type="button" class="btn btn-primary btn-block tg-curso" data-course="' + c.id + '">Entrar no grupo do Telegram</button>' +
+            '<a href="minha-area.html" class="btn btn-ghost btn-block" style="margin-top:10px">Ir para minha área</a>';
         }
       })
       .catch(function () {});
+
+    // Grupo do Telegram: pede o link ao servidor só no clique, para quem tem acesso
+    document.addEventListener("click", function (e) {
+      var b = e.target.closest ? e.target.closest(".tg-curso") : null;
+      if (!b) return;
+      var win = window.open("", "_blank");
+      fetch("api/group.php?course=" + encodeURIComponent(b.getAttribute("data-course")), { credentials: "same-origin" })
+        .then(function (res) { return res.json(); })
+        .then(function (r) {
+          if (r.ok && r.url) { if (win) win.location.href = r.url; return; }
+          if (win) win.close();
+          window.alert(r.error || "Não foi possível abrir o grupo.");
+        })
+        .catch(function () {
+          if (win) win.close();
+          window.alert("Sem conexão com o servidor. Tente de novo.");
+        });
+    });
   })();
 </script>
 <script src="js/chat.js"></script>
