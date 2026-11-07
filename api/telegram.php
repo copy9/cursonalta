@@ -32,6 +32,7 @@ users_modify(function (&$users) use ($nome, $tgId) {
     foreach ($users as $email => &$u) {
         if (user_tag($email) === $nome) {
             $u['telegram_id'] = (int)$tgId;
+            if (empty($u['tg_entrou_em'])) $u['tg_entrou_em'] = time();
             break;
         }
     }

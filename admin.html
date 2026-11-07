@@ -319,6 +319,43 @@
       }).join("") + '</table></div>';
   }
 
+  var SIT = { remover: ["Remover do grupo", "#b42318"], atencao: ["Chegou a 30 dias", "#b54708"], ativo: ["Ativo", "#067647"] };
+  function grupoPanelHTML() {
+    if (!stats) return '<p class="adm-empty">Carregando...</p>';
+    var g = stats.grupo || [];
+    var topo = stats.grupo_alertas
+      ? '<div style="background:#fef3f2;color:#b42318;border-radius:12px;padding:12px 16px;margin-bottom:14px;font-weight:600">' + stats.grupo_alertas + ' aluno(s) precisam de atenção no grupo do Telegram. Remova manualmente e marque como removido.</div>'
+      : '';
+    if (!g.length) return '<div class="adm-card">' + topo + '<p class="adm-empty">Nenhum aluno com o pacote de todos os cursos.</p></div>';
+    return '<div class="adm-card">' + topo +
+      '<div class="adm-scroll"><table class="adm-table"><tr><th>Nome</th><th>E-mail</th><th>Entrou no grupo</th><th>Início</th><th>Vence</th><th class="num">Dias usados</th><th>Situação</th><th></th></tr>' +
+      g.map(function (a) {
+        var sit = SIT[a.situacao] || SIT.ativo;
+        var acao = a.situacao === "remover"
+          ? '<button type="button" class="adm-btn ghost al-grupo-ok" data-email="' + esc(a.email) + '">Já removi do grupo</button>'
+          : '';
+        return '<tr><td>' + esc(a.name) + '</td><td>' + esc(a.email) + '</td><td>' + esc(a.entrou || "não entrou ainda") + '</td><td>' + esc(a.inicio) + '</td><td>' + esc(a.vence) + '</td><td class="num">' + a.dias_usados + '</td><td><b style="color:' + sit[1] + '">' + sit[0] + '</b></td><td>' + acao + '</td></tr>';
+      }).join("") +
+      '</table></div></div>';
+  }
+  function grupoRemovido(email) {
+    fetch("api/grupo-removido.php", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: email })
+    }).then(function (res) { return res.json().catch(function () { return { ok: false, error: "Resposta inválida." }; }); })
+      .then(function (r) {
+        if (!r.ok) { alert(r.error || "Não foi possível marcar."); return; }
+        loadStats(function () { render(); });
+      })
+      .catch(function () { alert("Sem conexão. Tente de novo."); });
+  }
+  document.addEventListener("click", function (e) {
+    var g = e.target.closest && e.target.closest(".al-grupo-ok");
+    if (g) grupoRemovido(g.getAttribute("data-email"));
+  });
+
   function excluirAluno(email) {
     fetch("api/student-delete.php", {
       method: "POST",
@@ -350,6 +387,7 @@
         '<button type="button" class="adm-tab' + (tab === "painel" ? " on" : "") + '" id="tab-painel">Painel</button>' +
         '<button type="button" class="adm-tab' + (tab === "cursos" ? " on" : "") + '" id="tab-cursos">Cursos</button>' +
         '<button type="button" class="adm-tab' + (tab === "alunos" ? " on" : "") + '" id="tab-alunos">Alunos</button>' +
+        '<button type="button" class="adm-tab' + (tab === "grupo" ? " on" : "") + '" id="tab-grupo">Grupo' + (stats && stats.grupo_alertas ? ' <b style="color:#b42318">(' + stats.grupo_alertas + ')</b>' : '') + '</button>' +
         '<button type="button" class="adm-tab' + (tab === "acesso" ? " on" : "") + '" id="tab-acesso">Acesso</button>' +
       "</div>";
 
@@ -358,6 +396,8 @@
       body = dashHTML();
     } else if (tab === "alunos") {
       body = alunosPanelHTML();
+    } else if (tab === "grupo") {
+      body = grupoPanelHTML();
     } else if (tab === "acesso") {
       body = accessHTML();
     } else if (editing()) {
@@ -440,6 +480,8 @@
   function bind() {
     var tp = document.getElementById("tab-painel");
     if (tp) tp.addEventListener("click", function () { tab = "painel"; msg(""); if (!stats) loadStats(); else render(); });
+    var tg = document.getElementById("tab-grupo");
+    if (tg) tg.addEventListener("click", function () { tab = "grupo"; msg(""); if (!stats) loadStats(); else render(); });
     var ta = document.getElementById("tab-alunos");
     if (ta) ta.addEventListener("click", function () { tab = "alunos"; msg(""); if (!stats) loadStats(); else render(); });
     var dr = document.getElementById("dash-refresh");

@@ -45,6 +45,35 @@ foreach ($users as $email => $u) {
         'created' => $u['created'] ?? null,
     ];
 }
+// Grupo geral do Telegram: quem tem o pacote de todos os cursos (remoção é manual)
+$grupo = [];
+$alertas = 0;
+foreach ($users as $email => $u) {
+    if (!is_array($u) || $email === ADMIN_EMAIL || !isset($u['password'])) continue;
+    if (($u['plan'] ?? '') !== 'todos') continue;
+    $expires = (int)($u['plan_expires_at'] ?? 0);
+    if ($expires <= 0) continue;
+    $inicio = $expires - DAYS_TODOS * 86400;
+    $usados = (int)floor(($now - $inicio) / 86400);
+    if ($expires > $now) {
+        $situacao = $usados >= 30 ? 'atencao' : 'ativo';
+    } else {
+        $situacao = 'remover';
+    }
+    if ($situacao !== 'ativo') $alertas++;
+    $grupo[] = [
+        'name' => $u['name'] ?? '',
+        'email' => $email,
+        'entrou' => !empty($u['tg_entrou_em']) ? date('d/m/Y H:i', (int)$u['tg_entrou_em']) : null,
+        'inicio' => date('d/m/Y', $inicio),
+        'vence' => date('d/m/Y', $expires),
+        'dias_usados' => max(0, $usados),
+        'situacao' => $situacao,
+    ];
+}
+$ordem = ['remover' => 0, 'atencao' => 1, 'ativo' => 2];
+usort($grupo, function ($a, $b) use ($ordem) { return $ordem[$a['situacao']] <=> $ordem[$b['situacao']]; });
+
 usort($students, function ($a, $b) { return strcmp((string)$b['created'], (string)$a['created']); });
 $students = array_slice($students, 0, 300);
 
@@ -151,6 +180,8 @@ out_json(200, [
     ],
     'months' => array_values($months),
     'courses' => array_values($coursesById),
+    'grupo' => $grupo,
+    'grupo_alertas' => $alertas,
     'students' => $students,
     'recent' => $recent,
     'sales' => $sales,
